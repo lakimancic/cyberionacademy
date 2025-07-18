@@ -23,7 +23,8 @@ dist/
 target/
 dist/
 
-# JetBrains IDE
+# VS Code / Rider / JetBrains / etc.
+.vscode/
 .idea/
 
 # Unit test reports
@@ -48,3 +49,6 @@ Thumbs.db
 *.mov
 *.wmv
 
+# Ignore build outputs
+bin/
+obj/
