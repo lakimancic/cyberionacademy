@@ -1,0 +1,142 @@
+.auth-form {
+    display: flex;
+    flex-direction: column;
+
+    width: 30rem;
+    padding: 3.5rem 3rem;
+    box-sizing: border-box;
+    border-radius: 4px;
+
+    background-color: rgba(26, 50, 83, 0.4);
+}
+
+.auth-form h1 {
+    display: block;
+    margin-bottom: 2rem;
+    font-size: 1.6rem;
+}
+
+.form-field {
+    width: 100%;
+}
+
+.form-field input {
+    box-sizing: border-box;
+    width: 100%;
+    
+    font-size: 0.9rem;
+    line-height: 1.2rem;
+
+    padding: 0.6rem 1rem;
+    outline: none;
+    border-radius: 3px;
+
+    background-color: #1d2d46;
+    color: white;
+
+    transition: all 0.2s ease;
+}
+
+.form-input-error {
+    border: 1px solid #FF646E;
+}
+
+.form-input-normal {
+    border: 1px solid #283d5f;
+}
+
+.form-error {
+    font-size: 0.9rem;
+    line-height: 1.8rem;
+    height: 2rem;
+    color: #FF646E;
+
+    transition: all 0.3s ease;
+}
+
+.form-hidden {
+    transform: translateY(-50%);
+    opacity: 0;
+}
+
+.form-label {
+    color: #566888;
+    margin-bottom: 0.5rem;
+}
+
+.auth-form button {
+    width: 100%;
+    margin: 1.5rem 0;
+    padding: 0.8rem;
+
+    font-weight: 600;
+    font-size: 1rem;
+    color: white;
+
+    outline: none;
+    border: 0;
+    border-radius: 4px;
+
+    background: linear-gradient(90deg, #0fac6f, #3385ff);
+    cursor: pointer;
+
+    transition: all 0.5s linear;
+}
+
+.auth-form button:disabled {
+    background: #2a374d;
+    color: #566888;
+    cursor: default;
+}
+
+.form-next {
+    margin-top: 1.5rem;
+    color: #91a5c5;
+    font-size: 0.9rem;
+}
+
+.form-next a {
+    color: #0facac;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.form-next a:hover {
+    text-decoration: underline;
+}
+
+.form-next a svg {
+    margin-left: 0.3rem;
+    transition: all 0.1s ease;
+}
+
+.form-next a:hover svg {
+    margin-left: 0.5rem;
+}
+
+.form-input {
+    position: relative;
+}
+
+.form-input svg {
+    position: absolute;
+    right: 0;
+
+    height: 100%;
+    width: 1.2rem;
+    margin-right: 0.5rem;
+    cursor: pointer;
+}
+
+.form-eye-red svg {
+    color: #FF646E;
+}
+
+h1.title {
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+}
+
+h1.title span {
+    font-weight: 500;
+}

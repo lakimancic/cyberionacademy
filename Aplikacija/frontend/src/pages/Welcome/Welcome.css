@@ -1,0 +1,48 @@
+main {
+    text-align: center;
+}
+
+main h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 3rem;
+    background: linear-gradient(to right, #fff, #acacac);
+
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+main h1 span {
+    font-weight: 500;
+}
+
+main p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 2rem;
+}
+
+main button {
+    background: linear-gradient(90deg, #0fac6f, #3385ff);
+    color: white;
+    font-weight: 600;
+    font-size: 1.3rem;
+    padding: 1rem 3rem;
+    margin: 0 2rem;
+    margin-top: 2rem;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    box-shadow: 0 4px 20px rgba(58, 255, 101, 0.3);
+}
+
+main button:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 25px rgba(58, 255, 101, 0.3);
+}
