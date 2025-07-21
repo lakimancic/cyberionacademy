@@ -23,8 +23,8 @@ function InputField(props : InputProps) {
                     className={props.error ? 'form-input-error' : 'form-input-normal'}
                 />
                 {props.type === 'password' && (passwordVisible ? 
-                    <IoEyeOff onClick={() => setPasswordVisible(false)}/> : 
-                    <IoEye    onClick={() => setPasswordVisible(true)}/>
+                    <IoEye    onClick={() => setPasswordVisible(false)}/> : 
+                    <IoEyeOff onClick={() => setPasswordVisible(true)}/>
                 )}
             </div>
             <div className={`form-error ${props.error ? '' : 'form-hidden'}`}>{props.error ?? ''}</div>
