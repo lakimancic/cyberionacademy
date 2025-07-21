@@ -15,7 +15,7 @@ function Home() {
                 Log-in to continue sharpening your skills.
             </p>
             <div className="button-container">
-                <button type="button">Register</button>
+                <button type="button" onClick={() => navigate('/register')}>Register</button>
                 <button type="button" onClick={() => navigate('/login')}>Login</button>
             </div>
             <Footer />

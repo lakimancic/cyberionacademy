@@ -55,7 +55,7 @@ function Login() {
 
     return <>
         <h1 className="title">Cyberion<span>Academy</span></h1>
-       <form className='auth-form' onSubmit={handleSubmit(onSubmit)}>
+        <form className='auth-form' onSubmit={handleSubmit(onSubmit)}>
             <h1>Log in to your account</h1>
             <InputField
                 type='email'

@@ -20,7 +20,8 @@
     width: 100%;
 }
 
-.form-field input {
+.form-field input, #mui-component-select-country {
+    display: block;
     box-sizing: border-box;
     width: 100%;
     
@@ -35,6 +36,33 @@
     color: white;
 
     transition: all 0.2s ease;
+}
+
+.MuiSelect-root {
+    width: 100%;
+    border: 1px solid #283d5f;
+    margin-bottom: 2rem;
+}
+
+.MuiSelect-root svg {
+    color: white;
+}
+
+.MuiPaper-root {
+    background-color: #1d2d46 !important;
+    color: white !important;
+}
+
+#mui-component-select-country {
+    padding: 0.8rem 1rem;
+}
+
+.MuiSelect-root fieldset {
+    all: unset;
+}
+
+.form-field option {
+    background-color: #1d2d46;
 }
 
 .form-input-error {
