@@ -46,3 +46,43 @@ main button:hover {
     transform: translateY(-4px);
     box-shadow: 0 6px 25px rgba(58, 255, 101, 0.3);
 }
+
+@keyframes dropFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.welcome_h1 {
+  animation: dropFadeIn 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes dropFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-button {
+  opacity: 0;
+  animation: dropFadeIn 1s ease-out forwards;
+}
+
+.delay-1 {
+  animation-delay: 0.3s;
+}
+
+.delay-2 {
+  animation-delay: 0.7s;
+}

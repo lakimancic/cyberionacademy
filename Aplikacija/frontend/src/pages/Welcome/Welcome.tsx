@@ -7,7 +7,7 @@ function Home() {
 
     return <>
         <main>
-            <h1>Cyberion<span>Academy</span></h1>
+            <h1 className="welcome_h1">Cyberion<span>Academy</span></h1>
             <p>
                 Welcome to Cyberion Academy — a platform for learning cybersecurity, <br />
                 from absolute beginner to expert hacker, with a personalized experience. <br />
@@ -15,8 +15,8 @@ function Home() {
                 Log-in to continue sharpening your skills.
             </p>
             <div className="button-container">
-                <button type="button" onClick={() => navigate('/register')}>Register</button>
-                <button type="button" onClick={() => navigate('/login')}>Login</button>
+                <button type="button" className="animate-button delay-1" onClick={() => navigate('/register')}>Register</button>
+                <button type="button" className="animate-button delay-2" onClick={() => navigate('/login')}>Login</button>
             </div>
             <Footer />
         </main>
