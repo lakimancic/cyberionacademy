@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form';
+import { useNavigate } from "react-router-dom";
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Link } from 'react-router-dom';
@@ -15,11 +16,6 @@ const schema = yup.object({
     password: yup
         .string()
         .required('Password is required')
-        .min(8, 'Password must be at least 8 characters')
-        .matches(/[a-z]/, 'Must include at least one lowercase letter')
-        .matches(/[A-Z]/, 'Must include at least one uppercase letter')
-        .matches(/\d/, 'Must include at least one number')
-        .matches(/[!@#$%^&*(),.?":{}|<>]/, 'Must include at least one special character')
 });
 
 type FormValues = {
@@ -49,12 +45,15 @@ function Login() {
         }
     };
 
+    const navigate = useNavigate();
+
     const onSubmit = (data: FormValues) => {
         console.log(data);
     }
 
     return <>
         <h1 className="title">Cyberion<span>Academy</span></h1>
+        <button type="button" className="back-button" onClick={() => navigate('/')}>Back</button>
         <form className='auth-form' onSubmit={handleSubmit(onSubmit)}>
             <h1>Log in to your account</h1>
             <InputField

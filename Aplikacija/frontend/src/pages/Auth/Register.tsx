@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form';
+import { useNavigate } from "react-router-dom";
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Link } from 'react-router-dom';
@@ -86,6 +87,8 @@ function Register() {
         console.log(data);
     }
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         async function validateEmail() {
             const valid = await trigger('email');
@@ -113,6 +116,7 @@ function Register() {
 
     return <>
         <h1 className="title">Cyberion<span>Academy</span></h1>
+        <button type="button" className="back-button" onClick={() => navigate('/')}>Back</button>
         <form className='auth-form' onSubmit={handleSubmit(onSubmit)}>
             <h1>Create new account</h1>
             {regState === 0 && <>
