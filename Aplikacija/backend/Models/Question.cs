@@ -25,7 +25,7 @@ public class MultiAnswerQuestion : Question { }
 
 public class ConnectQuestion : Question
 {
-    public List<AnswerOption>? Pairs { get; set; }
+    public List<ConnectPair>? Pairs { get; set; }
 }
 
 public class TextQuestion : Question { }

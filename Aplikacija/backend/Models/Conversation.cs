@@ -6,7 +6,8 @@ public class Conversation
     public int Id { get; set; }
     public bool Closed { get; set; } = false;
 
-    public List<Message> Messages { get; set; } = [];
+    public User? StartedBy { get; set; }
+    public List<Message>? Messages { get; set; }
 }
 
 public class ChallengeConversation

@@ -10,5 +10,5 @@ public class ChallengeSubmission
     public DateTime SubmittedAt { get; set; }
 
     public required Challenge Challenge { get; set; }
-    public required User User { get; set; }
+    public required User? User { get; set; }
 }

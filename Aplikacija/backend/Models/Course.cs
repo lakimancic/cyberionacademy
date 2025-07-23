@@ -10,7 +10,7 @@ public class Course
     [MaxLength(20)]
     public string? Banner { get; set; }
 
-    public required User Author { get; set; }
-    public List<Lesson> Lessons { get; set; } = [];
-    public List<Challenge> Challenges { get; set; } = [];
+    public User? Author { get; set; }
+    public List<Lesson>? Lessons { get; set; }
+    public List<Challenge>? Challenges { get; set; }
 }

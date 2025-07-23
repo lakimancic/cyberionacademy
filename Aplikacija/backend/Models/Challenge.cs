@@ -14,8 +14,11 @@ public class Challenge
     public int Points { get; set; }
     public bool Archived { get; set; } = false;
     public bool Public { get; set; } = true;
+    public DateTime CreatedAt { get; set; }
 
-    public required User Author { get; set; }
+    public User? Author { get; set; }
     public required Category Category { get; set; }
-    public List<Tag> Tags { get; set; } = [];
+    public List<Tag>? Tags { get; set; }
+    public List<ChallengeReview>? Reviews { get; set; }
+    public List<ChallengeSubmission>? Submissions { get; set; }
 }
