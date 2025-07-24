@@ -12,8 +12,14 @@
 
 .auth-form h1 {
     display: block;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     font-size: 1.6rem;
+}
+
+.auth-global-error {
+    color: #FF646E;
+    margin-bottom: 1rem;
+    text-align: center;
 }
 
 .form-field {
@@ -129,7 +135,11 @@
     background: linear-gradient(90deg, #0fac6f, #3385ff);
     cursor: pointer;
 
-    transition: all 0.5s linear;
+    transition: background 0.5s linear;
+}
+
+.auth-form button.loading {
+    padding: 0.5rem;
 }
 
 .auth-form button:disabled {

@@ -27,7 +27,7 @@ public class AuthController(IAuthService authService) : ControllerBase
     {
         var result = await authService.LoginAsync(request);
         if (result is null)
-            return BadRequest(new { Error = "Invalid username or password" });
+            return BadRequest(new { Error = "Invalid email or password" });
 
         return Ok(result);
     }

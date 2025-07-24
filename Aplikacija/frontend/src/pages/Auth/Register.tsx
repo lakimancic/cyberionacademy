@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Link } from 'react-router-dom';
-import { FaArrowRight } from "react-icons/fa";
-import InputField from '../../components/Auth/InputField';
-import Footer from '../../components/Footer/Footer';
 import { useEffect, useState } from 'react';
-import countries from '../../assets/data/countries.json';
-import { MenuItem, Select } from '@mui/material';
+import { FaArrowRight } from "react-icons/fa";
+import { CircularProgress, MenuItem, Select } from '@mui/material';
+import InputField from '@/components/Auth/InputField';
+import Footer from '@/components/Footer/Footer';
+import countries from '@/assets/data/countries.json';
+import api from '@/lib/api';
 import './Auth.css';
 
 const schema = yup.object({
@@ -53,6 +54,14 @@ type FormValues = {
 
 type StringFields = 'email' | 'password' | 'repeatPassword' | 'username' | 'fullName';
 
+const errorChecks = [
+    { field: 'Email', state: 0 },
+    { field: 'Password', state: 1 },
+    { field: 'Username', state: 2 },
+    { field: 'FullName', state: 2 },
+    { field: 'Country', state: 2 },
+];
+
 function Register() {
     const {
         register,
@@ -66,6 +75,8 @@ function Register() {
         resolver: yupResolver(schema),
         mode: 'onSubmit'
     });
+    const [globalError, setGlobalError] = useState<string>("");
+    const [loading, setLoading] = useState(false);
 
     const email = watch('email');
     const password = watch('password');
@@ -84,7 +95,46 @@ function Register() {
     };
 
     const onSubmit = (data: FormValues) => {
-        console.log(data);
+        setGlobalError("");
+        setLoading(true);
+
+        api.post("/Auth/register", data)
+            .then(() => {
+                navigate("/login");
+            })
+            .catch(error => {
+                if(error.response) {
+                    if(error.response.status === 400) {
+                        const data = error.response.data;
+                        if('error' in data) {
+                            const error : string = data.error;
+                            setGlobalError(error);
+                            if(error.includes("Email")) {
+                                setRegState(0);
+                            } else {
+                                setRegState(1);
+                            }
+                        } else if('errors' in data) {
+                            for(const check of errorChecks) {
+                                if(check.field in data.errors) {
+                                    setGlobalError(data.errors[check.field][0]);
+                                    setRegState(check.state);
+                                    break;
+                                }
+                            }
+                        } else {
+                            setGlobalError("Error occured during login");
+                        }
+                    } else {
+                        setGlobalError(error.title);
+                    }
+                } else {
+                    setGlobalError(error.message);
+                }
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     }
 
     const navigate = useNavigate();
@@ -119,6 +169,7 @@ function Register() {
         <button type="button" className="back-button" onClick={() => navigate('/')}>Back</button>
         <form className='auth-form' onSubmit={handleSubmit(onSubmit)}>
             <h1>Create new account</h1>
+            {globalError.length > 0 && <div className='auth-global-error'>{globalError}</div>}
             {regState === 0 && <>
                 <InputField
                     type='email'
@@ -130,7 +181,10 @@ function Register() {
                 <button 
                     type="button"
                     disabled={!isEmailValid}
-                    onClick={() => setRegState(1)}
+                    onClick={() => {
+                        setRegState(1);
+                        setGlobalError("");
+                    }}
                 >Continue</button>
             </>}
             {regState === 1 && <>
@@ -151,7 +205,10 @@ function Register() {
                 <button 
                     type="button"
                     disabled={!isPassValid}
-                    onClick={() => setRegState(2)}
+                    onClick={() => {
+                        setRegState(2);
+                        setGlobalError("");
+                    }}
                 >Continue</button>
             </>}
             {regState === 2 && <>
@@ -187,7 +244,8 @@ function Register() {
                 <button 
                     type="submit"
                     disabled={!isValid}
-                >Register</button>
+                    className={loading ? 'loading' : ''}
+                >{loading ? <CircularProgress color='inherit' size="1.6rem"/> : 'Register'}</button>
             </>}
             <div className="form-next">
                 Already have a CyberionAcademy account? <Link to='/login'>Login<FaArrowRight /></Link>
