@@ -28,6 +28,8 @@ public class User
     [MaxLength(200)]
     public string? Bio { get; set; }
     public UserRole Role { get; set; } = UserRole.User;
+    public string? RefreshToken { get; set; }
+    public DateTime? RefreshTokenExpiryTime { get; set; }
 
     public List<ChallengeSubmission>? Submissions { get; set; }
     public List<Challenge>? Challenges { get; set; }

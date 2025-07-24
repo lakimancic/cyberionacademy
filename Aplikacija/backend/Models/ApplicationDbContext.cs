@@ -27,7 +27,7 @@ public class ApplicationDbContext : DbContext
             .HasValue<ConnectQuestion>(QuestionType.Connect)
             .HasValue<TextQuestion>(QuestionType.Text);
 
-        modelBuilder.Entity<LessonReview>().UseTpcMappingStrategy();    
+        modelBuilder.Entity<LessonReview>().UseTpcMappingStrategy();
         modelBuilder.Entity<ChallengeReview>().UseTpcMappingStrategy();
 
         modelBuilder.Entity<LessonReview>()
@@ -35,5 +35,19 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<ChallengeReview>()
             .HasKey(cr => new { cr.UserId, cr.ChallengeId });
+            
+        
+        modelBuilder.Entity<Category>().HasData(
+            new Category { Id = 1, Name = "Web Exploitation", ShortForm = "web" },
+            new Category { Id = 2, Name = "Reverse Engineering", ShortForm = "rev" },
+            new Category { Id = 3, Name = "Binary Exploitation", ShortForm = "pwn" },
+            new Category { Id = 4, Name = "Cryptography", ShortForm = "cry" },
+            new Category { Id = 5, Name = "Digital Forensics", ShortForm = "for" },
+            new Category { Id = 6, Name = "Miscellaneous", ShortForm = "misc" },
+            new Category { Id = 7, Name = "Hardware Hacking", ShortForm = "hw" },
+            new Category { Id = 8, Name = "Network Security", ShortForm = "net" },
+            new Category { Id = 9, Name = "Open Source Intelligence", ShortForm = "osint" },
+            new Category { Id = 10, Name = "Game Hacking", ShortForm = "game" }
+        );
     }
 }

@@ -33,7 +33,7 @@ const schema = yup.object({
         .required('Username is required')
         .matches(/^[a-zA-Z0-9_]+$/, 'Only letters, numbers, and underscores allowed')
         .min(3, 'Must be at least 3 characters')
-        .max(15, 'Must be at most 15 characters'),
+        .max(50, 'Must be at most 50 characters'),
     fullName: yup
         .string()
         .required('Full name is required')
@@ -42,7 +42,7 @@ const schema = yup.object({
         'Only letters and single spaces allowed'
         )
         .min(3, 'Must be at least 3 characters')
-        .max(30, 'Must be at most 30 characters'),
+        .max(80, 'Must be at most 80 characters'),
     country: yup.string()
 });
 
