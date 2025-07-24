@@ -78,6 +78,18 @@ function Register() {
     const [globalError, setGlobalError] = useState<string>("");
     const [loading, setLoading] = useState(false);
 
+    const handleEnterKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            if (regState === 0 && isEmailValid) {
+                setRegState(1);
+                setGlobalError("");
+            } else if (regState === 1 && isPassValid) {
+                setRegState(2);
+                setGlobalError("");
+            }
+        }
+    };
+    
     const email = watch('email');
     const password = watch('password');
     const repeatPassword = watch('repeatPassword');
@@ -176,9 +188,12 @@ function Register() {
                     label='Email'
                     handleChange={() => handleChange('email')}
                     error={errors.email?.message}
-                    inputProps={{...register('email')}}
+                    inputProps={{
+                        ...register('email'),
+                        onKeyDown: handleEnterKey
+                    }}
                 />
-                <button 
+                <button
                     type="button"
                     disabled={!isEmailValid}
                     onClick={() => {
@@ -193,14 +208,22 @@ function Register() {
                     label='Password'
                     handleChange={() => handleChange('password')}
                     error={errors.password?.message}
-                    inputProps={{...register('password')}}
+                    inputProps={{
+                        ...register('password'),
+                        onKeyDown: handleEnterKey
+                    }}
                 />
                 <InputField
                     type='password'
                     label='Repeat password'
                     handleChange={() => handleChange('repeatPassword')}
                     error={errors.repeatPassword?.message}
-                    inputProps={{...register('repeatPassword')}}
+                    inputProps={{...register('repeatPassword'),
+                    onPaste: (e) => e.preventDefault(),
+                    onCopy: (e) => e.preventDefault(),
+                    onCut: (e) => e.preventDefault(),
+                    onKeyDown: handleEnterKey
+                    }}
                 />
                 <button 
                     type="button"
