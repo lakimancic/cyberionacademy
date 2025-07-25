@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using backend.Models;
 
@@ -11,9 +12,11 @@ using backend.Models;
 namespace backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250724215741_IdsAdded")]
+    partial class IdsAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -181,6 +184,9 @@ namespace backend.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CourseId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -213,6 +219,8 @@ namespace backend.Migrations
                     b.HasIndex("AuthorId");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("CourseId");
 
                     b.ToTable("Challenges");
                 });
@@ -316,9 +324,6 @@ namespace backend.Migrations
                     b.Property<bool>("Closed")
                         .HasColumnType("bit");
 
-                    b.Property<int>("ConversationType")
-                        .HasColumnType("int");
-
                     b.Property<int?>("StartedById")
                         .HasColumnType("int");
 
@@ -327,10 +332,6 @@ namespace backend.Migrations
                     b.HasIndex("StartedById");
 
                     b.ToTable("Conversations");
-
-                    b.HasDiscriminator<int>("ConversationType");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("backend.Models.Course", b =>
@@ -364,36 +365,6 @@ namespace backend.Migrations
                     b.HasIndex("AuthorId");
 
                     b.ToTable("Courses");
-                });
-
-            modelBuilder.Entity("backend.Models.CourseChallenge", b =>
-                {
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ChallengeId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CourseId", "ChallengeId");
-
-                    b.HasIndex("ChallengeId");
-
-                    b.ToTable("CourseChallenge");
-                });
-
-            modelBuilder.Entity("backend.Models.CourseLesson", b =>
-                {
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("LessonId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CourseId", "LessonId");
-
-                    b.HasIndex("LessonId");
-
-                    b.ToTable("CourseLesson");
                 });
 
             modelBuilder.Entity("backend.Models.CourseReview", b =>
@@ -436,6 +407,9 @@ namespace backend.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CourseId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -462,6 +436,8 @@ namespace backend.Migrations
                     b.HasIndex("AuthorId");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("CourseId");
 
                     b.ToTable("Lessons");
                 });
@@ -499,6 +475,9 @@ namespace backend.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AuthorId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -648,6 +627,15 @@ namespace backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("ChallengeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("LessonId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(30)
@@ -655,52 +643,13 @@ namespace backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tags");
-                });
-
-            modelBuilder.Entity("backend.Models.TagChallenge", b =>
-                {
-                    b.Property<int>("TagId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ChallengeId")
-                        .HasColumnType("int");
-
-                    b.HasKey("TagId", "ChallengeId");
-
                     b.HasIndex("ChallengeId");
-
-                    b.ToTable("TagChallenge");
-                });
-
-            modelBuilder.Entity("backend.Models.TagCourse", b =>
-                {
-                    b.Property<int>("TagId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.HasKey("TagId", "CourseId");
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("TagCourse");
-                });
-
-            modelBuilder.Entity("backend.Models.TagLesson", b =>
-                {
-                    b.Property<int>("TagId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("LessonId")
-                        .HasColumnType("int");
-
-                    b.HasKey("TagId", "LessonId");
-
                     b.HasIndex("LessonId");
 
-                    b.ToTable("TagLesson");
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("backend.Models.User", b =>
@@ -763,30 +712,6 @@ namespace backend.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("backend.Models.ChallengeConversation", b =>
-                {
-                    b.HasBaseType("backend.Models.Conversation");
-
-                    b.Property<int?>("ChallengeId")
-                        .HasColumnType("int");
-
-                    b.HasIndex("ChallengeId");
-
-                    b.HasDiscriminator().HasValue(1);
-                });
-
-            modelBuilder.Entity("backend.Models.LessonConversation", b =>
-                {
-                    b.HasBaseType("backend.Models.Conversation");
-
-                    b.Property<int?>("LessonId")
-                        .HasColumnType("int");
-
-                    b.HasIndex("LessonId");
-
-                    b.HasDiscriminator().HasValue(0);
-                });
-
             modelBuilder.Entity("backend.Models.ConnectQuestion", b =>
                 {
                     b.HasBaseType("backend.Models.Question");
@@ -844,6 +769,10 @@ namespace backend.Migrations
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("backend.Models.Course", null)
+                        .WithMany("Challenges")
+                        .HasForeignKey("CourseId");
 
                     b.Navigation("Author");
 
@@ -915,44 +844,6 @@ namespace backend.Migrations
                     b.Navigation("Author");
                 });
 
-            modelBuilder.Entity("backend.Models.CourseChallenge", b =>
-                {
-                    b.HasOne("backend.Models.Challenge", "Challenge")
-                        .WithMany()
-                        .HasForeignKey("ChallengeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("backend.Models.Course", "Course")
-                        .WithMany("Challenges")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Challenge");
-
-                    b.Navigation("Course");
-                });
-
-            modelBuilder.Entity("backend.Models.CourseLesson", b =>
-                {
-                    b.HasOne("backend.Models.Course", "Course")
-                        .WithMany("Lessons")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("backend.Models.Lesson", "Lesson")
-                        .WithMany()
-                        .HasForeignKey("LessonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Course");
-
-                    b.Navigation("Lesson");
-                });
-
             modelBuilder.Entity("backend.Models.CourseReview", b =>
                 {
                     b.HasOne("backend.Models.Course", "Course")
@@ -983,6 +874,10 @@ namespace backend.Migrations
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("backend.Models.Course", null)
+                        .WithMany("Lessons")
+                        .HasForeignKey("CourseId");
 
                     b.Navigation("Author");
 
@@ -1071,79 +966,19 @@ namespace backend.Migrations
                     b.Navigation("RequestedBy");
                 });
 
-            modelBuilder.Entity("backend.Models.TagChallenge", b =>
+            modelBuilder.Entity("backend.Models.Tag", b =>
                 {
-                    b.HasOne("backend.Models.Challenge", "Challenge")
+                    b.HasOne("backend.Models.Challenge", null)
                         .WithMany("Tags")
-                        .HasForeignKey("ChallengeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("backend.Models.Tag", "Tag")
-                        .WithMany()
-                        .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Challenge");
-
-                    b.Navigation("Tag");
-                });
-
-            modelBuilder.Entity("backend.Models.TagCourse", b =>
-                {
-                    b.HasOne("backend.Models.Course", "Course")
-                        .WithMany("Tags")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("backend.Models.Tag", "Tag")
-                        .WithMany()
-                        .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Course");
-
-                    b.Navigation("Tag");
-                });
-
-            modelBuilder.Entity("backend.Models.TagLesson", b =>
-                {
-                    b.HasOne("backend.Models.Lesson", "Lesson")
-                        .WithMany("Tags")
-                        .HasForeignKey("LessonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("backend.Models.Tag", "Tag")
-                        .WithMany()
-                        .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Lesson");
-
-                    b.Navigation("Tag");
-                });
-
-            modelBuilder.Entity("backend.Models.ChallengeConversation", b =>
-                {
-                    b.HasOne("backend.Models.Challenge", "Challenge")
-                        .WithMany()
                         .HasForeignKey("ChallengeId");
 
-                    b.Navigation("Challenge");
-                });
+                    b.HasOne("backend.Models.Course", null)
+                        .WithMany("Tags")
+                        .HasForeignKey("CourseId");
 
-            modelBuilder.Entity("backend.Models.LessonConversation", b =>
-                {
-                    b.HasOne("backend.Models.Lesson", "Lesson")
-                        .WithMany()
+                    b.HasOne("backend.Models.Lesson", null)
+                        .WithMany("Tags")
                         .HasForeignKey("LessonId");
-
-                    b.Navigation("Lesson");
                 });
 
             modelBuilder.Entity("backend.Models.Challenge", b =>

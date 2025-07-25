@@ -8,5 +8,6 @@ public class AnswerOption
     public required string Text { get; set; }
     public bool IsCorrect { get; set; }
 
+    public int QuestionId { get; set; }
     public required Question Question { get; set; }
 }

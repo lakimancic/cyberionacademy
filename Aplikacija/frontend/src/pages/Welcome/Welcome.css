@@ -25,7 +25,7 @@ main p {
     margin-bottom: 2rem;
 }
 
-main button {
+main button.main-button {
     background: linear-gradient(90deg, #0fac6f, #3385ff);
     color: white;
     font-weight: 600;
@@ -42,7 +42,7 @@ main button {
     box-shadow: 0 4px 20px rgba(58, 255, 101, 0.3);
 }
 
-main button:hover {
+main button.main-button:hover {
     transform: translateY(-4px);
     box-shadow: 0 6px 25px rgba(58, 255, 101, 0.3);
 }

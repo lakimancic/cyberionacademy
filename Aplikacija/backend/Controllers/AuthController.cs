@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using backend.DTOs.Auth;
 using backend.Services.Auth;
 

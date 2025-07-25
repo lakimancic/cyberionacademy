@@ -1,0 +1,17 @@
+main.layout {
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.layout-container {
+    display: flex;
+    flex: 1;
+}
+
+.layout-content {
+    flex: 1;
+    overflow-y: auto;
+}

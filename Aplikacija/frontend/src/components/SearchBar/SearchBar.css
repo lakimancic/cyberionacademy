@@ -1,0 +1,42 @@
+.search-bar-container {
+    position: relative;
+
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+
+    margin-left: 3rem;
+}
+
+.search-bar-container svg {
+    position: absolute;
+
+    left: 1rem;
+    top: 0.8rem;
+
+    color: rgba(255, 255, 255, 0.4);
+    transition: all 0.3s ease;
+}
+
+.search-bar-container input:focus + svg {
+    color: white;
+}
+
+.search-bar-container input {
+    outline: none;
+    border: 0;
+    display: block;
+    padding: 0.8rem 1rem;
+    padding-left: 3rem;
+
+    background: none;
+
+    color: white;
+    caret-color: rgb(47, 255, 158);
+
+    font-size: 0.9rem;
+    width: 20rem;
+}
+
+.search-bar-container input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}

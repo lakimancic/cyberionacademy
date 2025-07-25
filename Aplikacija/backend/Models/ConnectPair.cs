@@ -9,5 +9,6 @@ public class ConnectPair
     [MaxLength(30)]
     public required string Right { get; set; }
 
+    public int QuestionId { get; set; }
     public required ConnectQuestion Question { get; set; }
 }

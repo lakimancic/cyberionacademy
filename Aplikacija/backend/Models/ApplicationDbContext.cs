@@ -29,13 +29,26 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<LessonReview>().UseTpcMappingStrategy();
         modelBuilder.Entity<ChallengeReview>().UseTpcMappingStrategy();
+        modelBuilder.Entity<CourseReview>().UseTpcMappingStrategy();
 
         modelBuilder.Entity<LessonReview>()
             .HasKey(lr => new { lr.UserId, lr.LessonId });
 
         modelBuilder.Entity<ChallengeReview>()
             .HasKey(cr => new { cr.UserId, cr.ChallengeId });
-            
+
+        modelBuilder.Entity<CourseReview>()
+            .HasKey(cr => new { cr.UserId, cr.CourseId });
+        
+        modelBuilder.Entity<Lesson>()
+            .HasOne(l => l.Quiz)
+            .WithOne(q => q.Lesson)
+            .HasForeignKey<Quiz>(q => q.LessonId);
+
+        modelBuilder.Entity<Conversation>()
+            .HasDiscriminator<ConversationType>("ConversationType")
+            .HasValue<LessonConversation>(ConversationType.Lesson)
+            .HasValue<ChallengeConversation>(ConversationType.Challenge);
         
         modelBuilder.Entity<Category>().HasData(
             new Category { Id = 1, Name = "Web Exploitation", ShortForm = "web" },

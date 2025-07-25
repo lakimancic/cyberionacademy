@@ -6,8 +6,8 @@ import './App.css';
 function App() {
     return (
         <>
-            <Background />
             <AuthProvider>
+                <Background />
                 <Routes />
             </AuthProvider>
         </>

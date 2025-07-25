@@ -4,6 +4,10 @@ import ProtectedRoute from "./ProtectedRoute";
 import Welcome from "@/pages/Welcome/Welcome";
 import Login from "@/pages/Auth/Login";
 import Register from "@/pages/Auth/Register";
+import MainLayout from "@/layouts/MainLayout/MainLayout";
+import Lessons from "@/pages/Lessons/Lessons";
+import Challenges from "@/pages/Challenges/Challenges";
+import Courses from "@/pages/Courses/Courses";
 
 function Routes() {
     const auth = useAuth();
@@ -22,8 +26,26 @@ function Routes() {
             children: [
                 {
                     path: "/",
-                    element: <div>Hello World</div>,
-                }
+                    element: <MainLayout />,
+                    children: [
+                        {
+                            path: "/",
+                            element: <div>HELLO WORLD</div> 
+                        },
+                        {
+                            path: "/lessons",
+                            element: <Lessons />
+                        },
+                        {
+                            path: "/challenges",
+                            element: <Challenges />
+                        },
+                        {
+                            path: "/courses",
+                            element: <Courses />
+                        }
+                    ]
+                },
             ]
         }
     ];
@@ -44,7 +66,7 @@ function Routes() {
     ];
 
     const router = createBrowserRouter([
-        ...(!auth || !auth.token ? routesForNotAuthenticatedOnly : []),
+        ...(!auth?.token ? routesForNotAuthenticatedOnly : []),
         ...routesForAuthenticatedOnly,
         ...routesForPublic
     ]);

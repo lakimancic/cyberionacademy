@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react';
 import './Background.css';
+import { useAuth } from '@/contexts/AuthProvider';
 
 function Background() {
     const particlesRef = useRef<HTMLDivElement | null>(null);
+    const auth = useAuth();
 
     useEffect(() => {
         const particleCount = 80;
@@ -101,9 +103,9 @@ function Background() {
     }, []);
 
     return <div className='gradient-background'>
-        <div className="gradient-sphere sphere-1"></div>
-        <div className="gradient-sphere sphere-2"></div>
-        <div className="gradient-sphere sphere-3"></div>
+        <div className={`gradient-sphere sphere-1 gradient-invis${auth?.token ? '' : ''}`}></div>
+        <div className={`gradient-sphere sphere-2 gradient-invis${auth?.token ? '' : ''}`}></div>
+        <div className={`gradient-sphere sphere-3 gradient-invis${auth?.token ? '' : ''}`}></div>
         <div className="glow"></div>
         <div className="grid-overlay"></div>
         <div className="particles-container" ref={particlesRef}></div>

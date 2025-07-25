@@ -13,6 +13,11 @@
     position: absolute;
     border-radius: 50%;
     filter: blur(60px);
+    transition: opacity 1s ease;
+}
+
+.gradient-invis {
+    opacity: 0.12;
 }
 
 .sphere-1 {
@@ -36,7 +41,7 @@
 .sphere-3 {
     width: 30vw;
     height: 30vw;
-    background: linear-gradient(120deg, rgba(75, 47, 177, 0.4), rgba(98, 249, 156, 0.4));
+    background: linear-gradient(120deg, rgba(75, 47, 177, 0.15), rgba(98, 249, 156, 0.15));
     top: 60%;
     left: 20%;
     animation: float-3 20s ease-in-out infinite alternate;
@@ -63,11 +68,9 @@
 @keyframes float-3 {
     0% {
         transform: translate(0, 0) scale(1);
-        opacity: 0.3;
     }
     100% {
         transform: translate(-5%, 10%) scale(1.05);
-        opacity: 0.6;
     }
 }
 

@@ -17,5 +17,6 @@ public class RoleRequest
     [MaxLength(300)]
     public required string Text { get; set; }
 
+    public int RequestedById { get; set; }
     public required User RequestedBy { get; set; }
 }

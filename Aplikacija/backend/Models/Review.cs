@@ -21,3 +21,9 @@ public class ChallengeReview : Review
     public int ChallengeId { get; set; }
     public required Challenge Challenge { get; set; }
 }
+
+public class CourseReview : Review
+{
+    public int CourseId { get; set; }
+    public required Course Course { get; set; }
+}

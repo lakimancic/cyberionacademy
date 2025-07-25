@@ -74,8 +74,10 @@ function Login() {
                         } else {
                             setGlobalError("Error occured during login");
                         }
-                    } else {
+                    } else if('title' in error) {
                         setGlobalError(error.title);
+                    } else {
+                        setGlobalError(error.message);
                     }
                 } else {
                     setGlobalError(error.message);

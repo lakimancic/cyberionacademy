@@ -9,6 +9,8 @@ public class ChallengeSubmission
     public required bool Correct { get; set; }
     public DateTime SubmittedAt { get; set; }
 
+    public int ChallengeId { get; set; }
     public required Challenge Challenge { get; set; }
-    public required User? User { get; set; }
+    public int? UserId { get; set; }
+    public User? User { get; set; }
 }

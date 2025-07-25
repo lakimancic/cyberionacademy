@@ -11,9 +11,12 @@ public class Lesson
     public bool Public { get; set; } = true;
     public DateTime CreatedAt { get; set; }
 
+    public int? QuizId { get; set; }
     public Quiz? Quiz { get; set; }
+    public int CategoryId { get; set; }
     public required Category Category { get; set; }
+    public int? AuthorId { get; set; }
     public User? Author { get; set; }
-    public List<Tag>? Tags { get; set; }
+    public List<TagLesson>? Tags { get; set; }
     public List<LessonReview>? Reviews { get; set; }
 }

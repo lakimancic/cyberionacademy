@@ -15,8 +15,8 @@ function Home() {
                 Log-in to continue sharpening your skills.
             </p>
             <div className="button-container">
-                <button type="button" className="animate-button delay-1" onClick={() => navigate('/register')}>Register</button>
-                <button type="button" className="animate-button delay-2" onClick={() => navigate('/login')}>Login</button>
+                <button type="button" className="main-button animate-button delay-1" onClick={() => navigate('/register')}>Register</button>
+                <button type="button" className="main-button animate-button delay-2" onClick={() => navigate('/login')}>Login</button>
             </div>
             <Footer />
         </main>
