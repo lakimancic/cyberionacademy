@@ -8,6 +8,7 @@ import MainLayout from "@/layouts/MainLayout/MainLayout";
 import Lessons from "@/pages/Lessons/Lessons";
 import Challenges from "@/pages/Challenges/Challenges";
 import Courses from "@/pages/Courses/Courses";
+import Settings from "@/pages/Settings/Settings";
 
 function Routes() {
     const auth = useAuth();
@@ -43,6 +44,10 @@ function Routes() {
                         {
                             path: "/courses",
                             element: <Courses />
+                        },
+                        {
+                            path: "/settings",
+                            element: <Settings />
                         }
                     ]
                 },

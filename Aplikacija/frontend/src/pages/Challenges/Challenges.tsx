@@ -1,6 +1,6 @@
 import './Challenges.css';
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from 'react';
+import api from '@/lib/api';
 
 interface Challenge {
     id: number;
@@ -13,13 +13,11 @@ function Challenges() {
     const [challenges, setChallenges] = useState<Challenge[]>([]);
 
     useEffect(() => {
-        axios.get('http://localhost:5072/api/Challenge/GetChallenges', { ////////ispravi
-            headers: {Accept: 'application/json'}
-        })
-        
+        api.get('/Challenge/GetChallenges')
             .then(response => {
-        console.log('Odgovor sa servera:', response.data);
-        setChallenges(response.data);})
+                console.log('Odgovor sa servera:', response.data);
+                setChallenges(response.data);
+            })
             .catch(error => console.error('Greška pri dohvatanju izazova:', error));
     }, []);
 

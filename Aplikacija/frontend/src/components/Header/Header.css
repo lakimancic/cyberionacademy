@@ -37,7 +37,7 @@ header {
     pointer-events: none;
 }
 
-.MuiAvatar-root {
+.header-right .MuiAvatar-root {
     width: 2rem !important;
     height: 2rem !important;
 }

@@ -23,7 +23,13 @@ interface AuthProviderProps {
 }
 
 function AuthProvider({ children } : AuthProviderProps) {
-    const [token, setToken_] = useState<string | null>(localStorage.getItem("token"));
+    const [token, setToken_] = useState<string | null>(() => {
+        const savedToken = localStorage.getItem("token");
+        if (savedToken) {
+            api.defaults.headers.common["Authorization"] = `Bearer ${savedToken}`;
+        }
+        return savedToken;
+    });
     const [refresh, setRefresh] = useState<string | null>(localStorage.getItem("refreshToken"));
 
     const setToken = (newToken: string | null) => {
