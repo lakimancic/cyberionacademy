@@ -19,17 +19,18 @@ public class ChallengeController : ControllerBase
     {
         var challenges = await Context.Challenges
             .Include(c => c.Category)
-            //.Include(c => c.User)
+            .Include(c => c.Author)
             .Select(c => new ChallengeDto
             {
                 Id = c.Id,
                 Name = c.Name,
                 Description = c.Description,
-                //IsArchieved = c.Archieved,
+                IsArchived = c.Archived,
                 IsPublic = c.Public,
                 Points = c.Points,
                 CreatedAt = c.CreatedAt,
-                //AutorName = c.User.Username,
+                AutorName = c.Author.Username,
+                AvatarUrl = c.Author.Avatar,
                 CategoryName = c.Category.Name
             })
             .ToListAsync();

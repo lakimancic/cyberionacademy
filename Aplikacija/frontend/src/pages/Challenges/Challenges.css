@@ -1,0 +1,52 @@
+.challenge-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.challenge-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.challenge-table th,
+.challenge-table td {
+    border: 1px solid #dddddd2c;
+    padding: 10px;
+    text-align: left;
+}
+
+.challenge-table th {
+    background-color: #4372f546;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.challenge-table th:hover {
+    background-color: #2e3cff3d;
+}
+
+
+.challenge-table tr:hover {
+    background-color: #2f63d3cb;
+}
+
+.tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.tab {
+    padding: 0.5rem 1rem;
+    border: none;
+    background-color: #eee;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.tab.active {
+    background-color: #007bff;
+    color: white;
+}
