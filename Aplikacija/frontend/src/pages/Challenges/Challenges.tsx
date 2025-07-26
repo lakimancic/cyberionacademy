@@ -13,7 +13,7 @@ function Challenges() {
     const [challenges, setChallenges] = useState<Challenge[]>([]);
 
     useEffect(() => {
-        api.get('/Challenge/GetChallenges')
+        api.get('/Challenge/GetChallenges')//
             .then(response => {
                 console.log('Odgovor sa servera:', response.data);
                 setChallenges(response.data);
