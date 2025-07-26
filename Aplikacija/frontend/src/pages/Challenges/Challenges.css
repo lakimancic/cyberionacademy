@@ -1,52 +1,125 @@
 .challenge-container {
-    padding: 20px;
-    font-family: Arial, sans-serif;
+    backdrop-filter: blur(12px);
+    color: #fff;
+    padding: 2rem;
+    font-family: 'Segoe UI', sans-serif;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
-.challenge-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-.challenge-table th,
-.challenge-table td {
-    border: 1px solid #dddddd2c;
-    padding: 10px;
-    text-align: left;
-}
-
-.challenge-table th {
-    background-color: #4372f546;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.challenge-table th:hover {
-    background-color: #2e3cff3d;
-}
-
-
-.challenge-table tr:hover {
-    background-color: #2f63d3cb;
+h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    display: flex;
+    color: #e4e6eb;
 }
 
 .tabs {
     display: flex;
     gap: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .tab {
-    padding: 0.5rem 1rem;
+    background-color: #1a1d2e;
+    color: #aab2c8;
     border: none;
-    background-color: #eee;
-    cursor: pointer;
+    padding: 0.5rem 1rem;
     border-radius: 6px;
-    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.tab:hover {
+    background-color: #252a40;
 }
 
 .tab.active {
-    background-color: #007bff;
+    background-color: #2d324a;
+    color: #fff;
+}
+
+.challenge-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+}
+
+.challenge-table th, .challenge-table td {
+    text-align: left;
+    padding: 0.75rem;
+    border-bottom: 1px solid #2a2d3f;
+}
+
+.challenge-table th {
+    color: #aab2c8;
+    cursor: pointer;
+    user-select: none;
+    background-color: #151824;
+}
+
+.challenge-table tr:hover {
+    background-color: #1f2233;
+}
+
+.challenge-table img {
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+}
+
+input[type="text"], select {
+    background-color: #1a1d2e;
+    color: #fff;
+    border: 1px solid #2c2f45;
+    border-radius: 6px;
+    padding: 0.5rem;
+    outline: none;
+    font-size: 0.9rem;
+}
+
+input::placeholder {
+    color: #777;
+}
+
+button {
+    font-size: 0.9rem;
+    background-color: #1a1d2e;
+    color: #fff;
+    border: 1px solid #2c2f45;
+    border-radius: 6px;
+    padding: 0.5rem;
+    outline: none;
+    font-size: 0.9rem;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+.challenge-table tbody tr {
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.challenge-table tbody tr:hover {
+    transform: scale(1.02);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.view-button {
+    background-color: #28a745;
     color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.view-button:hover {
+    background-color: #218838;
+    transform: scale(1.1);
 }
