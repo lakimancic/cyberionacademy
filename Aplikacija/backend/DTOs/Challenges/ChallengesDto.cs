@@ -12,4 +12,6 @@ public class ChallengeDto
     public string AutorName { get; set; }
     public DateTime CreatedAt { get; set; }
     public string AvatarUrl { get; set; }
+    public double AverageRating { get; set; }
+    public int SolvedCount { get; set; }
 }

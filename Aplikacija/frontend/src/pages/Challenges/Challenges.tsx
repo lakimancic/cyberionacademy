@@ -7,65 +7,57 @@ interface Challenge {
     name: string;
     categoryName: string;
     points: number;
-    autorName: string;
-    createdAt: string;
+    averageRating: number;
+    solvedCount: number;
     isArchived: boolean;
     isPublic: boolean;
     avatarUrl?: string;
 }
 
-type SortKey = keyof Challenge;
+type SortKey = 'name' | 'points' | 'categoryName';
 type Tab = 'active' | 'retired' | 'all';
 
 function Challenges() {
     const [challenges, setChallenges] = useState<Challenge[]>([]);
-    const [sortKey, setSortKey] = useState<SortKey>('createdAt');
+    const [sortKey, setSortKey] = useState<SortKey>('name');
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
     const [activeTab, setActiveTab] = useState<Tab>('all');
     const [inputValue, setInputValue] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [selectedDifficulty, setSelectedDifficulty] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+
+    const pageSize = 10;
 
     useEffect(() => {
-        api.get('/Challenge/GetChallenges')
-            .then(response => setChallenges(response.data))
+        fetchChallenges();
+    }, [sortKey, sortDirection, activeTab, searchQuery, selectedCategory, currentPage]);
+
+    const fetchChallenges = () => {
+        const archivedParam =
+            activeTab === 'retired' ? true :
+                activeTab === 'active' ? false :
+                    undefined;
+
+        const params: any = {
+            sortKey,
+            sortDirection,
+            page: currentPage,
+            pageSize,
+            category: selectedCategory !== 'all' ? selectedCategory : undefined,
+            search: searchQuery !== '' ? searchQuery : undefined,
+            archived: archivedParam
+        };
+
+        api.get('/Challenge/GetChallenges', { params })
+            .then(response => {
+                setChallenges(response.data.items);
+                setTotalPages(response.data.totalPages);
+            })
             .catch(error => console.error('Greška pri dohvatanju izazova:', error));
-    }, []);
-
-    const categoryOptions = Array.from(new Set(challenges.map(c => c.categoryName)));
-
-    const filteredChallenges = challenges
-        .filter(c => {
-            if (activeTab === 'active') return !c.isArchived;
-            if (activeTab === 'retired') return c.isArchived;
-            return true;
-        })
-        .filter(c => selectedCategory === 'all' || c.categoryName === selectedCategory)
-        .filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()));
-
-    const sortedChallenges = [...filteredChallenges].sort((a, b) => {
-        const aValue = a[sortKey];
-        const bValue = b[sortKey];
-
-        if (typeof aValue === 'string' && typeof bValue === 'string') {
-            return sortDirection === 'asc'
-                ? aValue.localeCompare(bValue)
-                : bValue.localeCompare(aValue);
-        }
-
-        if (typeof aValue === 'number' && typeof bValue === 'number') {
-            return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
-        }
-
-        if (sortKey === 'createdAt') {
-            const aDate = new Date(aValue as string).getTime();
-            const bDate = new Date(bValue as string).getTime();
-            return sortDirection === 'asc' ? aDate - bDate : bDate - aDate;
-        }
-
-        return 0;
-    });
+    };
 
     const renderSortArrow = (key: SortKey) => {
         if (sortKey !== key) return null;
@@ -81,6 +73,8 @@ function Challenges() {
         }
     };
 
+    const uniqueCategories = Array.from(new Set(challenges.map(c => c.categoryName)));
+
     return (
         <div className="challenge-container">
             <h2 className="title">Challenges</h2>
@@ -90,7 +84,10 @@ function Challenges() {
                     <button
                         key={tab}
                         className={`tab ${activeTab === tab ? 'active' : ''}`}
-                        onClick={() => setActiveTab(tab as Tab)}>
+                        onClick={() => {
+                            setCurrentPage(1);
+                            setActiveTab(tab as Tab);
+                        }}>
                         {tab[0].toUpperCase() + tab.slice(1)}
                     </button>
                 ))}
@@ -104,13 +101,21 @@ function Challenges() {
                     onChange={e => setInputValue(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && setSearchQuery(inputValue)}
                 />
-                <button onClick={() => setSearchQuery(inputValue)}>Search</button>
-                <select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)}>
+                <button onClick={() => {
+                    setCurrentPage(1);
+                    setSearchQuery(inputValue);
+                }}>Search</button>
+
+                <select value={selectedCategory} onChange={e => {
+                    setCurrentPage(1);
+                    setSelectedCategory(e.target.value);
+                }}>
                     <option value="all">All Categories</option>
-                    {categoryOptions.map(cat => (
+                    {uniqueCategories.map(cat => (
                         <option key={cat} value={cat}>{cat}</option>
                     ))}
                 </select>
+
                 <select value={selectedDifficulty} onChange={e => setSelectedDifficulty(e.target.value)}>
                     <option value="">All Difficulties</option>
                 </select>
@@ -122,13 +127,13 @@ function Challenges() {
                         <th onClick={() => handleSort('name')}>Challenge {renderSortArrow('name')}</th>
                         <th onClick={() => handleSort('categoryName')}>Category {renderSortArrow('categoryName')}</th>
                         <th onClick={() => handleSort('points')}>Points {renderSortArrow('points')}</th>
-                        <th onClick={() => handleSort('createdAt')}>Date of creation{renderSortArrow('createdAt')}</th>
-                        <th onClick={() => handleSort('autorName')}>Author {renderSortArrow('autorName')}</th>
-                        <th ></th>
+                        <th>Avg. Rating</th>
+                        <th>Solved</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {sortedChallenges.map(c => (
+                    {challenges.map(c => (
                         <tr key={c.id}>
                             <td>
                                 <div className="challenge-name">
@@ -138,23 +143,30 @@ function Challenges() {
                             </td>
                             <td>{c.categoryName}</td>
                             <td>{c.points}</td>
-                            <td>{new Date(c.createdAt).toLocaleDateString()}</td>
+                            <td>{c.averageRating.toFixed(2)} ★</td>
+                            <td>{c.solvedCount}</td>
                             <td>
-                                <div className="author">
-                                    <img
-                                        src={c.avatarUrl || 'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg'}
-                                        alt="avatar"
-                                    />
-                                    <span>  {c.autorName}</span>
-                                </div>
+                                <button className="view-button">➔</button>
                             </td>
-                            <button className="view-button">
-                    ➔
-                </button>
                         </tr>
                     ))}
                 </tbody>
             </table>
+
+            <div className="pagination">
+                <button
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}>
+                    Previous
+                </button>
+                <span>Page {currentPage} of {totalPages}</span>
+                <button
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}>
+                    Next
+                </button>
+            </div>
+
         </div>
     );
 }

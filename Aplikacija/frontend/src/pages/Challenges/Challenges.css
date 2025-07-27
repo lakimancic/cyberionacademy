@@ -123,3 +123,25 @@
     background-color: #218838;
     transform: scale(1.1);
 }
+
+.challenge-container .pagination {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    align-items: center;
+}
+
+.challenge-container .pagination button {
+    background-color: #1a1d2e;
+    color: white;
+    border: 1px solid #2c2f45;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.challenge-container .pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
