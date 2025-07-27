@@ -7,7 +7,7 @@ namespace backend.Controllers;
 [ApiController]
 public class AuthController(IAuthService authService) : ControllerBase
 {
-    [HttpPost("register")]
+    [HttpPost("Register")]
     public async Task<ActionResult<JsonContent>> Register(RegisterDto request)
     {
         var result = await authService.RegisterAsync(request);
@@ -21,7 +21,7 @@ public class AuthController(IAuthService authService) : ControllerBase
         };
     }
 
-    [HttpPost("login")]
+    [HttpPost("Login")]
     public async Task<ActionResult<TokenResponseDto>> Login(LoginDto request)
     {
         var result = await authService.LoginAsync(request);
@@ -31,7 +31,7 @@ public class AuthController(IAuthService authService) : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost("refresh-token")]
+    [HttpPost("RefreshToken")]
     public async Task<ActionResult<TokenResponseDto>> RefreshToken(RefreshTokenDto request)
     {
         var result = await authService.RefreshTokensAsync(request);

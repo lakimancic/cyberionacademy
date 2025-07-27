@@ -58,7 +58,7 @@ function Login() {
         setGlobalError("");
         setLoading(true);
 
-        api.post("/Auth/login", data)
+        api.post("/Auth/Login", data)
             .then(response => {
                 auth?.setToken(response.data.accessToken);
                 auth?.setRefreshToken(response.data.refreshToken);

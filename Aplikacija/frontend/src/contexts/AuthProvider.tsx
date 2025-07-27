@@ -1,7 +1,6 @@
 import {
     createContext,
     useContext,
-    useEffect,
     useMemo,
     useState,
     type ReactNode,
@@ -61,7 +60,7 @@ function AuthProvider({ children } : AuthProviderProps) {
         if (!refresh) return logout();
 
         try {
-            const response = await api.post("/Auth/refresh-token", {
+            const response = await api.post("/Auth/RefreshToken", {
                 refreshToken: refresh,
             });
 
@@ -72,12 +71,6 @@ function AuthProvider({ children } : AuthProviderProps) {
             logout();
         }
     };
-
-    useEffect(() => {
-        if (token) {
-            api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-        }
-    }, [token]);
 
     const contextValue = useMemo(
         () => ({

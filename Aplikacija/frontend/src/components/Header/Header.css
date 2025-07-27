@@ -49,10 +49,12 @@ header {
     width: 130%;
 
     text-align: left;
-    background: rgba(30, 59, 97, 0.5);
+    background: rgb(19, 39, 65);
 
     transition: all 0.4s ease;
     transform-origin: 50% 0;
+
+    z-index: 3;
 }
 
 .header-hidden {

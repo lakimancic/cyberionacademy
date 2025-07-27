@@ -12,6 +12,7 @@ public class Challenge
     [MaxLength(80)]
     public string? DockerImage { get; set; }
     public int Points { get; set; }
+    public int Difficulty { get; set; }
     public bool Archived { get; set; } = false;
     public bool Public { get; set; } = true;
     public DateTime CreatedAt { get; set; }

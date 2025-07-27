@@ -110,7 +110,7 @@ function Register() {
         setGlobalError("");
         setLoading(true);
 
-        api.post("/Auth/register", data)
+        api.post("/Auth/Register", data)
             .then(() => {
                 navigate("/login");
             })
