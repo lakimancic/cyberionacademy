@@ -9,9 +9,10 @@ public class ChallengeDto
     public bool IsArchived { get; set; }
     public bool IsPublic { get; set; }
     public int Points { get; set; }
-    public string AutorName { get; set; }
+    public string? AutorName { get; set; }
     public DateTime CreatedAt { get; set; }
     public string AvatarUrl { get; set; }
     public double AverageRating { get; set; }
     public int SolvedCount { get; set; }
+    public int Difficulty { get; set; }
 }

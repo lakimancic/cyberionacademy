@@ -12,6 +12,7 @@ interface Challenge {
     isArchived: boolean;
     isPublic: boolean;
     avatarUrl?: string;
+    difficulty: number;
 }
 
 type SortKey = 'name' | 'points' | 'categoryName';
@@ -25,16 +26,30 @@ function Challenges() {
     const [inputValue, setInputValue] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
-    const [selectedDifficulty, setSelectedDifficulty] = useState('');
+    const [selectedDifficulty, setSelectedDifficulty] = useState<number | ''>('');
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-
+    const [categories, setCategories] = useState<string[]>([]);
+    const [difficulties, setDifficulties] = useState<{ value: number; label: string }[]>([]);
+    const difficultyLabels = ['Very Easy', 'Easy', 'Medium', 'Hard', 'Very Hard'];
+    const getDifficultyLabel = (value: number) => {
+        return difficultyLabels[value] ?? 'Unknown';
+    };
     const pageSize = 10;
 
     useEffect(() => {
         fetchChallenges();
-    }, [sortKey, sortDirection, activeTab, searchQuery, selectedCategory, currentPage]);
+    }, [sortKey, sortDirection, activeTab, searchQuery, selectedCategory, selectedDifficulty, currentPage]);
 
+    useEffect(() => {
+        api.get('/Challenge/GetCategories')
+            .then(res => setCategories(res.data))
+            .catch(err => console.error('Greška pri dohvatanju kategorija', err));
+
+        api.get('/Challenge/GetDifficulties')
+            .then(res => setDifficulties(res.data))
+            .catch(err => console.error('Greška pri dohvatanju težina', err));
+    }, []);
     const fetchChallenges = () => {
         const archivedParam =
             activeTab === 'retired' ? true :
@@ -48,9 +63,10 @@ function Challenges() {
             pageSize,
             category: selectedCategory !== 'all' ? selectedCategory : undefined,
             search: searchQuery !== '' ? searchQuery : undefined,
-            archived: archivedParam
+            archived: archivedParam,
+            difficulty: selectedDifficulty !== '' ? Number(selectedDifficulty) : undefined
         };
-
+        console.log("Params sent to backend:", params);
         api.get('/Challenge/GetChallenges', { params })
             .then(response => {
                 setChallenges(response.data.items);
@@ -72,8 +88,6 @@ function Challenges() {
             setSortDirection('asc');
         }
     };
-
-    const uniqueCategories = Array.from(new Set(challenges.map(c => c.categoryName)));
 
     return (
         <div className="challenge-container">
@@ -111,13 +125,23 @@ function Challenges() {
                     setSelectedCategory(e.target.value);
                 }}>
                     <option value="all">All Categories</option>
-                    {uniqueCategories.map(cat => (
+                    {categories.map(cat => (
                         <option key={cat} value={cat}>{cat}</option>
                     ))}
                 </select>
 
-                <select value={selectedDifficulty} onChange={e => setSelectedDifficulty(e.target.value)}>
+                <select value={selectedDifficulty} onChange={e => {
+                    setCurrentPage(1);
+                    const value = e.target.value;
+                    setSelectedDifficulty(value === '' ? '' : Number(value));
+                }}
+                >
                     <option value="">All Difficulties</option>
+                    {difficulties.map(diff => (
+                        <option key={diff.value} value={diff.value}>
+                            {diff.label}
+                        </option>
+                    ))}
                 </select>
             </div>
 
@@ -128,7 +152,7 @@ function Challenges() {
                         <th onClick={() => handleSort('categoryName')}>Category {renderSortArrow('categoryName')}</th>
                         <th onClick={() => handleSort('points')}>Points {renderSortArrow('points')}</th>
                         <th>Avg. Rating</th>
-                        <th>Solved</th>
+                        <th>Users Solves</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -137,9 +161,10 @@ function Challenges() {
                         <tr key={c.id}>
                             <td>
                                 <div className="challenge-name">
-                                    <strong>{c.name}</strong>
-                                    <div className="difficulty">Very Easy</div>
-                                </div>
+    <strong>{c.name}</strong>
+    <div className="difficulty">{getDifficultyLabel(c.difficulty)}</div>
+</div>
+
                             </td>
                             <td>{c.categoryName}</td>
                             <td>{c.points}</td>
