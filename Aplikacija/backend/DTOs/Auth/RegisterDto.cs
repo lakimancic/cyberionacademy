@@ -25,6 +25,6 @@ public class RegisterDto
     [MaxLength(80, ErrorMessage = "Full name must be at most 80 characters")]
     public string FullName { get; set; } = null!;
 
-    [Length(3, 3, ErrorMessage = "Country code length must be 3 characters")]
+    [Length(2, 2, ErrorMessage = "Country code length must be 2 characters")]
     public string? Country { get; set; } = null!;
 }

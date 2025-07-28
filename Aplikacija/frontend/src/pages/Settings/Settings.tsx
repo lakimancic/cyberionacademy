@@ -32,7 +32,10 @@ const basicSchema = yup.object({
         )
         .min(3, 'Must be at least 3 characters')
         .max(80, 'Must be at most 80 characters'),
-    country: yup.string()
+    country: yup.string(),
+    bio: yup
+        .string()
+        .max(200, 'Must be at most 200 characters')
 });
 
 const passwordSchema = yup.object({
@@ -53,7 +56,7 @@ const passwordSchema = yup.object({
         .required('Please confirm your password'),
 });
 
-type BasicStringFields = 'email' | 'username' | 'fullName' | 'country';
+type BasicStringFields = 'email' | 'username' | 'fullName' | 'country' | 'bio';
 type PasswordStringFields = 'newPassword' | 'repeatNewPassword' | 'currentPassword';
 
 type BasicInfo = {
@@ -61,6 +64,7 @@ type BasicInfo = {
     email: string;
     fullName: string;
     country?: string;
+    bio?: string;
 };
 
 type PasswordsInfo = {
@@ -80,6 +84,7 @@ function Settings() {
     
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [avatarError, setAvatarError] = useState("");
+    const [avatarUrl, setAvatarUrl] = useState("");
     const [basicError, setBasicError] = useState("");
     const [passwordError, setPasswordError] = useState("");
     const [origBasic, setOrigBasic] = useState<BasicInfo|undefined>();
@@ -89,6 +94,33 @@ function Settings() {
     const [passwordSuccess, setPasswordSuccess] = useState("");
     const country = basicForm.watch('country');
     const handleError = useErrorHandler();
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        api.post("/Account/ProfilePicture", formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        }).then(() => {
+            window.location.reload();
+        }).catch(error => {
+            handleError(error, setAvatarError);
+        })
+    };
+
+    const deleteProfilePicture = () => {
+        api.delete("/Account/ProfilePicture")
+        .then(() => {
+            window.location.reload();
+        }).catch(error => {
+            handleError(error, setAvatarError);
+        });
+    };
 
     const handleBasicChange = async (elem : BasicStringFields) => {
         const value = basicForm.getValues(elem);
@@ -114,13 +146,16 @@ function Settings() {
         return origBasic?.username !== values.username ||
             origBasic?.email !== values.username ||
             origBasic?.fullName !== values.fullName ||
-            origBasic?.country !== values.country;
+            origBasic?.country !== values.country ||
+            origBasic?.bio !== values.bio;
     }
 
     const onSubmitBasic = (values: BasicInfo) => {
         if(values.country === null || values.country?.length == 0)
             delete values.country;
 
+        if(values.bio && values.bio.length === 0)
+            delete values.bio;
         
         if(!isBasicDiffer(values)) return;
         
@@ -167,11 +202,20 @@ function Settings() {
                 basicForm.setValue('email', resp.data.email);
                 basicForm.setValue('username', resp.data.username);
                 basicForm.setValue('fullName', resp.data.fullName);
+                basicForm.setValue('bio', resp.data.bio);
                 if (resp.data.country)
                     basicForm.setValue('country', resp.data.country);
             })
             .catch(error => {
                 handleError(error, setBasicError);
+            });
+
+        api.get("/Account/ProfilePicture", {
+            responseType: 'blob'
+        })
+            .then(resp => {
+                const url = URL.createObjectURL(resp.data);
+                setAvatarUrl(url);
             });
     }, []);
     
@@ -180,7 +224,7 @@ function Settings() {
             <h1>User Account Settings</h1>
             <div className="settings-avatar">
                 <div className="settings-avatar-info">
-                    <Avatar></Avatar>
+                    <Avatar src={avatarUrl}></Avatar>
                     <div className="settings-avatar-text">
                         <h2>Upload your Avatar</h2>
                         <p>The maximum size of an image is 2MB.</p>
@@ -200,9 +244,10 @@ function Settings() {
                             ref={fileInputRef}
                             style={{ display: 'none' }}
                             accept=".jpg,.png,.jpeg"
+                            onChange={handleFileChange}
                         />
                     </button>
-                    <button type="button" className='settings-avatar-delete'><BsTrash3Fill /></button>
+                    <button type="button" className='settings-avatar-delete' onClick={deleteProfilePicture}><BsTrash3Fill /></button>
                 </div>
             </div>
             <form className="settings-form settings-basic" onSubmit={basicForm.handleSubmit(onSubmitBasic)}>
@@ -243,11 +288,21 @@ function Settings() {
                         }}
                     >
                         {countries.map((c) => (
-                        <MenuItem key={c.code3} value={c.code3}>
+                        <MenuItem key={c.code} value={c.code}>
                             {c.name}
                         </MenuItem>
                         ))}
                     </Select>
+                </div>
+                <div className="form-field settings-bio">
+                    <div className="form-label">Bio</div>
+                    <textarea
+                        className={basicForm.formState.errors.bio ? 'form-input-error' : 'form-input-normal'}
+                        spellCheck={false}
+                        onKeyUp={() => handleBasicChange('bio')}
+                        {...basicForm.register('bio')}
+                    ></textarea>
+                    <div className={`form-error ${basicForm.formState.errors.bio ? '' : 'form-hidden'}`}>{basicForm.formState.errors.bio?.message ?? ''}</div>
                 </div>
                 <button 
                     type="submit"

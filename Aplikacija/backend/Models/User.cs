@@ -30,6 +30,7 @@ public class User
     public UserRole Role { get; set; } = UserRole.User;
     public string? RefreshToken { get; set; }
     public DateTime? RefreshTokenExpiryTime { get; set; }
+    public int TotalPoints { get; set; } = 0;
 
     public List<ChallengeSubmission>? Submissions { get; set; }
     public List<Challenge>? Challenges { get; set; }

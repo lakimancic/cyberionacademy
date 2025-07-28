@@ -9,6 +9,8 @@ import Lessons from "@/pages/Lessons/Lessons";
 import Challenges from "@/pages/Challenges/Challenges";
 import Courses from "@/pages/Courses/Courses";
 import Settings from "@/pages/Settings/Settings";
+import User from "@/pages/User/User";
+import Profile from "@/pages/User/Profile";
 
 function Routes() {
     const auth = useAuth();
@@ -48,6 +50,14 @@ function Routes() {
                         {
                             path: "/settings",
                             element: <Settings />
+                        },
+                        {
+                            path: "/user/:userId",
+                            element: <User />
+                        },
+                        {
+                            path: "/profile",
+                            element: <Profile />
                         }
                     ]
                 },

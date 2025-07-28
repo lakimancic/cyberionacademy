@@ -260,7 +260,7 @@ function Register() {
                         {...register('country')}
                     >
                         {countries.map((c) => (
-                        <MenuItem key={c.code3} value={c.code3}>
+                        <MenuItem key={c.code} value={c.code}>
                             {c.name}
                         </MenuItem>
                         ))}

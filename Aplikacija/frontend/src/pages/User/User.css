@@ -1,0 +1,113 @@
+.user-page {
+    width: 90%;
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    margin: 3rem auto;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.user-main {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user-world {
+    height: 100%;
+}
+
+.user-avatar {
+    position: relative;
+    height: 8rem;
+    width: 8rem;
+}
+
+.user-profile {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.user-flag {
+    position: absolute !important;
+    bottom: 0;
+    right: 0;
+
+    width: 35% !important;
+    height: 35% !important;
+}
+
+.user-text {
+    width: 50%;
+
+    margin-left: 2rem;
+    text-align: left;
+}
+
+.user-text p {
+    margin: 0;
+}
+
+[class^=user-role] {
+    font-size: 1.3rem;
+}
+
+.user-role-helper {
+    color: rgb(255, 255, 142)
+}
+
+.user-role-mod {
+    color: rgb(255, 171, 92)
+}
+
+.user-role-admin {
+    color: rgb(255, 92, 92)
+}
+
+.user-username {
+    font-size: 2rem;
+    margin: 0.5rem 0;
+}
+
+.user-fullname {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.user-fullname span {
+    font-weight: 600;
+}
+
+.user-bio {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-style: italic;
+}
+
+.user-bio span {
+    font-style: normal;
+    margin-right: 0.5rem;
+}
+
+.user-stats {
+    min-width: 30%;
+}
+
+.user-stats p {
+    margin: 0;
+}
+
+.user-rank-label {
+    font-size: 1.3rem;
+}
+
+.user-rank {
+    font-size: 2rem;
+
+    margin-bottom: 1rem;
+}

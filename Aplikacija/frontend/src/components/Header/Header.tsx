@@ -7,12 +7,14 @@ import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthProvider';
 import { getInfoFromToken } from '@/lib/jwt';
 import './Header.css';
+import api from '@/lib/api';
 
 function Header() {
     const [submenuVisible, setSubmenuVisible] = useState(false);
     const auth = useAuth();
     const navigate = useNavigate();
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const [avatarUrl, setAvatarUrl] = useState("");
 
     const jwtToken = getInfoFromToken(auth?.token ?? null);
 
@@ -22,6 +24,14 @@ function Header() {
                 setSubmenuVisible(false);
             }
         }
+
+        api.get("/Account/ProfilePicture", {
+            responseType: 'blob'
+        })
+            .then(resp => {
+                const url = URL.createObjectURL(resp.data);
+                setAvatarUrl(url);
+            });
 
         document.addEventListener("click", handleClickOutside);
         return () => {
@@ -36,7 +46,7 @@ function Header() {
                 <SearchBar />
             </div>
             <div className="header-right" onClick={() => setSubmenuVisible(!submenuVisible)} ref={dropdownRef}>
-                <Avatar></Avatar>
+                <Avatar src={avatarUrl}></Avatar>
                 <span className="name">{jwtToken?.username}</span>
                 {submenuVisible ? <FaAngleUp /> : <FaAngleDown />}
                 <div className={`header-submenu ${submenuVisible ? '' : 'header-hidden'}`}>
