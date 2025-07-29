@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Avatar, createTheme } from '@mui/material';
+import { Avatar } from '@mui/material';
 import api from '@/lib/api';
 import worldLogo from '@/assets/images/world.png';
 import { useProfilePicture } from '@/hooks/useProfilePicture';

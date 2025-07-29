@@ -6,6 +6,7 @@ import {
     type ReactNode,
 } from "react";
 import api from '@/lib/api';
+import { getInfoFromToken } from "@/lib/jwt";
 
 interface AuthContextType {
     token: string | null;
@@ -13,6 +14,7 @@ interface AuthContextType {
     setRefreshToken: (newToken: string | null) => void;
     logout: () => void;
     refreshToken: () => Promise<void>;
+    checkAndRefreshToken: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -72,6 +74,21 @@ function AuthProvider({ children } : AuthProviderProps) {
         }
     };
 
+    const checkAndRefreshToken = async () => {
+        if(!refresh || !token) return logout();
+        
+        const data = getInfoFromToken(token);
+
+        if(!data) return logout();
+
+        const timeDiff = Math.abs(data.exp - Date.now() / 1000);
+
+        if(timeDiff <= 600)
+            await refreshToken();
+        else if(Date.now() / 1000 > data.exp)
+            return logout();
+    };
+
     const contextValue = useMemo(
         () => ({
             token,
@@ -79,6 +96,7 @@ function AuthProvider({ children } : AuthProviderProps) {
             setRefreshToken,
             logout,
             refreshToken,
+            checkAndRefreshToken
         }),
         [token, refresh]
     );

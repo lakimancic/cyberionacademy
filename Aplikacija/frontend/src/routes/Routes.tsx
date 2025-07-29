@@ -11,6 +11,7 @@ import Courses from "@/pages/Courses/Courses";
 import Settings from "@/pages/Settings/Settings";
 import User from "@/pages/User/User";
 import Profile from "@/pages/User/Profile";
+import RoleSignup from "@/pages/Roles/RoleSignup";
 
 function Routes() {
     const auth = useAuth();
@@ -58,6 +59,10 @@ function Routes() {
                         {
                             path: "/profile",
                             element: <Profile />
+                        },
+                        {
+                            path: '/role-signup',
+                            element: <RoleSignup />
                         }
                     ]
                 },

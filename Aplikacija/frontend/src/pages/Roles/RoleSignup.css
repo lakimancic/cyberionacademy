@@ -1,0 +1,247 @@
+.role-signup {
+    width: 90%;
+    min-height: 80vh;
+    height: fit-content;
+
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    margin: 3rem auto;
+    padding: 1rem;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.role-signup h1 {
+    font-size: 2.3rem;
+    margin: 2rem 0;
+}
+
+.role-signup-current {
+    margin-left: 2rem;
+    text-align: left;
+
+    font-weight: 500;
+}
+
+[class^=role-signup-role] {
+    font-weight: 600;
+}
+
+.role-radio-helper {
+    color: rgb(255, 255, 142) !important;
+}
+
+.role-radio-moderator {
+    color: rgb(255, 171, 92) !important;
+}
+
+.role-radio-admin {
+    color: rgb(255, 92, 92) !important;
+}
+
+.role-signup-tabs {
+    position: relative;
+
+    display: flex;
+    justify-content: space-evenly;
+
+    margin-top: 2rem;
+    font-size: 1.2rem;
+}
+
+.role-signup-tab {
+    position: relative;
+
+    width: 30%;
+    cursor: pointer;
+
+    padding: 1rem 0;
+
+    transition: all 0.5s ease;
+
+    z-index: 2;
+}
+
+.role-signup-tab:hover {
+    transform: scale(1.1);
+}
+
+[class^=role-signup-active] {
+    position: absolute;
+    width: 30%;
+    height: 3.5rem;
+
+    bottom: 0;
+    background: rgba(29, 55, 99, 0.1);
+
+    transition: all 0.3s ease;
+}
+
+.role-signup-active-first {
+    left: 13.3%;
+}
+
+.role-signup-active-second {
+    left: 56%;
+}
+
+.role-signup-content {
+    background: rgba(29, 55, 99, 0.1);
+
+    border-radius: 6px;
+    padding-bottom: 2rem;
+}
+
+.role-signup-cooldown, .role-signup-admin {
+    width: 100%;
+    height: 90%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    color: rgba(255, 255, 255, 0.6);
+
+    margin: 10rem 0;
+}
+
+.role-signup-cooldown svg, .role-signup-admin svg {
+    font-size: 3rem;
+
+    margin-bottom: 2rem;
+}
+
+.role-helper {
+    color: rgb(255, 255, 142) !important;
+}
+
+.role-moderator {
+    color: rgb(255, 171, 92) !important;
+}
+
+.role-admin {
+    color: rgb(255, 92, 92) !important;
+}
+
+.role-signup-form {
+    width: 70%;
+    margin: 2rem auto;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.role-signup-roleradios {
+    display: flex;
+    align-items: center;
+
+    font-weight: 500;
+    font-size: 1.2rem;
+}
+
+span.role-signup-label {
+    margin-right: 2rem;
+}
+
+p.role-signup-label {
+    margin-top: 2rem;
+    margin-bottom: 0;
+
+    font-size: 1.2rem;
+    color: white;
+
+    text-align: left;
+}
+
+.role-signup-form textarea {
+    resize: none;
+
+    border: 0;
+    outline: none;
+    box-sizing: border-box;
+
+    width: 100%;
+    height: 10rem;
+
+    background-color: #1d2d4686;
+    color: white;
+
+    font-size: 1rem;
+    font-family: 'Inter', 'Helvetica Neue', sans-serif;
+    line-height: 2rem;
+    padding: 0.6rem 1rem;
+    border-radius: 3px;
+}
+
+.role-signup-form button {
+    padding: 0.8rem;
+    width: 30%;
+
+    font-weight: 600;
+    font-size: 1rem;
+    color: white;
+
+    outline: none;
+    border: 0;
+    border-radius: 4px;
+
+    background: linear-gradient(90deg, #0fac6f, #3385ff);
+    cursor: pointer;
+
+    transition: background 0.5s linear;
+
+    margin: 0 auto;
+    margin-top: 2rem;
+}
+
+.role-signup-form button:disabled {
+    background: #2a374d;
+    color: #566888;
+    cursor: default;
+}
+
+.role-signup-requests {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.role-signup-request {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+
+    background-color: #1d2d4686;
+
+    padding: 1.5rem;
+    margin-top: 2rem;
+}
+
+.role-request-reqinfo {
+    display: flex;
+}
+
+.role-request-role {
+    margin-right: 2rem;
+}
+
+[class^=role-request] span {
+    font-weight: 600;
+}
+
+.role-accepted {
+    color: rgb(92, 255, 105);
+}
+
+.role-rejected {
+    color: rgb(255, 126, 126);
+}
+
+.role-error {
+    color: rgb(255, 91, 91);
+
+    margin-bottom: 1rem;
+}
