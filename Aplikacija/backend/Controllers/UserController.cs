@@ -121,4 +121,120 @@ public class UserController(ApplicationDbContext context, IConfiguration configu
             RankNum = userRank
         });
     }
+
+    [HttpGet("{userid}/PointsPerMonth")]
+    public async Task<ActionResult> GetPointsPerMonth(int userId)
+    {
+        User? user = await context.Users.FindAsync(userId);
+
+        if (user == null)
+            return NotFound("User not found");
+
+        var now = DateTime.Now;
+        var fromDate = new DateTime(now.Year, now.Month, 1).AddMonths(-11);
+        var months = Enumerable.Range(0, 12)
+            .Select(i =>
+            {
+                var date = new DateTime(now.Year, now.Month, 1).AddMonths(-i);
+                return new { date.Year, date.Month };
+            })
+            .ToList();
+
+        var challengePoints = await context.ChallengeSubmissions
+            .Where(s => s.UserId == userId && s.Correct && s.SubmittedAt >= fromDate)
+            .Select(s => new
+            {
+                s.SubmittedAt.Year,
+                s.SubmittedAt.Month,
+                s.Challenge.Points
+            }).ToListAsync();
+
+        var bestQuizPoints = (await context.QuizResults
+            .Where(qr => qr.UserId == userId && qr.FinishedAt.HasValue && qr.FinishedAt >= fromDate)
+            .GroupBy(qr => qr.QuizId)
+            .Select(g => g
+                .OrderByDescending(qr => qr.Points)
+                .ThenByDescending(qr => qr.FinishedAt)
+                .First())
+            .ToListAsync())
+        .Select(q => new
+        {
+            q.FinishedAt!.Value.Year,
+            q.FinishedAt.Value.Month,
+            q.Points
+        });
+
+        var allPoints = challengePoints
+            .Concat(bestQuizPoints)
+            .GroupBy(p => new { p.Year, p.Month })
+            .Select(g => new
+            {
+                g.Key.Year,
+                g.Key.Month,
+                TotalPoints = g.Sum(x => x.Points)
+            })
+            .OrderBy(p => p.Year)
+            .ThenBy(p => p.Month);
+
+        var result = months
+            .Select(m => new
+            {
+                m.Year,
+                m.Month,
+                TotalPoints = allPoints
+                    .FirstOrDefault(c => c.Year == m.Year && c.Month == m.Month)?.TotalPoints ?? 0
+            })
+            .OrderBy(r => r.Year)
+            .ThenBy(r => r.Month)
+            .ToList();
+
+        return Ok(new
+        {
+            user.TotalPoints,
+            MonthsData = result
+        });
+    }
+
+    [HttpGet("{userid}/Activity")]
+    public async Task<ActionResult> GetActivity(int userId)
+    {
+        User? user = await context.Users.FindAsync(userId);
+
+        if (user == null)
+            return NotFound("User not found");
+
+        var now = DateTime.UtcNow.Date;
+        var fromDate = now.AddMonths(-12);
+
+        var challengeActivities = await context.ChallengeSubmissions
+            .Where(s => s.UserId == userId && s.Correct && s.SubmittedAt >= fromDate)
+            .Select(s => s.SubmittedAt.Date)
+            .ToListAsync();
+
+        var quizActivities = await context.QuizResults
+            .Where(q => q.UserId == userId && q.FinishedAt != null && q.FinishedAt >= fromDate)
+            .Select(q => q.FinishedAt!.Value.Date)
+            .ToListAsync();
+
+        var allActivities = challengeActivities
+            .Concat(quizActivities)
+            .GroupBy(date => date)
+            .Select(g => new
+            {
+                Date = g.Key,
+                Count = g.Count()
+            })
+            .ToList();
+
+        var missing = new[] { now, fromDate }
+            .Where(d => !allActivities.Any(a => a.Date == d))
+            .Select(d => new { d.Date, Count = 0 });
+
+        return Ok(
+            allActivities
+            .Concat(missing)
+            .OrderBy(a => a.Date)
+            .ToList()
+        );
+    }
 }

@@ -5,6 +5,9 @@
     margin: 3rem auto;
     padding: 1rem;
     box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
 }
 
 .user-main {
@@ -14,6 +17,8 @@
 }
 
 .user-info {
+    width: 30%;
+
     display: flex;
     align-items: center;
 }
@@ -43,7 +48,7 @@
 }
 
 .user-text {
-    width: 50%;
+    width: calc(100% - 10rem);
 
     margin-left: 2rem;
     text-align: left;
@@ -110,4 +115,36 @@
     font-size: 2rem;
 
     margin-bottom: 1rem;
+}
+
+.user-radars {
+    display: flex;
+    justify-content: space-around;
+
+    margin-top: 2rem;
+}
+
+.user-radar {
+    margin-top: 2rem;
+    width: 40%;
+}
+
+.user-radar h2 {
+    margin: 2rem 0;
+}
+
+.user-year-stats {
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+}
+
+.user-year-stats h2 {
+    margin: 3rem 0;
+}
+
+.user-year-stats .react-activity-calendar {
+    margin-bottom: 3rem;
 }

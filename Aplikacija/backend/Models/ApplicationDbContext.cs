@@ -10,6 +10,12 @@ public class ApplicationDbContext : DbContext
     public DbSet<Category> Categories { get; set; }
     public DbSet<Tag> Tags { get; set; }
     public DbSet<RoleRequest> RoleRequests { get; set; }
+    public DbSet<ChallengeSubmission> ChallengeSubmissions { get; set; }
+    public DbSet<QuizResult> QuizResults { get; set; }
+    public DbSet<Badge> Badges { get; set; }
+    public DbSet<Message> Messages { get; set; }
+    public DbSet<ChallengeReview> ChallengeReviews { get; set; }
+    public DbSet<LessonReview> LessonReviews { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)

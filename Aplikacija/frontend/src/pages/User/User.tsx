@@ -1,11 +1,13 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Avatar, createTheme, ThemeProvider } from '@mui/material';
+import { Avatar, createTheme } from '@mui/material';
 import api from '@/lib/api';
 import worldLogo from '@/assets/images/world.png';
 import { useProfilePicture } from '@/hooks/useProfilePicture';
 import { RadarChart } from '@mui/x-charts/RadarChart';
+import { ActivityCalendar } from 'react-activity-calendar';
 import './User.css';
+import { LineChart } from '@mui/x-charts';
 
 type UserInfo = {
     id: number;
@@ -22,16 +24,31 @@ type UserStats = {
     rankNum: number;
 };
 
-const darkTheme = createTheme({
-    palette: {
-        mode: 'dark',
-    },
-});
+type ChallengeRadarData = {
+    name: string;
+    max: number;
+    num: number;
+};
+
+type ActivityData = {
+    count: number;
+    date: string;
+};
+
+type GrowthData = {
+    year: number;
+    month: number;
+    totalPoints: number;
+};
 
 function User() {
     const { userId } = useParams();
     const [userInfo, setUserInfo] = useState<UserInfo|null>(null);
     const [userStats, setUserStats] = useState<UserStats|null>(null);
+    const [growthData, setGrowthData] = useState<GrowthData[]>([]);
+    const [chalRadarData, setChalRadarData] = useState<ChallengeRadarData[]>([]);
+    const [quizRadarData, setQuizRadarData] = useState<ChallengeRadarData[]>([]);
+    const [activity, setActivity] = useState<ActivityData[]>([]);
     const profilePicture = useProfilePicture(userId ?? '0');
 
     useEffect(() => {
@@ -43,6 +60,37 @@ function User() {
         api.get(`/User/${userId}/Stats`)
             .then(resp => {
                 setUserStats(resp.data);
+            });
+
+        api.get(`/User/${userId}/ChallengesInfo`)
+            .then(resp => {
+                setChalRadarData(resp.data);
+            });
+
+        api.get(`/User/${userId}/LessonsInfo`)
+            .then(resp => {
+                setQuizRadarData(resp.data);
+            });
+
+        api.get(`/User/${userId}/PointsPerMonth`)
+            .then(resp => {
+                const monthsData : GrowthData[] = resp.data.monthsData;
+                let startPoints = resp.data.totalPoints;
+
+                monthsData.reverse();
+                monthsData.forEach(val => {
+                    let tmpts = startPoints;
+                    startPoints -= val.totalPoints;
+                    val.totalPoints = tmpts;
+                });
+                monthsData.reverse();
+
+                setGrowthData(monthsData);
+            });
+
+        api.get(`/User/${userId}/Activity`)
+            .then(resp => {
+                setActivity(resp.data);
             });
     }, []);
 
@@ -78,16 +126,60 @@ function User() {
                     <p className="user-ranking">Ranking #{userStats?.rankNum}</p>
                 </div>
             </div>
-            <ThemeProvider theme={darkTheme}>
-                <RadarChart
-                    height={300}
-                    series={[{ label: 'Lisa', data: [120, 98, 86, 99, 85, 65] }]}
-                    radar={{
-                        max: 120,
-                        metrics: ['Math', 'Chinese', 'English', 'Geography', 'Physics', 'History'],
+            <div className="user-year-stats">
+                <h2>User Activity & Growth Last year</h2>
+                {activity.length > 0 && <ActivityCalendar 
+                    data={activity.map(a => {
+                        return { 
+                            date: a.date.split('T')[0],
+                            count: a.count,
+                            level: Math.min(4, Math.ceil(a.count / 3))
+                        }
+                    })} 
+                    weekStart={0}
+                    theme={{
+                        light: ['#f0f0f0', '#f0f0f0', '#f0f0f0', '#f0f0f0', '#f0f0f0'],
+                        dark: ['#181d30ff', '#232e58ff', '#30428aff', '#344dafff', '#2c52ebff'],
                     }}
+                    colorScheme='dark'
+                />}
+                <LineChart
+                    dataset={growthData.map(gd => { 
+                        return { yearMonth: `${gd.month}/${gd.year}`, points: gd.totalPoints }
+                    })}
+                    xAxis={[{ scaleType: 'band', dataKey: 'yearMonth' }]}
+                    series={[{ dataKey: 'points' }]}
+                    width={900}
+                    height={300}
+                    grid={{ vertical: true, horizontal: true }}
                 />
-            </ThemeProvider> 
+            </div>
+            <div className="user-radars">
+                <div className="user-radar">
+                    <h2>Challenges Stats</h2>
+                    <RadarChart
+                        height={400}
+                        series={[{ label: 'Challenges', data: chalRadarData.map(c => c.num)}]}
+                        radar={{
+                            metrics: chalRadarData.map(c => {
+                                return {name: c.name, max: c.max};
+                            }),
+                        }}
+                    />
+                </div>
+                <div className="user-radar">
+                    <h2>Lessons (Quizes) Stats</h2>
+                    <RadarChart
+                        height={400}
+                        series={[{ label: 'Lessons (Quizes)', data: quizRadarData.map(c => c.num), color: '#34be7eff'}]}
+                        radar={{
+                            metrics: quizRadarData.map(c => {
+                                return {name: c.name, max: c.max};
+                            }),
+                        }}
+                    />
+                </div>
+            </div>
         </div>
     )
 }
