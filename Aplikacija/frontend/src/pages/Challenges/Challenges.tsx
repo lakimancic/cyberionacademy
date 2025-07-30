@@ -1,6 +1,10 @@
 import './Challenges.css';
 import { useEffect, useState } from 'react';
 import api from '@/lib/api';
+import { Rating } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+
+
 
 interface Challenge {
     id: number;
@@ -35,7 +39,9 @@ function Challenges() {
     const getDifficultyLabel = (value: number) => {
         return difficultyLabels[value] ?? 'Unknown';
     };
-    const pageSize = 10;
+    const navigate = useNavigate();
+
+    const pageSize = 8;
 
     useEffect(() => {
         fetchChallenges();
@@ -93,57 +99,62 @@ function Challenges() {
         <div className="challenge-container">
             <h2 className="title">Challenges</h2>
 
-            <div className="tabs">
-                {['all', 'active', 'retired'].map(tab => (
-                    <button
-                        key={tab}
-                        className={`tab ${activeTab === tab ? 'active' : ''}`}
-                        onClick={() => {
+            <div className="controls-bar">
+                <div className="tabs">
+                    {['all', 'active', 'retired'].map(tab => (
+                        <button
+                            key={tab}
+                            className={`tab ${activeTab === tab ? 'active' : ''}`}
+                            onClick={() => {
+                                setCurrentPage(1);
+                                setActiveTab(tab as Tab);
+                            }}>
+                            {tab[0].toUpperCase() + tab.slice(1)}
+                        </button>
+                    ))}
+                </div>
+
+                <div className="controls">
+                    <div className="search-group">
+                        <input
+                            type="text"
+                            placeholder="Search Challenges..."
+                            value={inputValue}
+                            onChange={e => setInputValue(e.target.value)}
+                            onKeyDown={e => e.key === 'Enter' && setSearchQuery(inputValue)}
+                        />
+                        <button onClick={() => {
                             setCurrentPage(1);
-                            setActiveTab(tab as Tab);
-                        }}>
-                        {tab[0].toUpperCase() + tab.slice(1)}
-                    </button>
-                ))}
+                            setSearchQuery(inputValue);
+                        }}>🔎︎</button>
+                    </div>
+
+
+                    <select value={selectedCategory} onChange={e => {
+                        setCurrentPage(1);
+                        setSelectedCategory(e.target.value);
+                    }}>
+                        <option value="all">All Categories</option>
+                        {categories.map(cat => (
+                            <option key={cat} value={cat}>{cat}</option>
+                        ))}
+                    </select>
+
+                    <select value={selectedDifficulty} onChange={e => {
+                        setCurrentPage(1);
+                        const value = e.target.value;
+                        setSelectedDifficulty(value === '' ? '' : Number(value));
+                    }}>
+                        <option value="">All Difficulties</option>
+                        {difficulties.map(diff => (
+                            <option key={diff.value} value={diff.value}>
+                                {diff.label}
+                            </option>
+                        ))}
+                    </select>
+                </div>
             </div>
 
-            <div className="controls">
-                <input
-                    type="text"
-                    placeholder="Search Challenges..."
-                    value={inputValue}
-                    onChange={e => setInputValue(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && setSearchQuery(inputValue)}
-                />
-                <button onClick={() => {
-                    setCurrentPage(1);
-                    setSearchQuery(inputValue);
-                }}>Search</button>
-
-                <select value={selectedCategory} onChange={e => {
-                    setCurrentPage(1);
-                    setSelectedCategory(e.target.value);
-                }}>
-                    <option value="all">All Categories</option>
-                    {categories.map(cat => (
-                        <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                </select>
-
-                <select value={selectedDifficulty} onChange={e => {
-                    setCurrentPage(1);
-                    const value = e.target.value;
-                    setSelectedDifficulty(value === '' ? '' : Number(value));
-                }}
-                >
-                    <option value="">All Difficulties</option>
-                    {difficulties.map(diff => (
-                        <option key={diff.value} value={diff.value}>
-                            {diff.label}
-                        </option>
-                    ))}
-                </select>
-            </div>
 
             <table className="challenge-table">
                 <thead>
@@ -158,17 +169,25 @@ function Challenges() {
                 </thead>
                 <tbody>
                     {challenges.map(c => (
-                        <tr key={c.id}>
+                        <tr key={c.id} onClick={() => navigate(`/challenges/${c.id}`)}>
+
                             <td>
                                 <div className="challenge-name">
-    <strong>{c.name}</strong>
-    <div className="difficulty">{getDifficultyLabel(c.difficulty)}</div>
-</div>
+                                    <strong>{c.name}</strong>
+                                    <div className="difficulty">{getDifficultyLabel(c.difficulty)}</div>
+                                </div>
 
                             </td>
                             <td>{c.categoryName}</td>
                             <td>{c.points}</td>
-                            <td>{c.averageRating.toFixed(2)} ★</td>
+                            <td>
+                                <Rating
+                                    value={c.averageRating}
+                                    precision={0.1}
+                                    readOnly
+                                    size="small"
+                                />
+                            </td>
                             <td>{c.solvedCount}</td>
                             <td>
                                 <button className="view-button">➔</button>

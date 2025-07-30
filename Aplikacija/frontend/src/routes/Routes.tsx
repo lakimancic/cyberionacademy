@@ -7,6 +7,7 @@ import Register from "@/pages/Auth/Register";
 import MainLayout from "@/layouts/MainLayout/MainLayout";
 import Lessons from "@/pages/Lessons/Lessons";
 import Challenges from "@/pages/Challenges/Challenges";
+import Challenge from "@/pages/Challenges/Challenge";
 import Courses from "@/pages/Courses/Courses";
 import Settings from "@/pages/Settings/Settings";
 import User from "@/pages/User/User";
@@ -34,7 +35,7 @@ function Routes() {
                     children: [
                         {
                             path: "/",
-                            element: <div>HELLO WORLD</div> 
+                            element: <div>HELLO WORLD</div>
                         },
                         {
                             path: "/lessons",
@@ -43,6 +44,10 @@ function Routes() {
                         {
                             path: "/challenges",
                             element: <Challenges />
+                        },
+                        {
+                            path: "/challenges/:id",
+                            element: <Challenge />
                         },
                         {
                             path: "/courses",

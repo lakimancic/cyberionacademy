@@ -17,7 +17,7 @@ public class ChallengeController : ControllerBase
     [HttpGet("GetChallenges")]
     public async Task<ActionResult<object>> GetChallenges(
     int page = 1,
-    int pageSize = 10,
+    int pageSize = 8,
     string? sortKey = "Name",
     string? sortDirection = "asc",
     string? category = null,
@@ -85,6 +85,32 @@ public class ChallengeController : ControllerBase
             totalPages,
             currentPage = page
         });
+    }
+
+    [HttpGet("GetChallengeDetails/{id}")]
+    public async Task<ActionResult<ChallengeDto>> GetChallengeById(int id)
+    {
+        var challenge = await Context.Challenges
+            .Where(c => c.Id == id)
+            .Select(c => new ChallengeDto
+            {
+                Id = c.Id,
+                Name = c.Name,
+                Description = c.Description,
+                CategoryName = c.Category.Name,
+                Points = c.Points,
+                //AverageRating = c.AverageRating,
+                //SolvedCount = c.SolvedCount,
+                Difficulty = (int)c.Difficulty,
+                IsArchived = c.Archived,
+                IsPublic = c.Public
+            })
+            .FirstOrDefaultAsync();
+
+        if (challenge == null)
+            return NotFound();
+
+        return Ok(challenge);
     }
 
     [HttpGet("GetCategories")]
