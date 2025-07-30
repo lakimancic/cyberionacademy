@@ -90,7 +90,7 @@ public class UserController(ApplicationDbContext context, IConfiguration configu
         var rootPath = configuration.GetValue<string>("AppSettings:Storage")!;
         var filePath = Path.Combine(rootPath, user.Avatar ?? "0");
         if (user.Avatar == null || !System.IO.File.Exists(filePath))
-            NotFound("Profile picture not found");
+            return NotFound("Profile picture not found");
 
         var extension = Path.GetExtension(filePath).ToLowerInvariant();
         var contentType = extension switch

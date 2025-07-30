@@ -13,15 +13,27 @@ import Settings from "@/pages/Settings/Settings";
 import User from "@/pages/User/User";
 import Profile from "@/pages/User/Profile";
 import RoleSignup from "@/pages/Roles/RoleSignup";
+import AdminRoles from "@/pages/Roles/AdminRoles";
+import { getInfoFromToken } from "@/lib/jwt";
 
 function Routes() {
     const auth = useAuth();
+
+    const token = getInfoFromToken(auth?.token ?? null);
+    const roleInd = ['User', 'Helper', 'Moderator', 'Admin'].indexOf(token?.role ?? 'User');
 
     const routesForPublic = [
         {
             path: "*",
             element: <Navigate to="/" replace />,
         },
+    ];
+
+    const routesForAdmin = [
+        {
+            path: "/admin/users-roles",
+            element: <AdminRoles />
+        }
     ];
 
     const routesForAuthenticatedOnly = [
@@ -35,7 +47,7 @@ function Routes() {
                     children: [
                         {
                             path: "/",
-                            element: <div>HELLO WORLD</div>
+                            element: <div>HELLO WORLD</div> 
                         },
                         {
                             path: "/lessons",
@@ -68,7 +80,8 @@ function Routes() {
                         {
                             path: '/role-signup',
                             element: <RoleSignup />
-                        }
+                        },
+                        ...(roleInd >= 3 ? routesForAdmin : [])
                     ]
                 },
             ]

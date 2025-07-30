@@ -1,0 +1,233 @@
+.admin-roles {
+    width: 100%;
+    height: fit-content;
+
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    padding: 3rem;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-roles .data-table-con {
+    width: 95%;
+
+    margin-bottom: 2.5rem;
+}
+
+.admin-roles h2 {
+    margin-bottom: 4rem;
+}
+
+.admin-tabs {
+    position: relative;
+
+    display: flex;
+    justify-content: space-evenly;
+
+    margin-top: 2rem;
+    font-size: 1.2rem;
+}
+
+.admin-tab {
+    position: relative;
+
+    width: 25%;
+    cursor: pointer;
+
+    padding: 1rem 0;
+
+    transition: all 0.5s ease;
+
+    z-index: 2;
+}
+
+.admin-tab:hover {
+    transform: scale(1.1);
+}
+
+.admin-tab-active {
+    position: absolute;
+    width: 25%;
+    height: 3.5rem;
+
+    bottom: 0;
+    background: rgba(29, 55, 99, 0.1);
+
+    transition: all 0.3s ease;
+}
+
+.admin-content {
+    background: rgba(29, 55, 99, 0.1);
+
+    display: flex;
+    justify-content: center;
+}
+
+.admin-roles td .MuiInputBase-root {
+    border: 0;
+    margin: 0;
+
+    width: 80%;
+}
+
+.admin-roles td button {
+    border: 0;
+    outline: none;
+
+    padding: 0.7rem;
+    font-size: 0.8rem;
+    border-radius: 3px;
+
+    color: white;
+    background-color: rgba(33, 73, 141, 0.3);
+
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.admin-roles td button:hover {
+    background-color: rgba(33, 73, 141, 0.6);
+}
+
+.admin-roles td:has(.MuiInputBase-root) {
+    width: 20%;
+}
+
+.admin-users-con {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    margin-top: 2rem;
+}
+
+.admin-filters {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.admin-filter-role {
+    width: 20%;
+    margin-right: 3rem
+}
+
+.admin-filter-role .MuiInputBase-root {
+    margin: 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    text-align: left;
+    height: 3rem;
+}
+
+.admin-placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.admin-role-request {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+
+    position: relative;
+}
+
+.admin-back {
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.admin-req-left, .admin-req-right {
+    width: 40%;
+}
+
+.admin-req-user {
+    display: flex;
+    align-items: center;
+
+    margin: 2rem;
+    text-align: left;
+}
+
+.admin-req-username {
+    font-size: 2rem;
+    margin: 1rem;
+}
+
+.admin-req-role {
+    font-size: 1.2rem;
+    margin: 0.6rem 0;
+}
+
+.admin-req-avatar {
+    width: 7rem !important;
+    height: 7rem !important;
+
+    margin-right: 2rem;
+}
+
+.admin-req-right {
+    display: flex;
+    flex-direction: column;
+
+    text-align: left;
+}
+
+.admin-req-text {
+    display: flex;
+    width: 100%;
+    min-height: calc(100% - 3.2rem);
+    text-wrap: wrap;
+    overflow-x: auto;
+
+    font-style: italic;
+}
+
+.admin-req-label {
+    margin: 1rem 0;
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+.admin-req-buttons {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.admin-req-buttons button {
+    border: 0;
+    outline: none;
+
+    font-size: 1.3rem;
+    padding: 0.6rem 2.5rem;
+    margin: 2rem;
+
+    cursor: pointer;
+    border-radius: 2px;
+
+    display: flex;
+    align-items: center;
+
+    color: white;
+}
+
+.admin-req-buttons button svg {
+    margin-left: 0.5rem;
+}
+
+.admin-req-accept {
+    background: linear-gradient(90deg, #0fac6f, #59b41c);
+}
+
+.admin-req-reject {
+    background: linear-gradient(90deg, #ac0f0f, #a03333);
+}

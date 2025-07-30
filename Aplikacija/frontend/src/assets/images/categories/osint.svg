@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="-1 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 58 (84663) - https://sketch.com -->
+    <title>hierarchy</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="User-Careers---User-Profile_-Dashboard_Lab-Progress" transform="translate(-293.000000, -1990.000000)" stroke="#A4B1CD" stroke-width="1.2">
+            <g id="Group-18-Copy-8" transform="translate(278.000000, 1971.000000)">
+                <g id="Group" transform="translate(16.000000, 19.000000)">
+                    <g id="hierarchy">
+                        <rect id="Rectangle-path" x="0.25" y="18.75" width="13.5" height="4.5" rx="1.5"/>
+                        <rect id="Rectangle-path" x="0.25" y="11.25" width="13.5" height="4.5" rx="1.5"/>
+                        <rect id="Rectangle-path" x="0.25" y="3.75" width="13.5" height="4.5" rx="1.5"/>
+                        <path d="M13.75,21.75 L18.25,21.75 C19.0784271,21.75 19.75,21.0784271 19.75,20.25 L19.75,0.75" id="Shape"/>
+                        <path d="M13.75,14.25 L19.75,14.25" id="Shape"/>
+                        <path d="M13.75,6.75 L19.75,6.75" id="Shape"/>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

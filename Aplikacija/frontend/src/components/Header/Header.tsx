@@ -6,15 +6,14 @@ import { IoMdSettings } from 'react-icons/io';
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthProvider';
 import { getInfoFromToken } from '@/lib/jwt';
+import AuthImage from '../AuthImage/AuthImage';
 import './Header.css';
-import api from '@/lib/api';
 
 function Header() {
     const [submenuVisible, setSubmenuVisible] = useState(false);
     const auth = useAuth();
     const navigate = useNavigate();
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const [avatarUrl, setAvatarUrl] = useState("");
 
     const jwtToken = getInfoFromToken(auth?.token ?? null);
 
@@ -24,14 +23,6 @@ function Header() {
                 setSubmenuVisible(false);
             }
         }
-
-        api.get("/Account/ProfilePicture", {
-            responseType: 'blob'
-        })
-            .then(resp => {
-                const url = URL.createObjectURL(resp.data);
-                setAvatarUrl(url);
-            });
 
         document.addEventListener("click", handleClickOutside);
         return () => {
@@ -43,10 +34,10 @@ function Header() {
         <header>
             <div className='header-left'>
                 <Link to="/" className='title'>Cyberion<span>Academy</span></Link>
-                <SearchBar />
+                <SearchBar label='Cyberion Academy' />
             </div>
             <div className="header-right" onClick={() => setSubmenuVisible(!submenuVisible)} ref={dropdownRef}>
-                <Avatar src={avatarUrl}></Avatar>
+                <AuthImage src="/Account/ProfilePicture" element={Avatar} />
                 <span className="name">{jwtToken?.username}</span>
                 {submenuVisible ? <FaAngleUp /> : <FaAngleDown />}
                 <div className={`header-submenu ${submenuVisible ? '' : 'header-hidden'}`}>
