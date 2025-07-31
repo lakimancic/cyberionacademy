@@ -38,10 +38,12 @@ function AdminRoles() {
     const [searchWord, setSearchWord] = useState("");
     const [roleFilter, setRoleFilter] = useState("");
     const [roleRequest, setRoleRequest] = useState<RoleRequest|null>(null);
+    const [sortKey, setSortKey] = useState<keyof UserData>('username');
+    const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc');
     const [tab, setTab] = useState(0);
 
     const fetchUsers = async (search?: string) => {
-        await api.get("/Roles/UserList", { params: { page: currentPage, search: search, role: roleFilter }})
+        await api.get("/Roles/UserList", { params: { page: currentPage, search: search, role: roleFilter, sortKey: sortKey, sortDir: sortDir }})
             .then(resp => {
                 setTotalPages(resp.data.totalPages);
                 setUsers(resp.data.users);
@@ -127,7 +129,7 @@ function AdminRoles() {
         setCurrentPage(1);
         setTotalPages(1);
         fetchUsers();
-    }, [roleFilter]);
+    }, [roleFilter, sortDir, sortKey]);
 
     useEffect(() => {
         setCurrentPage(1);
@@ -246,9 +248,9 @@ function AdminRoles() {
                             }
                         })}
                         columns={[
-                            { key: 'username', header: 'Username' },
-                            { key: 'email', header: 'Email' },
-                            { key: 'fullName', header: 'Full Name'},
+                            { key: 'username', header: 'Username', sortable: true },
+                            { key: 'email', header: 'Email', sortable: true },
+                            { key: 'fullName', header: 'Full Name', sortable: true},
                             { key: 'role', header: 'Role' },
                             { key: 'action', header: 'Action' }
                         ]}
@@ -256,6 +258,12 @@ function AdminRoles() {
                             page: currentPage,
                             totalPages: totalPages,
                             setPage: setCurrentPage
+                        }}
+                        sort={{
+                            key: sortKey,
+                            dir: sortDir,
+                            onSetSortDir: setSortDir,
+                            onSetSortKey: arg => setSortKey(arg as keyof UserData)
                         }}
                     />
                 </div>}

@@ -15,6 +15,7 @@ import Profile from "@/pages/User/Profile";
 import RoleSignup from "@/pages/Roles/RoleSignup";
 import AdminRoles from "@/pages/Roles/AdminRoles";
 import { getInfoFromToken } from "@/lib/jwt";
+import Scoreboard from "@/pages/Scoreboard/Scoreboard";
 
 function Routes() {
     const auth = useAuth();
@@ -80,6 +81,10 @@ function Routes() {
                         {
                             path: '/role-signup',
                             element: <RoleSignup />
+                        },
+                        {
+                            path: '/scoreboard',
+                            element: <Scoreboard />
                         },
                         ...(roleInd >= 3 ? routesForAdmin : [])
                     ]

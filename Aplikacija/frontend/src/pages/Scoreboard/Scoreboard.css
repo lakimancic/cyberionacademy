@@ -1,0 +1,71 @@
+.scoreboard {
+    width: 100%;
+    height: fit-content;
+
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    padding: 3rem;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.scoreboard h1 {
+    font-size: 3rem;
+}
+
+.scoreboard h1 span {
+    font-weight: 500;
+}
+
+.scoreboard-tabs {
+    position: relative;
+
+    display: flex;
+    justify-content: space-evenly;
+
+    margin-top: 2rem;
+    font-size: 1.2rem;
+}
+
+.scoreboard-tab {
+    position: relative;
+
+    width: 30%;
+    cursor: pointer;
+
+    padding: 1rem 0;
+
+    transition: all 0.5s ease;
+
+    z-index: 2;
+}
+
+.scoreboard-tab:hover {
+    transform: scale(1.1);
+}
+
+.scoreboard-tab-active {
+    position: absolute;
+    width: 30%;
+    height: 3.5rem;
+
+    bottom: 0;
+    background: rgba(29, 55, 99, 0.1);
+
+    transition: all 0.3s ease;
+}
+
+.scoreboard .data-table-con {
+    width: 90%;
+
+    margin-bottom: 3rem;
+}
+
+.scoreboard-content {
+    background: rgba(29, 55, 99, 0.1);
+
+    display: flex;
+    justify-content: center;
+}

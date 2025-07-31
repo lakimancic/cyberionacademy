@@ -1,9 +1,17 @@
+import { FaArrowUp } from 'react-icons/fa';
 import './DataTable.css';
 
 type Pagination = {
     page: number;
     setPage: (prev: React.SetStateAction<number>) => void;
     totalPages: number;
+};
+
+type Sort<T> = {
+    key: keyof T;
+    dir: 'asc' | 'desc';
+    onSetSortKey: (prev: React.SetStateAction<keyof T>) => void;
+    onSetSortDir: (prev: React.SetStateAction<'asc' | 'desc'>) => void;
 };
 
 type Column<T> = {
@@ -18,13 +26,14 @@ type Props<T> = {
     className?: string;
     onRowClick?: (row: T, ind: number) => void;
     pagination?: Pagination;
+    sort?: Sort<T>;
 };
 
 type ValidRow = {
     [key: string]: React.ReactNode;
 };
 
-function DataTable<T extends ValidRow>({ data, columns, className, onRowClick, pagination } : Props<T>) {
+function DataTable<T extends ValidRow>({ data, columns, className, onRowClick, pagination, sort } : Props<T>) {
     return (
         <div className={`data-table-con ${className ? className + '-con' : ''}`}>
             <table className={`data-table ${className ?? ''}`}>
@@ -33,8 +42,21 @@ function DataTable<T extends ValidRow>({ data, columns, className, onRowClick, p
                         {columns.map(col => (
                             <th
                                 key={String(col.key)}
+                                className={col.sortable ? 'data-sortable' : ''}
+                                onClick={() => {
+                                    if(!col.sortable || !sort) return
+
+                                    if(col.key === sort.key)
+                                        sort.onSetSortDir(sort.dir === 'asc' ? 'desc' : 'asc');
+                                    else {
+                                        sort.onSetSortDir('asc');
+                                        sort.onSetSortKey(col.key);
+                                    }
+                                }}
                             >
-                                {col.header}
+                                {col.header} {col.sortable && sort ? 
+                                    (sort.key === col.key ? <FaArrowUp className={`data-sort-${sort.dir}`} /> : <FaArrowUp />)
+                                 : ''}
                             </th>
                         ))}
                     </tr>

@@ -23,7 +23,6 @@
 
 .data-table th {
     color: #aab2c8;
-    cursor: pointer;
     user-select: none;
     background-color: #020e20a8;
 }
@@ -62,4 +61,27 @@
 .data-table-con .data-pagination button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+.data-sortable {
+    cursor: pointer;
+}
+
+.data-table th svg {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0);
+
+    transition: color 0.2s ease;
+}
+
+.data-table th:hover svg:not([class^=data-sort-]) {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.data-table svg[class^=data-sort-] {
+    color: white;
+}
+
+.data-table svg[class^=data-sort-desc] {
+    transform: scaleY(-1);
 }

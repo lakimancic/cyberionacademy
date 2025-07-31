@@ -6,15 +6,21 @@
 
     margin-left: 3rem;
     display: flex;
+    align-items: center;
+
+    height: 3rem;
 }
 
 .search-bar-container svg {
+    height: 100%;
+
     color: white;
     transition: all 0.3s ease;
 
     cursor: pointer;
     font-size: 1.3rem;
-    padding: 0.6rem;
+    padding: 0 0.6rem;
+
 }
 
 .search-bar-container svg:hover {
