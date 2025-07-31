@@ -69,3 +69,76 @@
     display: flex;
     justify-content: center;
 }
+
+.score-user {
+    display: flex;
+    align-items: center;
+}
+
+.score-user span {
+    margin-left: 1rem;
+}
+
+.score-ranking img {
+    height: 1.6rem;
+}
+
+.score-users {
+    display: flex;
+    align-items: center;
+
+    font-size: 1.2rem;
+}
+
+.score-users svg {
+    margin-left: 1rem;
+}
+
+.score-country-con {
+    position: relative;
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.score-country {
+    display: flex;
+    align-items: center;
+
+    margin: 2rem 0;
+}
+
+.score-country .MuiAvatar-root {
+    width: 6rem !important;
+    height: 6rem !important;
+
+    margin-right: 2rem;
+}
+
+.score-country-info h2 {
+    font-size: 2rem;
+}
+
+.score-country-info p {
+    margin: 0;
+    text-align: left;
+}
+
+.score-back {
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+    padding: 0.3rem;
+
+    font-size: 2rem;
+    border-radius: 50%;
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+}
+
+.score-back:hover {
+    background-color: rgba(71, 124, 223, 0.2);
+}

@@ -140,9 +140,17 @@
     position: absolute;
     left: 1rem;
     top: 1rem;
+    padding: 0.3rem;
 
     font-size: 2rem;
+    border-radius: 50%;
     cursor: pointer;
+
+    transition: all 0.3s ease;
+}
+
+.admin-back:hover {
+    background-color: rgba(71, 124, 223, 0.2);
 }
 
 .admin-req-left, .admin-req-right {

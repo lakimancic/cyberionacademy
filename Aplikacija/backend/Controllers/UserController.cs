@@ -34,18 +34,23 @@ public class UserController(ApplicationDbContext context, IConfiguration configu
         if (user == null)
             return NotFound("User not found");
 
-        var result = await context.Challenges
-            .Where(c => c.Public)
-            .GroupBy(c => c.Category)
-            .Select(g => new CategoryStatsDto
+        var result = await context.Categories
+            .Select(cat => new CategoryStatsDto
             {
-                Name = g.Key.Name,
-                Max = g.Count(),
-                Num = g.SelectMany(c => c.Submissions!.Where(s => s.UserId == userId && s.Correct))
+                Name = cat.Name,
+                Max = context.Challenges
+                    .Where(c => c.Public && c.CategoryId == cat.Id)
+                    .Count(),
+
+                Num = context.Challenges
+                    .Where(c => c.Public && c.CategoryId == cat.Id)
+                    .SelectMany(c => c.Submissions!
+                        .Where(s => s.UserId == userId && s.Correct))
                     .Select(s => s.ChallengeId)
                     .Distinct()
                     .Count()
-            }).ToListAsync();
+            })
+            .ToListAsync();
 
         return result;
     }
@@ -57,23 +62,21 @@ public class UserController(ApplicationDbContext context, IConfiguration configu
         if (user == null)
             return NotFound("User not found");
 
-        var result = await context.Lessons
-            .Where(l => l.QuizId != null && l.Public)
-            .Select(l => new
+        var result = await context.Categories
+            .Select(cat => new CategoryStatsDto
             {
-                l.Category.Name,
-                LessonId = l.Id,
-                QuizTotal = l.Quiz!.TotalPoints,
-                Passed = l.Quiz!.Results!
-                    .Where(r => r.UserId == userId)
-                    .Any(r => r.Points > l.Quiz.TotalPoints / 2.0)
-            })
-            .GroupBy(x => x.Name)
-            .Select(g => new CategoryStatsDto
-            {
-                Name = g.Key,
-                Max = g.Count(),
-                Num = g.Count(x => x.Passed)
+                Name = cat.Name,
+
+                Max = context.Lessons
+                    .Count(l => l.Public && l.QuizId != null && l.CategoryId == cat.Id),
+
+                Num = context.Lessons
+                    .Where(l => l.Public && l.QuizId != null && l.CategoryId == cat.Id)
+                    .SelectMany(l => l.Quiz!.Results!
+                        .Where(r => r.UserId == userId && r.Points > l.Quiz.TotalPoints / 2.0))
+                    .Select(r => r.Quiz!.Lesson!.Id)
+                    .Distinct()
+                    .Count()
             })
             .ToListAsync();
 

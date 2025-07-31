@@ -17,18 +17,14 @@ public class ScoreboardController(ApplicationDbContext context, IUserService ser
             .Where(u => u.TotalPoints > 0)
             .AsQueryable();
 
-        int totalSum = 0;
         if (!string.IsNullOrEmpty(country))
-        {
             query = query.Where(u => u.Country == country);
-            totalSum = await query.SumAsync(u => u.TotalPoints);
-        }
 
         var totalCount = await query.CountAsync();
         var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
 
         var users = await query
-            .OrderBy(u => u.TotalPoints)
+            .OrderByDescending(u => u.TotalPoints)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .Select(u => new
@@ -71,13 +67,14 @@ public class ScoreboardController(ApplicationDbContext context, IUserService ser
                 user.Country,
                 user.TotalPoints
             });
+
+            prevPoints = user.TotalPoints;
         }
 
         return Ok(new
         {
             Users = rankedUsers,
             TotalPages = totalPages,
-            TotalSum = totalSum
         });
     }
 
@@ -91,7 +88,7 @@ public class ScoreboardController(ApplicationDbContext context, IUserService ser
             {
                 Country = g.Key,
                 Points = g.Sum(u => u.TotalPoints),
-                Users = g.Count()
+                Users = g.Count(u => u.TotalPoints > 0)
             })
             .AsQueryable();
 
@@ -99,7 +96,7 @@ public class ScoreboardController(ApplicationDbContext context, IUserService ser
         var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
 
         var countries = await query
-            .OrderBy(g => g.Points)
+            .OrderByDescending(g => g.Points)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
@@ -124,13 +121,16 @@ public class ScoreboardController(ApplicationDbContext context, IUserService ser
             {
                 RankNum = rank,
                 country.Country,
-                country.Users
+                country.Users,
+                country.Points
             });
+
+            prevPoints = country.Points;
         }
 
         return Ok(new
         {
-            Users = rankedCountries,
+            Countries = rankedCountries,
             TotalPages = totalPages,
         });
     }
