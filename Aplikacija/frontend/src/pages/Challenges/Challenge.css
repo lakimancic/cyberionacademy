@@ -1,0 +1,273 @@
+.challenge-details-container {
+  padding: 2rem;
+  gap: 2rem;
+}
+
+.challenge-header {
+  margin-bottom: 2rem;
+   text-align: left;
+}
+
+.challenge-header h2{
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+.challenge-content-row {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+.challenge-section {
+  width: 100%;
+  max-width: 800px;
+  padding: 2rem;
+  backdrop-filter: blur(16px);
+  border-radius: 16px;
+  color: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.212);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex: 1 1 300px;
+  max-width: 400px;
+}
+.challenge-details{
+  display: flex;
+  padding: 1.5rem;
+  gap: 1.5rem;
+  border-radius: 16px;
+  color: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.212);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ratings-info {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.challenge-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.challenge-header-left {
+  flex: 2;
+  min-width: 300px;
+}
+
+.challenge-header-right {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  flex: 1;
+  min-width: 200px;
+}
+
+.meta-card {
+  background-color: #1a1d2e33;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  min-width: 120px;
+  text-align: left;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.challenge-actions-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
+  text-align: left;
+  backdrop-filter: blur(16px);
+}
+
+.action-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background-color: #111827;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  border: 1px solid #1f2937;
+  transition: 
+    background-color 0.3s ease, 
+    box-shadow 0.3s ease, 
+    transform 0.3s ease;
+  cursor: pointer;
+  will-change: transform, box-shadow;
+}
+
+.action-item:hover {
+  background-color: #1f2937;
+  border-color: #3b82f6;
+  box-shadow: 0 0 8px 4px rgba(59, 130, 246, 0.7);
+  transform: scale(1.02);
+}
+
+
+.icon-container {
+  font-size: 1.6rem;
+  color: #ffffff;
+  margin-top: 0.2rem;
+}
+
+.action-text .action-description {
+  color: #9ca3af;
+  font-size: 0.85rem;
+  margin-top: 0.2rem;
+}
+
+.action-item:hover {
+  background-color: #1f29373f; 
+  box-shadow: 0 4px 20px rgba(153, 153, 153, 0.5);
+  border-color: #b1b1b1;
+}
+
+.meta-label {
+  color: gray;
+  font-size: 0.85rem;
+  margin-bottom: 0.2rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.challenge-details-container p,
+.challenge-details-container h3 {
+  margin: 0;
+  padding: 0;
+  line-height: 1.4;
+}
+
+.challenge-section h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: white;
+  text-align: left;
+}
+
+.ratings-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: flex-start;
+}
+
+.rating-item {
+  background-color: #111827;
+  border: 1px solid #1f2937;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  min-width: 180px;
+  flex: 1 1 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.rating-item:hover {
+  background-color: #1f2937;
+  box-shadow: 0 0 8px 4px rgba(59, 130, 246, 0.2);
+}
+
+.rating-label {
+  font-size: 0.95rem;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.rating-value {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: white;
+}
+
+.rating-description {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.rating-stars {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.section-header {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.flag-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.flag-input input {
+  background-color: #1f2937;
+  color: white;
+}
+
+.submit-flag-button {
+  align-self: flex-start;
+  background-color: #2563eb;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  font-weight: 600;
+  text-transform: none;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.submit-flag-button:hover {
+  background-color: #3b82f6;
+  transform: scale(1.03);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
+}
+
+.submit-button {
+  justify-content: center;
+  align-items: center;
+  padding: 0.75rem 2rem;
+  min-height: 48px;
+}
+
+.submit-text {
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.section-header {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.review-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
