@@ -56,7 +56,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(builder.Configuration["AppSettings:Frontend"]!)
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 

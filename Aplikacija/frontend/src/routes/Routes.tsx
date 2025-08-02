@@ -31,6 +31,13 @@ function Routes() {
         },
     ];
 
+    const routesForHelper = [
+        {
+            path: "/helper/questions",
+            element: <Support isNew={false} isSupport={true} />
+        }
+    ];
+
     const routesForAdmin = [
         {
             path: "/admin/users-roles",
@@ -89,8 +96,13 @@ function Routes() {
                         },
                         {
                             path: '/support',
-                            element: <Support isNew={true} />
+                            element: <Support isNew={false} isSupport={false} />
                         },
+                        {
+                            path: '/new-support/:type/:id',
+                            element: <Support isNew={true} isSupport={false} />
+                        },
+                        ...(roleInd >= 1 ? routesForHelper : []),
                         ...(roleInd >= 3 ? routesForAdmin : [])
                     ]
                 },

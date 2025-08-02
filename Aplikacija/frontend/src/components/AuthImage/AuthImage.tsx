@@ -19,7 +19,7 @@ function AuthImage({ src, element: Component, className } : Props) {
             .catch(() => {
                 setUrl("");
             });
-    }, []);
+    }, [src]);
 
     return <Component src={url} className={className} />
 }

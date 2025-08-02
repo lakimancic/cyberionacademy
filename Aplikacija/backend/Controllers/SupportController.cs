@@ -114,7 +114,7 @@ public class SupportController(ApplicationDbContext context) : ControllerBase
             .AsQueryable();
 
         var totalCount = await messages.CountAsync();
-        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+        var totalPages = (int)Math.Ceiling(totalCount / (double)msgPageSize);
 
         var result = await messages
             .Skip((page - 1) * msgPageSize)
@@ -151,11 +151,11 @@ public class SupportController(ApplicationDbContext context) : ControllerBase
             return Forbid("You cannot get all conversations");
 
         var challConvs = context.Conversations
-            .Where(c => c.StartedById == userId && c is ChallengeConversation && c.Closed == closed)
+            .Where(c => c is ChallengeConversation && c.Closed == closed)
             .AsQueryable();
 
         var lessConvs = context.Conversations
-            .Where(c => c.StartedById == userId && c is LessonConversation && c.Closed == closed)
+            .Where(c => c is LessonConversation && c.Closed == closed)
             .AsQueryable();
 
         if (forUser)
@@ -202,6 +202,7 @@ public class SupportController(ApplicationDbContext context) : ControllerBase
 
         var query = cc
             .Union(lc)
+            .OrderByDescending(q => q.Id)
             .AsQueryable();
 
         var totalCount = await query.CountAsync();

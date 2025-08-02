@@ -22,6 +22,11 @@ public class ChatHub(ApplicationDbContext context) : Hub
         await Groups.AddToGroupAsync(Context.ConnectionId, $"conversation-{conversationId}");
     }
 
+    public async Task LeaveConversation(int conversationId)
+    {
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"conversation-{conversationId}");
+    }
+
     public async Task SendMessage(int conversationId, string message)
     {
         if (Context.User == null) return;
@@ -46,11 +51,11 @@ public class ChatHub(ApplicationDbContext context) : Hub
         await context.Messages.AddAsync(messageObj);
         await context.SaveChangesAsync();
 
-        await Clients.Group($"conversation-${conversationId}")
+        await Clients.Group($"conversation-{conversationId}")
             .SendAsync("ReceiveMessage", new
             {
                 SenderId = userId,
-                SenderName = user.Username,
+                SenderUsername = user.Username,
                 SenderRole = user.Role.ToString(),
                 Content = message,
                 messageObj.SentAt
