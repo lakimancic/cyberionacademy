@@ -31,7 +31,7 @@ public class ChatHub(ApplicationDbContext context) : Hub
         if (user == null) return;
 
         Conversation? conversation = await context.Conversations.FindAsync(conversationId);
-        if (conversation == null) return;
+        if (conversation == null || conversation.Closed) return;
 
         if (user.Role == UserRole.User && conversation.StartedById != userId) return;
 

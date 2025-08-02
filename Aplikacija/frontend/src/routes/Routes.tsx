@@ -16,6 +16,7 @@ import RoleSignup from "@/pages/Roles/RoleSignup";
 import AdminRoles from "@/pages/Roles/AdminRoles";
 import { getInfoFromToken } from "@/lib/jwt";
 import Scoreboard from "@/pages/Scoreboard/Scoreboard";
+import Support from "@/pages/Support/Support";
 
 function Routes() {
     const auth = useAuth();
@@ -85,6 +86,10 @@ function Routes() {
                         {
                             path: '/scoreboard',
                             element: <Scoreboard />
+                        },
+                        {
+                            path: '/support',
+                            element: <Support isNew={true} />
                         },
                         ...(roleInd >= 3 ? routesForAdmin : [])
                     ]

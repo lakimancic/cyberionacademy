@@ -107,10 +107,16 @@ public class SupportController(ApplicationDbContext context) : ControllerBase
         if (user.Role == UserRole.User && conversation.StartedById != userId)
             return Forbid("You are not allowed to close conversation");
 
-        var messages = await context.Messages
+        var messages = context.Messages
             .Include(m => m.Sender)
             .Where(m => m.ConversationId == conversationId)
             .OrderByDescending(m => m.SentAt)
+            .AsQueryable();
+
+        var totalCount = await messages.CountAsync();
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+        var result = await messages
             .Skip((page - 1) * msgPageSize)
             .Take(msgPageSize)
             .Select(m => new
@@ -123,43 +129,15 @@ public class SupportController(ApplicationDbContext context) : ControllerBase
             })
             .ToListAsync();
 
-        object? convObj = null;
-        if (conversation is ChallengeConversation)
-            convObj = await context.Conversations
-                .Where(c => c.Id == conversationId)
-                .Include(c => (c as ChallengeConversation)!.Challenge)
-                .Select(c => new
-                {
-                    Title = (c as ChallengeConversation)!.Challenge!.Name,
-                    ObjId = (c as ChallengeConversation)!.Challenge!.Id,
-                    (c as ChallengeConversation)!.Challenge!.Category,
-                    (c as ChallengeConversation)!.Challenge!.Difficulty,
-                    Type = "Challenge"
-                })
-                .FirstOrDefaultAsync();
-        else if (conversation is LessonConversation)
-            convObj = await context.Conversations
-                .Where(c => c.Id == conversationId)
-                .Include(c => (c as ChallengeConversation)!.Challenge)
-                .Select(c => new
-                {
-                    (c as LessonConversation)!.Lesson!.Title,
-                    ObjId = (c as LessonConversation)!.Lesson!.Id,
-                    (c as LessonConversation)!.Lesson!.Category,
-                    (c as LessonConversation)!.Lesson!.Difficulty,
-                    Type = "Lesson"
-                })
-                .FirstOrDefaultAsync();
-
         return Ok(new
         {
-            Info = convObj,
-            Messages = messages
+            Messages = result,
+            TotalPages = totalPages
         });
     }
 
-    [HttpGet("MyConversations")]
-    public async Task<ActionResult> GetMyConversations(int page = 1, bool closed = false)
+    [HttpGet("Conversations")]
+    public async Task<ActionResult> GetConversations(int page = 1, bool closed = false, bool forUser = true)
     {
         int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
         if (userId == -1)
@@ -169,73 +147,75 @@ public class SupportController(ApplicationDbContext context) : ControllerBase
         if (user == null)
             return BadRequest("User for account not found");
 
+        if (!forUser && user.Role == UserRole.User)
+            return Forbid("You cannot get all conversations");
+
         var challConvs = context.Conversations
             .Where(c => c.StartedById == userId && c is ChallengeConversation && c.Closed == closed)
+            .AsQueryable();
+
+        var lessConvs = context.Conversations
+            .Where(c => c.StartedById == userId && c is LessonConversation && c.Closed == closed)
+            .AsQueryable();
+
+        if (forUser)
+        {
+            challConvs = challConvs.Where(c => c.StartedById == userId);
+            lessConvs = lessConvs.Where(c => c.StartedById == user.Id);
+        }
+
+        var cc = challConvs
             .Select(c => new
             {
                 c.Id,
                 Title = (c as ChallengeConversation)!.Challenge!.Name,
                 Type = "Challenge",
                 ObjId = (c as ChallengeConversation)!.ChallengeId,
-                (c as ChallengeConversation)!.Challenge!.Category
-            })
-            .AsQueryable();
+                (c as ChallengeConversation)!.Challenge!.Category,
+                LastMessage = c.Messages!
+                    .OrderByDescending(m => m.SentAt)
+                    .Select(m => m.Content)
+                    .FirstOrDefault(),
+                LastSender = c.Messages!
+                    .OrderByDescending(m => m.SentAt)
+                    .Select(m => m.Sender!.Username)
+                    .FirstOrDefault()
+            });
 
-        var lessConvs = context.Conversations
-            .Where(c => c.StartedById == userId && c is LessonConversation && c.Closed == closed)
+        var lc = lessConvs
             .Select(c => new
             {
                 c.Id,
                 (c as LessonConversation)!.Lesson!.Title,
                 Type = "Lesson",
                 ObjId = (c as LessonConversation)!.LessonId,
-                (c as LessonConversation)!.Lesson!.Category
-            })
+                (c as LessonConversation)!.Lesson!.Category,
+                LastMessage = c.Messages!
+                    .OrderByDescending(m => m.SentAt)
+                    .Select(m => m.Content)
+                    .FirstOrDefault(),
+                LastSender = c.Messages!
+                    .OrderByDescending(m => m.SentAt)
+                    .Select(m => m.Sender!.Username)
+                    .FirstOrDefault()
+            });
+
+        var query = cc
+            .Union(lc)
             .AsQueryable();
 
-        var allConvs = await challConvs
-            .Union(lessConvs)
+        var totalCount = await query.CountAsync();
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+        var result = await query
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
 
-        return Ok(allConvs);
-    }
-
-    [HttpGet("Conversations")]
-    [Authorize(Roles = "Helper,Moderator,Admin")]
-    public async Task<ActionResult> GetConversations(int page = 1, bool closed = false)
-    {
-        var challConvs = context.Conversations
-            .Where(c => c is ChallengeConversation && c.Closed == closed)
-            .Select(c => new
-            {
-                c.Id,
-                c.StartedBy!.Username,
-                Title = (c as ChallengeConversation)!.Challenge!.Name,
-                Type = "Challenge",
-                ObjId = (c as ChallengeConversation)!.ChallengeId
-            })
-            .AsQueryable();
-
-        var lessConvs = context.Conversations
-            .Where(c => c is LessonConversation && c.Closed == closed)
-            .Select(c => new
-            {
-                c.Id,
-                c.StartedBy!.Username,
-                (c as LessonConversation)!.Lesson!.Title,
-                Type = "Lesson",
-                ObjId = (c as LessonConversation)!.LessonId
-            })
-            .AsQueryable();
-
-        var allConvs = await challConvs
-            .Union(lessConvs)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
-
-        return Ok(allConvs);
+        return Ok(new
+        {
+            Conversations = result,
+            TotalPages = totalPages
+        });
     }
 }

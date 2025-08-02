@@ -41,7 +41,7 @@ function Scoreboard() {
     const navigate = useNavigate();
 
     const fetchUsers = async () => {
-        await api.get("/Scoreboard/")
+        await api.get("/Scoreboard/", { params: { page: currentPage } })
             .then(resp => {
                 setTotalPages(resp.data.totalPages);
                 setUsers(resp.data.users);
@@ -49,7 +49,7 @@ function Scoreboard() {
     };
 
     const fetchCountries = async () => {
-        await api.get("/Scoreboard/Countries")
+        await api.get("/Scoreboard/Countries", { params: { page: currentPage } })
             .then(resp => {
                 setTotalPages(resp.data.totalPages);
                 setCountries(resp.data.countries);
@@ -59,7 +59,7 @@ function Scoreboard() {
     const fetchCountryUsers = async () => {
         if(!currentCountry) return;
 
-        await api.get("/Scoreboard/", { params: { country: currentCountry.country } })
+        await api.get("/Scoreboard/", { params: { country: currentCountry.country, page: currentPage } })
             .then(resp => {
                 setTotalPages(resp.data.totalPages);
                 setCountryUsers(resp.data.users);

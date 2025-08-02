@@ -1,0 +1,313 @@
+.support {
+    height: 100%;
+    width: 100%;
+
+    display: flex;
+}
+
+.support-left {
+    height: 100%;
+    width: 30%;
+
+    backdrop-filter: blur(3px);
+    display: flex;
+    flex-direction: column;
+}
+
+.support-right {
+    position: relative;
+
+    height: 100%;
+    width: 70%;
+
+    backdrop-filter: blur(20px);
+}
+
+.support-tabs {
+    position: relative;
+    height: 6rem;
+
+    display: flex;
+    align-items: end;
+}
+
+.support-tab {
+    position: relative;
+
+    width: 50%;
+
+    font-size: 1.2rem;
+    padding: 0.8rem 0;
+
+    cursor: pointer;
+    z-index: 3;
+
+    transition: all 0.5s ease;
+    box-sizing: border-box;
+}
+
+.support-tab:hover {
+    transform: scale(1.1);
+}
+
+.support-tab-active {
+    position: absolute;
+
+    width: 50%;
+    height: 2.8rem;
+
+    background-color: rgba(29, 55, 99, 0.1);
+
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.support-list {
+    position: relative;
+    background-color: rgba(29, 55, 99, 0.1);
+
+    height: calc(100% - 6rem);
+    box-sizing: border-box;
+
+    overflow-y: auto;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.support-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    text-align: left;
+    padding: 0.5rem 0;
+
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.support-active-item {
+    background-color: rgba(29, 55, 99, 0.5);
+}
+
+.support-item:hover {
+    background-color: rgba(29, 55, 99, 0.2);
+}
+
+.support-item img {
+    height: 2.3rem;
+    margin: 0 1rem;
+}
+
+.support-subitem {
+    overflow-x: hidden;
+}
+
+.support-subitem h2 {
+    font-size: 1.2rem;
+    font-weight: 400;
+}
+
+.support-subitem p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.support-info {
+    position: absolute;
+    top: 0;
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.support-info svg {
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
+}
+
+.support-header {
+    position: relative;
+    z-index: 3;
+
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    background: rgba(21, 41, 68, 0.2);
+}
+
+.support-header img {
+    height: 2.5rem;
+    margin: 0 1rem;
+}
+
+.support-subheader {
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.support-subheader a {
+    height: 3.5rem;
+    line-height: 4rem;
+
+    color: white;
+    text-decoration: none;
+}
+
+.support-subheader h2 {
+    font-weight: 400;
+}
+
+.support-subheader i {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.support-subheader p {
+    margin: 0;
+    height: 2.5rem;
+}
+
+.support-content {
+    position: relative;
+    
+    height: calc(100% - 6rem);
+    width: 100%;
+
+    display: flex;
+    flex-direction: column-reverse;
+
+    z-index: 3;
+}
+
+.support-input-con {
+    flex-shrink: 0;
+
+    width: 100%;
+
+    display: flex;
+    align-items: end;   
+    
+    background-color: rgba(17, 61, 117, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+
+    margin-top: 1rem;
+}
+
+.support-messages {
+    flex: 1 1 auto;
+    overflow-y: auto;
+
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.support-input {
+    display: block;
+    width: 100%;
+
+    resize: none;
+    outline: none;
+    border: 0;
+
+    color: white;
+    background: none;
+
+    box-sizing: border-box;
+
+    font-size: 1rem;
+    line-height: 1.2rem;
+    font-family: 'Inter', 'Helvetica Neue', sans-serif;
+
+    padding: 1rem;
+}
+
+.support-input-con svg {
+    font-size: 1.5rem;
+    padding: 0.5rem;
+    margin: 0.5rem;
+
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.support-input-con svg:hover {
+    background-color: rgba(0, 255, 255, 0.1);
+}
+
+.support-message {
+    display: flex;
+    padding: 0.5rem;
+}
+
+.support-message .MuiAvatar-root {
+    margin: 0 0.8rem;
+}
+
+.support-message-data {
+    background: rgba(18, 59, 105, 0.6);
+
+    box-sizing: border-box;
+    padding: 0.8rem;
+    border-radius: 10px;
+
+    max-width: 50%;
+    text-align: left;
+}
+
+.support-message-sender {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 0.6rem;
+}
+
+.support-date {
+    font-size: 0.9rem;
+}
+
+.support-name {
+    font-weight: 600;
+}
+
+.support-name span {
+    margin-right: 0.5rem;
+}
+
+.support-message-right {
+    flex-direction: row-reverse;
+}
+
+.support-load-more {
+    margin: 1rem auto;
+    padding: 0.5rem 3rem;
+    width: fit-content;
+
+    border-radius: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+}
+
+.support-load-more:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
