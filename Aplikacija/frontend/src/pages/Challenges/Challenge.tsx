@@ -1,13 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
-  Box,
-  Paper,
-  Button,
   TextField,
   Rating,
   MenuItem,
-  Stack
 } from "@mui/material";
 import api from "@/lib/api";
 import './Challenge.css';
@@ -29,6 +25,8 @@ interface ChallengeDetailsData {
   isPublic: boolean;
   dockerImage?: string | null;
   averageReviewDifficulty?: number;
+  reviewCount: number;
+
 }
 
 function ChallengeDetails() {
@@ -40,6 +38,16 @@ function ChallengeDetails() {
   const [stars, setStars] = useState<number | null>(0);
   const [reviewDifficulty, setReviewDifficulty] = useState<number | "">("");
   const [reviewText, setReviewText] = useState("");
+  const [flagResult, setFlagResult] = useState<null | "correct" | "incorrect">(null);
+  const [hasSolved, setHasSolved] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!id) return;
+    api.get(`/Challenge/HasSolved?challengeId=${id}`)
+      .then(res => setHasSolved(res.data))
+      .catch(() => setHasSolved(false));
+  }, [id]);
+
 
   useEffect(() => {
     if (!id) return;
@@ -51,13 +59,21 @@ function ChallengeDetails() {
   }, [id]);
 
   const handleSubmitFlag = () => {
-    api.post("/Submission/SubmitFlag", {
+    api.post("/Challenge/SubmitFlag", {
       challengeId: challenge?.id,
       flag
-    }).then(() => alert("Submitted")).catch(() => alert("Error"));
+    })
+      .then((res) => {
+        setFlagResult(res.data.correct ? "correct" : "incorrect");
+      })
+      .catch(() => {
+        alert("Error submitting flag.");
+        setFlagResult(null);
+      });
   };
 
-  const handleSubmitReview = () => {
+
+  const handleSubmitReview = () => {///////////
     api.post("/Review/SubmitChallengeReview", {
       challengeId: challenge?.id,
       stars,
@@ -126,6 +142,7 @@ function ChallengeDetails() {
               <div className="rating-item">
                 <div className="rating-label">👥 User Solves</div>
                 <div className="rating-value">{challenge.solvedCount}</div>
+                <div className="rating-description">Number of users who completed the challenge</div>
               </div>
 
               <div className="rating-item">
@@ -139,11 +156,12 @@ function ChallengeDetails() {
               <div className="rating-item">
                 <div className="rating-label">🧠 Review Difficulty</div>
                 <div className="rating-value">
-                  {difficultyLabels[challenge.averageReviewDifficulty ?? challenge.difficulty]}
+                  {difficultyLabels[Math.round(challenge.averageReviewDifficulty ?? challenge.difficulty)]}
+
                 </div>
                 <div className="rating-description">Avg. reported difficulty</div>
               </div>
-
+              <div className="rating-description">Based on {challenge.reviewCount} review(s)</div>
             </div>
           </div>
 
@@ -152,21 +170,39 @@ function ChallengeDetails() {
               <h3>Submit Flag</h3>
             </div>
 
-            <TextField
-              label="Flag"
-              variant="outlined"
-              fullWidth
-              value={flag}
-              onChange={(e) => setFlag(e.target.value)}
-              className="flag-input"
-              sx={{ mb: 2 }}
-            />
+            {hasSolved === null ? (
+              <p>Loading...</p>
+            ) : hasSolved ? (
+              <p style={{ color: "green", fontWeight: "bold" }}>
+                ✅ You have already solved this challenge!
+              </p>
+            ) : (
+              <>
+                <TextField
+                  label="Flag"
+                  variant="outlined"
+                  fullWidth
+                  value={flag}
+                  onChange={(e) => setFlag(e.target.value)}
+                  className="flag-input"
+                  sx={{ mb: 2 }}
+                />
 
-            <div className="action-item action-clickable submit-button" onClick={handleSubmitFlag}>
-              <div className="submit-text">Submit</div>
-            </div>
+                <div className="action-item action-clickable submit-button" onClick={handleSubmitFlag}>
+                  <div className="submit-text">Submit</div>
+                </div>
 
+                {flagResult === "correct" && (
+                  <p className="flag-result success">✅ Correct flag!</p>
+                )}
+                {flagResult === "incorrect" && (
+                  <p className="flag-result error">❌ Incorrect flag. Try again.</p>
+                )}
+              </>
+            )}
           </div>
+
+
 
           <div className="challenge-section">
             <div className="section-header">Leave a Review</div>
@@ -175,8 +211,8 @@ function ChallengeDetails() {
               <div className="form-row">
                 <label className="form-label">Your Rating</label>
                 <div className="rating-stars">
-                <Rating value={stars} onChange={(_, v) => setStars(v)} />
-                  </div>
+                  <Rating value={stars} onChange={(_, v) => setStars(v)} />
+                </div>
               </div>
 
               <div className="form-row">

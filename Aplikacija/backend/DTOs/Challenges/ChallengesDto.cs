@@ -15,4 +15,7 @@ public class ChallengeDto
     public double AverageRating { get; set; }
     public int SolvedCount { get; set; }
     public int Difficulty { get; set; }
+    public double? AverageReviewDifficulty { get; set; }
+
+    public int ReviewCount { get; set; }
 }
