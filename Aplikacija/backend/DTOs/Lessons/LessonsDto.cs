@@ -1,0 +1,16 @@
+namespace backend.DTOs
+{
+    public class LessonDto
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string? Description { get; set; }
+        public int Difficulty { get; set; }
+        public bool IsPublic { get; set; }
+        public int CategoryId { get; set; }
+        public int AuthorId { get; set; }
+        public int? QuizId { get; set; }
+        public string CategoryName { get; set; }
+        public double AverageRating { get; set; }
+    }
+}
