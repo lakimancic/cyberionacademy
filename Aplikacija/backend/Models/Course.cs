@@ -16,4 +16,5 @@ public class Course
     public List<CourseLesson>? Lessons { get; set; }
     public List<CourseChallenge>? Challenges { get; set; }
     public List<TagCourse>? Tags { get; set; }
+    public List<CourseReview>? Reviews { get; set; }
 }
