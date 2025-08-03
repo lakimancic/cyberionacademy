@@ -1,7 +1,9 @@
 
 using backend.Hubs;
 using backend.Services.Auth;
+using backend.Services.Docker;
 using backend.Services.UserServices;
+using backend.Utils.Docker;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -47,6 +49,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddSingleton<IDockerInstancer, DockerInstancer>();
+builder.Services.AddHostedService<DockerCleanupService>();
 
 builder.Services.AddSignalR();
 

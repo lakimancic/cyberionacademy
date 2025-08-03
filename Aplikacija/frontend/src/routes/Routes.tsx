@@ -17,6 +17,8 @@ import AdminRoles from "@/pages/Roles/AdminRoles";
 import { getInfoFromToken } from "@/lib/jwt";
 import Scoreboard from "@/pages/Scoreboard/Scoreboard";
 import Support from "@/pages/Support/Support";
+import ChallengeStudio from "@/pages/Challenges/ChallengeStudio";
+import CreateChallenge from "@/pages/Challenges/CreateChallenge";
 
 function Routes() {
     const auth = useAuth();
@@ -35,6 +37,21 @@ function Routes() {
         {
             path: "/helper/questions",
             element: <Support isNew={false} isSupport={true} />
+        }
+    ];
+
+    const routesForMod = [
+        {
+            path: "/moderator/challenges",
+            element: <ChallengeStudio />
+        },
+        {
+            path: "/moderator/new-challenge",
+            element: <CreateChallenge />
+        },
+        {
+            path: "/moderator/edit-challenge/:id",
+            element: <CreateChallenge />
         }
     ];
 
@@ -103,6 +120,7 @@ function Routes() {
                             element: <Support isNew={true} isSupport={false} />
                         },
                         ...(roleInd >= 1 ? routesForHelper : []),
+                        ...(roleInd >= 2 ? routesForMod : []),
                         ...(roleInd >= 3 ? routesForAdmin : [])
                     ]
                 },
