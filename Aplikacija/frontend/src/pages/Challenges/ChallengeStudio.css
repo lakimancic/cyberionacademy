@@ -1,0 +1,77 @@
+.challenge-studio {
+    backdrop-filter: blur(12px);
+    color: #fff;
+    padding: 2rem;
+    font-family: 'Segoe UI', sans-serif;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.challenge-studio h2 {
+    font-size: 2rem;
+    margin: 1rem 0;
+}
+
+.challenge-studio-filters {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin: 1rem 0;
+    padding: 1rem;
+    background-color: #131623ad;
+
+    width: 98%;
+}
+
+.challenge-studio-right {
+    display: flex;
+}
+
+.challenge-studio-right input[type=search] {
+    width: 15rem;
+}
+
+.challenge-studio-filters .MuiSelect-root {
+    margin-bottom: 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 15rem;
+    text-align: left;
+    margin-left: 1rem;
+}
+
+.challenge-studio-filters .MuiSelect-select {
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+}
+
+.challenge-studio-table th {
+    background-color: #151824e7;
+}
+
+.challenge-studio-add {
+    background: linear-gradient(90deg, #0fac6f, #3385ff);
+    border: 0;
+    outline: none;
+    color: white;
+
+    font-size: 1rem;
+    font-weight: 600;
+    margin-left: 1rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+
+    border-radius: 3px;
+
+    transition: all 0.3s ease;
+}
+
+.challenge-studio-add:hover {
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}

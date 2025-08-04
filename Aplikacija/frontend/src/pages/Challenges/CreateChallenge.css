@@ -1,0 +1,230 @@
+.challenge-create {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    width: 100%;
+    z-index: 2;
+}
+
+.challenge-create h1 {
+    font-size: 2.5rem;
+
+    margin: 3rem 0;
+    padding: 0;
+}
+
+.challenge-create-form, .challenge-create-con {
+    display: flex;
+    justify-content: space-evenly;
+    width: 80%;
+
+    background: rgba(10, 26, 48, 0.5);
+    border: 1px solid rgba(47, 75, 114, 0.2);
+    border-radius: 5px;
+
+    flex-wrap: wrap;
+}
+
+.challenge-create-con {
+    margin: 3rem 0;
+}
+
+.challenge-create-form h2, .challenge-create-con h2 {
+    display: block;
+    width: 100%;
+    text-align: center;
+
+    padding: 2rem;
+}
+
+.challenge-create-col {
+    width: 40%;
+    text-align: left;
+}
+
+.challenge-create-desc textarea {
+    width: 100%;
+    box-sizing: border-box;
+
+    outline: none;
+    
+    background-color: #1d2d46;
+    color: white;
+
+    font-size: 1rem;
+    font-family: 'Inter', 'Helvetica Neue', sans-serif;
+    line-height: 1.5rem;
+    height: 8rem;
+    padding: 0.6rem 1rem;
+    border-radius: 3px;
+
+    transition: all 0.2s ease;
+
+    resize: none;
+    margin-bottom: 2rem;
+}
+
+.challenge-create-col .form-value-show {
+    text-align: center;
+    margin: 1rem 0;
+    font-weight: 600;
+}
+
+.challenge-create-switches {
+    display: flex;
+    justify-content: space-between;
+    margin: 2rem 0;
+}
+
+.challenge-create-col.form-switch-con {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.challenge-create-col .MuiSelect-root {
+    background-color: #1d2d46;
+    color: white;
+}
+
+.challenge-create-col .MuiSelect-select {
+    font-size: 1rem;
+    padding: 0.6rem;
+}
+
+.challenge-upload-con {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 3rem;
+}
+
+.challenge-upload-con p {
+    margin: 0;
+}
+
+.challenge-no-upload {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.challenge-upload-con button {
+    font-size: 1.1rem;
+    font-weight: 600;
+
+    display: flex;
+    align-items: center;
+
+    border: 0;
+    outline: none;
+
+    padding: 0.5rem 1.5rem;
+    border-radius: 3px;
+    
+    cursor: pointer;
+
+    color: white;
+    background: rgba(17, 59, 122, 0.6);
+
+    transition: all 0.3s ease;
+}
+
+.challenge-upload-con button:hover {
+    background: rgba(31, 87, 172, 0.6);
+}
+
+.challenge-upload-con button svg {
+    margin-right: 0.5rem;
+}
+
+.challenge-create-buttons {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+
+    margin-bottom: 2rem;
+}
+
+.challenge-create-buttons button, .challenge-docker-con button {
+    font-size: 1.2rem;
+    font-weight: 600;
+
+    display: flex;
+    align-items: center;
+
+    border: 0;
+    outline: none;
+
+    padding: 0.8rem 2rem;
+    margin: 0 1rem;
+    border-radius: 3px;
+    
+    cursor: pointer;
+
+    color: white;
+
+    transition: all 0.3s ease;
+}
+
+.challenge-docker-con {
+    display: flex;
+    flex-wrap: wrap;
+    width: 90%;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+.challenge-docker-buttons {
+    display: flex;
+}
+
+.challenge-docker-con button {
+    font-size: 1.1rem;
+    padding: 0.7rem 1rem;
+}
+
+.challenge-docker-con button svg {
+    margin-right: 0.6rem;
+}
+
+.challenge-create-buttons button svg {
+    margin-right: 1rem;
+}
+
+.challenge-btn-add {
+    background: linear-gradient(90deg, #0fac6f, #239618);
+}
+
+.challenge-btn-save {
+    background: linear-gradient(90deg, #0fac6f, #3385ff);
+}
+
+.challenge-btn-del {
+    background: linear-gradient(90deg, #9c1313, #d83535);
+}
+
+.challenge-create-con .form-label {
+    width: 100%;
+    text-align: left;
+
+    margin-top: 2rem;
+}
+
+.challenge-docker-logs {
+    width: 80%;
+    text-align: left;
+
+    background-color: rgb(29, 33, 43);
+    border: 1px solid rgb(80, 80, 80);
+    padding: 0.3rem;
+
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9rem;
+
+    height: 15rem;
+    overflow-y: auto;
+}
