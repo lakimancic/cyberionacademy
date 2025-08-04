@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import {
   TextField,
   Rating,
@@ -26,7 +26,11 @@ interface ChallengeDetailsData {
   dockerImage?: string | null;
   averageReviewDifficulty?: number;
   reviewCount: number;
-
+  autorId: number;
+  autorName: string;
+  createdAt: string;
+  autorRole: string;
+  autorCountry: string;
 }
 
 function ChallengeDetails() {
@@ -73,14 +77,34 @@ function ChallengeDetails() {
   };
 
 
-  const handleSubmitReview = () => {///////////
-    api.post("/Review/SubmitChallengeReview", {
+  const handleSubmitReview = () => {
+    if (!stars || reviewDifficulty === "" || reviewText.trim() === "") {
+      alert("Please fill in all fields before submitting your review.");
+      return;
+    }
+
+    api.post("/Challenge/SubmitChallengeReview", {
       challengeId: challenge?.id,
       stars,
       difficulty: reviewDifficulty,
       text: reviewText
-    }).then(() => alert("Review sent")).catch(() => alert("Error"));
+    }).then(() => {
+      setStars(0);
+      setReviewDifficulty("");
+      setReviewText("");
+      alert("✅ Review submitted successfully!");
+    }).catch(() => {
+      alert("❌ Failed to submit review. Please try again.");
+    }).then(() => {
+      setStars(0);
+      setReviewDifficulty("");
+      setReviewText("");
+
+      return api.get(`/Challenge/GetChallengeDetails/${id}`);
+    })
+      .then(res => setChallenge(res.data));
   };
+
 
   if (loading) return <div>Loading...</div>;
   if (!challenge) return <div>Challenge not found</div>;
@@ -95,6 +119,19 @@ function ChallengeDetails() {
 
         <div className="challenge-header-right">
           <div className="meta-card">
+            <p className="meta-label">📅 Created</p>
+            <p>{new Date(challenge.createdAt).toLocaleDateString('en-GB', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric'
+            })}</p>
+          </div>
+          <div className="meta-card">
+            <p className="meta-label">🌐 Access</p>
+            <p>{challenge.isPublic ? "Public" : "Private"}</p>
+          </div>
+
+          <div className="meta-card">
             <p className="meta-label">🧾 Category</p>
             <p>{challenge.categoryName}</p>
           </div>
@@ -106,12 +143,14 @@ function ChallengeDetails() {
             <p className="meta-label">🧠 Difficulty</p>
             <p>{difficultyLabels[challenge.difficulty]}</p>
           </div>
+
+
         </div>
       </div>
 
       <div className="challenge-content-row">
-        <div className="challenge-actions-section">
-          {(
+        <div className="challenge-sidebar">
+          <div className="challenge-actions-section">
             <div className="action-item">
               <div className="icon-container"><PlayArrowTwoToneIcon fontSize="large" /></div>
               <div className="action-text">
@@ -121,18 +160,39 @@ function ChallengeDetails() {
                 </p>
               </div>
             </div>
-          )}
 
-          <div className="action-item">
-            <div className="icon-container"><GetAppOutlinedIcon fontSize="large" /></div>
-            <div className="action-text">
-              <p className="subtitle bold">Download Files</p>
-              <p className="action-description">
-                Download necessary files to play the challenge.
-              </p>
+            <div className="action-item">
+              <div className="icon-container"><GetAppOutlinedIcon fontSize="large" /></div>
+              <div className="action-text">
+                <p className="subtitle bold">Download Files</p>
+                <p className="action-description">
+                  Download necessary files to play the challenge.
+                </p>
+              </div>
             </div>
           </div>
+          <Link
+            to={`/user/${challenge.autorId}`}
+            className="author-card meta-card clickable-card"
+          >
+            <h3>Author</h3>
+            <div className="author-info">
+              <img
+                src={"/default-avatar.png"}
+                alt={challenge.autorName}
+                className="author-avatar"
+              />
+              <div className="author-details">
+                <p className="author-name">{challenge.autorName}</p>
+                <p className="author-role-country">
+                  {challenge.autorRole} | {challenge.autorCountry}
+                </p>
+              </div>
+            </div>
+          </Link>
+
         </div>
+
 
         <div className="challenge-details">
           <div className="challenge-section">
@@ -173,9 +233,13 @@ function ChallengeDetails() {
             {hasSolved === null ? (
               <p>Loading...</p>
             ) : hasSolved ? (
-              <p style={{ color: "green", fontWeight: "bold" }}>
-                ✅ You have already solved this challenge!
-              </p>
+              <div className="solved-message">
+                <p className="solved-text">You have already solved this challenge!</p>
+                <div className="solved-icon">
+                  <span className="checkmark">✓</span>
+                </div>
+              </div>
+
             ) : (
               <>
                 <TextField

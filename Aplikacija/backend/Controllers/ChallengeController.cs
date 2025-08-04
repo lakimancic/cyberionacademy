@@ -73,7 +73,6 @@ public class ChallengeController : ControllerBase
             IsPublic = c.Public,
             Points = c.Points,
             CategoryName = c.Category.Name,
-            AvatarUrl = c.Author?.Avatar ?? "",
             AverageRating = c.Reviews?.Count > 0 ? c.Reviews.Average(r => r.Stars) : 0.0,
             SolvedCount = c.Submissions?.Count(s => s.Correct) ?? 0,
             Difficulty = c.Difficulty
@@ -110,9 +109,13 @@ public class ChallengeController : ControllerBase
             Points = challengeEntity.Points,
             SolvedCount = challengeEntity.Submissions?.Count(s => s.Correct) ?? 0,
             Difficulty = (int)challengeEntity.Difficulty,
+            AutorId = challengeEntity.Author?.Id ?? 0,
+            AutorRole = challengeEntity.Author?.Role.ToString() ?? "Unknown",
+            AutorCountry = challengeEntity.Author?.Country ?? "Unknown",
+            CreatedAt = challengeEntity.CreatedAt,
+            AutorName = challengeEntity.Author?.Username ?? "Unknown",
             IsArchived = challengeEntity.Archived,
             IsPublic = challengeEntity.Public,
-            AvatarUrl = challengeEntity.Author?.Avatar ?? "",
             ReviewCount = challengeEntity.Reviews?.Count ?? 0,
             AverageRating = challengeEntity.Reviews?.Count > 0 ? challengeEntity.Reviews.Average(r => r.Stars) : 0.0,
             AverageReviewDifficulty = challengeEntity.Reviews?.Count > 0
@@ -201,6 +204,36 @@ public class ChallengeController : ControllerBase
             .AnyAsync(s => s.UserId == userId && s.ChallengeId == challengeId && s.Correct);
 
         return Ok(hasSolved);
+    }
+
+    [HttpPost("SubmitChallengeReview")]/////ispravi
+    public async Task<IActionResult> SubmitReview([FromBody] ChallengeReviewDto dto)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+        int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
+        if (userId == -1)
+            return BadRequest("UserId in token is malformed");
+
+        User? user = await Context.Users.FindAsync(userId);
+        if (user == null)
+            return BadRequest("User for account not found");
+        var challenge = await Context.Challenges.FindAsync(dto.ChallengeId);
+        if (challenge == null)
+            return NotFound("Challenge not found");
+        var review = new ChallengeReview
+        {
+            ChallengeId = dto.ChallengeId,
+            Challenge = challenge,
+            Stars = dto.Stars,
+            Difficulty = dto.Difficulty,
+            Text = dto.Text,
+            UserId = userId,
+        };
+
+        Context.ChallengeReviews.Add(review);
+        await Context.SaveChangesAsync();
+
+        return Ok();
     }
 
 
