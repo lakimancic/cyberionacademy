@@ -231,45 +231,39 @@
   box-shadow: 0 0 12px 4px rgba(230, 230, 230, 0.6);
   transform: scale(1.03);
 }
-.btn-go-to-lesson {
-  display: inline-block;
-  margin-top: 1rem;
-  padding: 0.5rem 1.5rem;
-  background-color: #2563eb;
+
+.btn-action {
+    text-decoration: none;
+  background-color: #2563eb; /* plava boja */
   color: white;
   font-weight: 600;
+  text-align: center;
+  padding: 1rem 1.5rem;
   border-radius: 12px;
-  text-decoration: none;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-  user-select: none;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.5);
+  border: 1px solid rgba(37, 99, 235, 0.8);
   cursor: pointer;
-}
-
-
-.btn-go-to-lesson-link {
+  user-select: none;
+  transition: 
+    background-color 0.3s ease, 
+    box-shadow 0.3s ease, 
+    transform 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
-  cursor: pointer;
-  user-select: none;
-  transition:
-    border-color 0.3s ease,
-    box-shadow 0.3s ease,
-    transform 0.15s ease;
-  border: 2px solid rgba(255, 255, 255, 0.2); 
-  color: white;
-  background-color: #000066;
+  min-width: 140px;
+  font-size: 1rem;
+}
+
+.challenge-header-right .btn-action {
+  flex-shrink: 0;
+}
+
+.btn-action:hover {
+  background-color: #3b82f6;
+  box-shadow: 0 0 12px 4px rgba(59, 130, 246, 0.7);
+  border-color: #3b82f6;
+  transform: scale(1.05);
   text-decoration: none;
-  min-width: 120px;
-  padding: 1rem 1.25rem;
-}
-
-.btn-go-to-lesson-link:hover {
-  border-color: #3b82f6; 
-  box-shadow: 0 0 10px 4px rgba(59, 130, 246, 0.6);
-  transform: scale(1.03);
-  background-color: #000080; 
   color: white;
 }
-

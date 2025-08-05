@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Rating, TextField, MenuItem } from "@mui/material";
+import {
+  TextField,
+  Rating,
+  MenuItem,
+} from "@mui/material";
 import api from "@/lib/api";
 import './LessonDetails.css';
 
@@ -19,6 +23,7 @@ interface LessonDetailsData {
   authorName?: string;
   authorRole?: string;
   authorCountry?: string;
+  authorAvatarUrl?: string;
 }
 
 function LessonDetails() {
@@ -65,14 +70,14 @@ function LessonDetails() {
   if (!lesson) return <div>Lesson not found.</div>;
 
   return (
-    <div className="lesson-details-container">
-      <div className="lesson-header">
-        <div className="lesson-header-left">
+    <div className="challenge-details-container"> 
+      <div className="challenge-header">
+        <div className="challenge-header-left">
           <h2>{lesson.title}</h2>
           <p>{lesson.description}</p>
         </div>
 
-        <div className="lesson-header-right">
+        <div className="challenge-header-right">
           <div className="meta-card">
             <p className="meta-label">🌐 Access</p>
             <p>{lesson.isPublic ? "Public" : "Private"}</p>
@@ -85,15 +90,17 @@ function LessonDetails() {
             <p className="meta-label">🧠 Difficulty</p>
             <p>{difficultyLabels[lesson.difficulty]}</p>
           </div>
-           <Link to={`/lesson/play/${lesson.id}`} className="meta-card btn-go-to-lesson-link">
+          <Link to={`/lesson/play/${lesson.id}`} className="meta-card btn-action">
             Start Learning
-            </Link>
-
+          </Link>
+          <Link to={`/lesson/quiz/${lesson.id}`} className="meta-card btn-action">
+            Quiz
+          </Link>
         </div>
       </div>
 
-      <div className="lesson-content-row">
-        <div className="lesson-sidebar">
+      <div className="challenge-content-row">
+        <div className="challenge-sidebar">
           {lesson.authorId && (
             <Link
               to={`/user/${lesson.authorId}`}
@@ -101,7 +108,12 @@ function LessonDetails() {
             >
               <h3>Author</h3>
               <div className="author-info">
-                <img src="/default-avatar.png" alt={lesson.authorName} className="author-avatar" />
+                <img
+                  src={lesson.authorAvatarUrl || "/default-avatar.png"}
+                  alt={lesson.authorName ?? "Author"}
+                  className="author-avatar"
+                  onError={(e) => (e.currentTarget.src = "/default-avatar.png")}
+                />
                 <div className="author-details">
                   <p className="author-name">{lesson.authorName}</p>
                   <p className="author-role-country">
@@ -113,8 +125,8 @@ function LessonDetails() {
           )}
         </div>
 
-        <div className="lesson-details">
-          <div className="lesson-section">
+        <div className="challenge-details">
+          <div className="challenge-section">
             <h3>Ratings</h3>
             <div className="ratings-grid">
               <div className="rating-item">
@@ -129,13 +141,14 @@ function LessonDetails() {
             </div>
           </div>
 
-          <div className="lesson-section">
-            <div className="section-header">Leave a Review</div>
-
+          <div className="challenge-section">
+            <h3>Leave a Review</h3>
             <div className="review-form">
               <div className="form-row">
                 <label className="form-label">Your Rating</label>
-                <Rating value={stars} onChange={(_, v) => setStars(v)} />
+                <div className="rating-stars">
+                  <Rating value={stars} onChange={(_, v) => setStars(v)} />
+                </div>
               </div>
 
               <div className="form-row">
