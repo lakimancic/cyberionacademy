@@ -53,7 +53,7 @@
     text-align: left;
 }
 
-.studio-create-desc textarea {
+.studio-create-desc textarea, .studio-quiz-quest textarea {
     width: 100%;
     box-sizing: border-box;
 
@@ -65,7 +65,6 @@
     font-size: 1rem;
     font-family: 'Inter', 'Helvetica Neue', sans-serif;
     line-height: 1.5rem;
-    height: 11rem;
     padding: 0.6rem 1rem;
     border-radius: 3px;
 
@@ -73,6 +72,10 @@
 
     resize: none;
     margin-bottom: 2rem;
+}
+
+.studio-create-desc textarea {
+    height: 11rem;
 }
 
 .studio-create-col .form-value-show {
@@ -247,4 +250,104 @@
 
 .studio-create-sync {
     width: 100%;
+}
+
+.studio-create-margb {
+    margin-bottom: 3rem;
+}
+
+.studio-create > h2 {
+    margin: 2rem 0;
+}
+
+.studio-select-type {
+    width: 15rem;
+    text-align: left;
+
+    background: linear-gradient(90deg, #0fac70d0, #3385ff8a);
+
+    margin-bottom: 3rem;
+}
+
+.studio-select-type:hover {
+    background: linear-gradient(90deg, #0fac70f0, #3385ffca);
+}
+
+.studio-select-type svg {
+    font-size: 3rem;
+    margin-right: 1rem;
+}
+
+.studio-quiz-quest {
+    display: flex;
+    justify-content: space-evenly;
+    width: 50%;
+    box-sizing: border-box;
+
+    background: rgba(10, 26, 48, 0.5);
+    border: 1px solid rgba(47, 75, 114, 0.2);
+    border-radius: 5px;
+
+    flex-wrap: wrap;
+    padding: 1rem;
+
+    margin-bottom: 3rem;
+}
+
+.studio-quiz-quest .form-field {
+    width: 80%;
+}
+
+.studio-quiz-delete-con {
+    width: 95%;
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.studio-quiz-delete-con svg {
+    font-size: 2rem;
+    color: #e75a5a;
+
+    cursor: pointer;
+}
+
+.studio-quiz-delete-con svg:hover {
+    color: #d13434;
+}
+
+.studio-answer-grid {
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+    row-gap: 1rem;
+}
+
+.studio-quiz-add svg, .studio-quiz-remove svg {
+    font-size: 1.6rem;
+    cursor: pointer;
+}
+
+.studio-quiz-add svg {
+    color: #0fac6f;
+}
+
+.studio-quiz-remove svg {
+    color: #e75a5a;
+}
+
+.studio-quiz-answer {
+    display: flex;
+}
+
+.studio-form-quiz {
+    width: 50%;
+    box-sizing: border-box;
+}
+
+.studio-quiz-answer input {
+    margin: 0 0.5rem;
+}
+
+.studio-points-slider {
+    margin-top: 1.5rem;
 }

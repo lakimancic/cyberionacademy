@@ -1,12 +1,13 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '@/lib/api';
-import '@/assets/css/ModCreate.css';
-import { FaEdit, FaExternalLinkAlt } from 'react-icons/fa';
+import { FaEdit, FaExternalLinkAlt, FaPlus, FaTrashAlt } from 'react-icons/fa';
 import InputField from '@/components/Auth/InputField';
 import { FormControlLabel, MenuItem, Select, Slider, Switch } from '@mui/material';
 import difficulties from '@/utils/difficulties';
 import { MdQuiz } from 'react-icons/md';
+import '@/assets/css/ModCreate.css';
+import { IoIosSave } from 'react-icons/io';
 
 const getColor = (val: number) => {
     if (val < 3) return 'success.main';
@@ -25,6 +26,7 @@ function CreateLesson() {
     const params = useParams();
     const [selectedCategory, setSelectedCategory] = useState<string>('');
     const [categories, setCategories] = useState<string[]>([]);
+    const navigate = useNavigate();
     
     useEffect(() => {
         api.get('/Challenge/GetCategories')
@@ -116,7 +118,7 @@ function CreateLesson() {
                     <div className="form-field">
                         <div className="form-label">Lesson Content</div>
                         <div className="studio-upload-con">
-                            <button type="button"><FaEdit />  Open Editor</button>
+                            <button type="button" onClick={() => navigate("/moderator/lesson-editor")}><FaEdit />  Open Editor</button>
                             <p className='studio-no-upload'>No content</p>
                         </div>
                     </div>
@@ -129,6 +131,11 @@ function CreateLesson() {
                             <p className='studio-no-upload'>No quiz</p>
                         </div>
                     </div>
+                </div>
+                <div className="studio-create-buttons">
+                    <button type="button" className='studio-btn-add'><FaPlus /> Create</button>
+                    <button type="button" className='studio-btn-save'><IoIosSave /> Save Changes</button>
+                    <button type="button" className='studio-btn-del'><FaTrashAlt /> Delete</button>
                 </div>
             </form>
         </div>

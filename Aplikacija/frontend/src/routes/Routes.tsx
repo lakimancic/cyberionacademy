@@ -22,6 +22,7 @@ import CreateChallenge from "@/pages/Challenges/CreateChallenge";
 import LessonStudio from "@/pages/Lessons/LessonStudio";
 import CreateLesson from "@/pages/Lessons/CreateLesson";
 import LessonEditor from "@/pages/Lessons/LessonEditor";
+import CreateQuiz from "@/pages/Quiz/CreateQuiz";
 import LessonDetails from "@/pages/Lessons/LessonDetails";
 
 function Routes() {
@@ -72,7 +73,15 @@ function Routes() {
         {
             path: "/moderator/lesson-editor",
             element: <LessonEditor />
-        }
+        },
+        {
+            path: "/moderator/new-quiz",
+            element: <CreateQuiz />
+        },
+        {
+            path: "/moderator/edit-quiz/:id",
+            element: <CreateQuiz />
+        },
     ];
 
     const routesForAdmin = [
