@@ -1,4 +1,4 @@
-.challenge-studio {
+.studio-con {
     backdrop-filter: blur(12px);
     color: #fff;
     padding: 2rem;
@@ -12,12 +12,12 @@
     align-items: center;
 }
 
-.challenge-studio h2 {
+.studio-con h2 {
     font-size: 2rem;
     margin: 1rem 0;
 }
 
-.challenge-studio-filters {
+.studio-con-filters {
     width: 100%;
     display: flex;
     align-items: center;
@@ -30,15 +30,15 @@
     width: 98%;
 }
 
-.challenge-studio-right {
+.studio-con-right {
     display: flex;
 }
 
-.challenge-studio-right input[type=search] {
+.studio-con-right input[type=search] {
     width: 15rem;
 }
 
-.challenge-studio-filters .MuiSelect-root {
+.studio-con-filters .MuiSelect-root {
     margin-bottom: 0;
     border: 1px solid rgba(255, 255, 255, 0.2);
     width: 15rem;
@@ -46,16 +46,16 @@
     margin-left: 1rem;
 }
 
-.challenge-studio-filters .MuiSelect-select {
+.studio-con-filters .MuiSelect-select {
     padding-top: 0.8rem;
     padding-bottom: 0.8rem;
 }
 
-.challenge-studio-table th {
+.studio-con-table th {
     background-color: #151824e7;
 }
 
-.challenge-studio-add {
+.studio-con-add {
     background: linear-gradient(90deg, #0fac6f, #3385ff);
     border: 0;
     outline: none;
@@ -72,6 +72,6 @@
     transition: all 0.3s ease;
 }
 
-.challenge-studio-add:hover {
+.studio-con-add:hover {
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }

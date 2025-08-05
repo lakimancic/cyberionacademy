@@ -7,25 +7,25 @@ import SearchBar from '@/components/SearchBar/SearchBar';
 import { useNavigate } from 'react-router-dom';
 import '@/assets/css/ModStudio.css';
 
-interface Challenge {
-    id: number;
-    name: string;
-    categoryName: string;
-    points: number;
-    averageRating: number;
-    solvedCount: number;
-    isArchived: boolean;
-    isPublic: boolean;
-    avatarUrl?: string;
-    difficulty: number;
-};
+interface Lesson {
+  id: number;
+  title: string;
+  description?: string;
+  difficulty: number;
+  isPublic: boolean;
+  categoryId: number;
+  authorId: number;
+  quizId?: number;
+  categoryName: string;
+  averageRating: number;
+}
 
-type SortKey = 'name' | 'points' | 'categoryName';
+type SortKey = 'name' | 'categoryName';
 
-function ChallengeStudio() {
+function LessonStudio() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const [challenges, setChallenges] = useState<Challenge[]>([]);
+    const [lessons, setLessons] = useState<Lesson[]>([]);
     const [searchWord, setSearchWord] = useState('');
     const [sortKey, setSortKey] = useState<SortKey>('name');
     const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc');
@@ -50,9 +50,9 @@ function ChallengeStudio() {
             difficulty: selectedDifficulty !== '' ? Number(selectedDifficulty) : undefined
         };
 
-        api.get('/Challenge/GetChallenges', { params })
+        api.get('/Lesson/GetLessons', { params })
             .then(response => {
-                setChallenges(response.data.items);
+                setLessons(response.data.items);
                 setTotalPages(response.data.totalPages);
             })
             .catch(error => console.error('Greška pri dohvatanju izazova:', error));
@@ -66,43 +66,41 @@ function ChallengeStudio() {
         fetchChallenges();
     }, [currentPage, sortKey, sortDir, selectedCategory, selectedDifficulty]);
 
-    const mappedChallenges = useMemo(() => {
-        return challenges.map(chal => {
+    const mappedLessons = useMemo(() => {
+        return lessons.map(l => {
             return {
                 name: <div className='challenge-name'>
-                    <strong>{chal.name}</strong>
-                    <div className="difficulty">{(difficulties as any)[chal.difficulty] ?? 'Unknown'}</div>
+                    <strong>{l.title}</strong>
+                    <div className="difficulty">{(difficulties as any)[l.difficulty] ?? 'Unknown'}</div>
                 </div>,
-                categoryName: chal.categoryName,
-                points: chal.points,
+                categoryName: l.categoryName,
                 rating: <Rating 
-                    value={chal.averageRating}
+                    value={l.averageRating}
                     precision={0.1}
                     readOnly
                     size="small"
                 />,
-                sovleCount: chal.solvedCount,
-                visible: chal.isPublic ? 'Public' : 'Private',
-                status: chal.isArchived ? 'Archived' : 'Active',
-                id: chal.id
+                quiz: l.quizId ? `Quiz #${l.quizId}` : 'No quiz',
+                visible: l.isPublic ? 'Public' : 'Private',
+                id: l.id
             }
         })
-    }, [challenges]);
+    }, [lessons]);
 
     return (
         <div className="studio-con">
-            <h2>Create new or edit Challenges</h2>
+            <h2>Create new or edit Lessons</h2>
 
             <div className="studio-con-filters">
                 <button
                     className='studio-con-add'
                     onClick={() => {
-                        navigate("/moderator/new-challenge")
+                        navigate("/moderator/new-lesson")
                     }}
-                >Add New Challenge</button>
+                >Add New Lesson</button>
                 <div className="studio-con-right">
                     <SearchBar 
-                        label='Challenges'
+                        label='Lessons'
                         searchWord={searchWord}
                         setSearchWord={setSearchWord}
                         onSearch={onSearch}
@@ -144,15 +142,13 @@ function ChallengeStudio() {
 
             <DataTable 
                 className='studio-con-table'
-                data={mappedChallenges}
+                data={mappedLessons}
                 columns={[
-                    { key: 'name', header: 'Challenge', sortable: true },
+                    { key: 'name', header: 'Lesson', sortable: true },
                     { key: 'categoryName', header: 'Category', sortable: true },
-                    { key: 'points', header: 'Points', sortable: true },
                     { key: 'rating', header: 'Avg. Rating' },
-                    { key: 'sovleCount', header: 'Users Solves' },
+                    { key: 'quiz', header: 'Quiz' },
                     { key: 'visible', header: 'Visibility' },
-                    { key: 'status', header: 'Status' }
                 ]}
                 pagination={{
                     page: currentPage,
@@ -166,11 +162,11 @@ function ChallengeStudio() {
                     onSetSortKey: arg => setSortKey(arg as SortKey)
                 }}
                 onRowClick={row => {
-                    navigate(`/moderator/edit-challenge/${row.id}`);
+                    navigate(`/moderator/edit-lesson/${row.id}`);
                 }}
             />
         </div>
     )
 }
 
-export default ChallengeStudio;
+export default LessonStudio;

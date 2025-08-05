@@ -19,6 +19,9 @@ import Scoreboard from "@/pages/Scoreboard/Scoreboard";
 import Support from "@/pages/Support/Support";
 import ChallengeStudio from "@/pages/Challenges/ChallengeStudio";
 import CreateChallenge from "@/pages/Challenges/CreateChallenge";
+import LessonStudio from "@/pages/Lessons/LessonStudio";
+import CreateLesson from "@/pages/Lessons/CreateLesson";
+import LessonEditor from "@/pages/Lessons/LessonEditor";
 
 function Routes() {
     const auth = useAuth();
@@ -52,6 +55,22 @@ function Routes() {
         {
             path: "/moderator/edit-challenge/:id",
             element: <CreateChallenge />
+        },
+        {
+            path: "/moderator/lessons",
+            element: <LessonStudio />
+        },
+        {
+            path: "/moderator/new-lesson",
+            element: <CreateLesson />
+        },
+        {
+            path: "/moderator/edit-lesson/:id",
+            element: <CreateLesson />
+        },
+        {
+            path: "/moderator/lesson-editor",
+            element: <LessonEditor />
         }
     ];
 

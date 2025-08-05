@@ -1,4 +1,4 @@
-.challenge-create {
+.studio-create {
     position: relative;
 
     display: flex;
@@ -9,14 +9,14 @@
     z-index: 2;
 }
 
-.challenge-create h1 {
+.studio-create h1 {
     font-size: 2.5rem;
 
     margin: 3rem 0;
     padding: 0;
 }
 
-.challenge-create-form, .challenge-create-con {
+.studio-create-form, .studio-create-con {
     display: flex;
     justify-content: space-evenly;
     width: 80%;
@@ -28,11 +28,11 @@
     flex-wrap: wrap;
 }
 
-.challenge-create-con {
+.studio-create-con {
     margin: 3rem 0;
 }
 
-.challenge-create-form h2, .challenge-create-con h2 {
+.studio-create-form h2, .studio-create-con h2 {
     display: block;
     width: 100%;
     text-align: center;
@@ -40,12 +40,20 @@
     padding: 2rem;
 }
 
-.challenge-create-col {
+.studio-create-form h2 svg {
+    margin-left: 1rem;
+}
+
+.studio-create-form h2 a {
+    color: white;
+}
+
+.studio-create-col {
     width: 40%;
     text-align: left;
 }
 
-.challenge-create-desc textarea {
+.studio-create-desc textarea {
     width: 100%;
     box-sizing: border-box;
 
@@ -57,7 +65,7 @@
     font-size: 1rem;
     font-family: 'Inter', 'Helvetica Neue', sans-serif;
     line-height: 1.5rem;
-    height: 8rem;
+    height: 11rem;
     padding: 0.6rem 1rem;
     border-radius: 3px;
 
@@ -67,36 +75,36 @@
     margin-bottom: 2rem;
 }
 
-.challenge-create-col .form-value-show {
+.studio-create-col .form-value-show {
     text-align: center;
     margin: 1rem 0;
     font-weight: 600;
 }
 
-.challenge-create-switches {
+.studio-create-switches {
     display: flex;
     justify-content: space-between;
     margin: 2rem 0;
 }
 
-.challenge-create-col.form-switch-con {
+.studio-create-form .form-switch-con {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
 }
 
-.challenge-create-col .MuiSelect-root {
+.studio-create-col .MuiSelect-root {
     background-color: #1d2d46;
     color: white;
 }
 
-.challenge-create-col .MuiSelect-select {
+.studio-create-col .MuiSelect-select {
     font-size: 1rem;
     padding: 0.6rem;
 }
 
-.challenge-upload-con {
+.studio-upload-con {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -104,15 +112,15 @@
     margin-bottom: 3rem;
 }
 
-.challenge-upload-con p {
+.studio-upload-con p {
     margin: 0;
 }
 
-.challenge-no-upload {
+.studio-no-upload {
     color: rgba(255, 255, 255, 0.3);
 }
 
-.challenge-upload-con button {
+.studio-upload-con button {
     font-size: 1.1rem;
     font-weight: 600;
 
@@ -133,15 +141,15 @@
     transition: all 0.3s ease;
 }
 
-.challenge-upload-con button:hover {
+.studio-upload-con button:hover {
     background: rgba(31, 87, 172, 0.6);
 }
 
-.challenge-upload-con button svg {
+.studio-upload-con button svg {
     margin-right: 0.5rem;
 }
 
-.challenge-create-buttons {
+.studio-create-buttons {
     display: flex;
     width: 100%;
     justify-content: center;
@@ -149,7 +157,7 @@
     margin-bottom: 2rem;
 }
 
-.challenge-create-buttons button, .challenge-docker-con button {
+.studio-create-buttons button, .studio-docker-con button {
     font-size: 1.2rem;
     font-weight: 600;
 
@@ -170,7 +178,11 @@
     transition: all 0.3s ease;
 }
 
-.challenge-docker-con {
+.studio-create-buttons button:hover, .studio-docker-con button:hover {
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+}
+
+.studio-docker-con {
     display: flex;
     flex-wrap: wrap;
     width: 90%;
@@ -178,43 +190,47 @@
     margin-bottom: 2rem;
 }
 
-.challenge-docker-buttons {
+.studio-docker-buttons {
     display: flex;
 }
 
-.challenge-docker-con button {
+.studio-docker-con button {
     font-size: 1.1rem;
     padding: 0.7rem 1rem;
 }
 
-.challenge-docker-con button svg {
+.studio-create-full {
+    width: 100%;
+}
+
+.studio-docker-con button svg {
     margin-right: 0.6rem;
 }
 
-.challenge-create-buttons button svg {
+.studio-create-buttons button svg {
     margin-right: 1rem;
 }
 
-.challenge-btn-add {
+.studio-btn-add {
     background: linear-gradient(90deg, #0fac6f, #239618);
 }
 
-.challenge-btn-save {
+.studio-btn-save {
     background: linear-gradient(90deg, #0fac6f, #3385ff);
 }
 
-.challenge-btn-del {
+.studio-btn-del {
     background: linear-gradient(90deg, #9c1313, #d83535);
 }
 
-.challenge-create-con .form-label {
+.studio-create-con .form-label {
     width: 100%;
     text-align: left;
 
     margin-top: 2rem;
 }
 
-.challenge-docker-logs {
+.studio-docker-logs {
     width: 80%;
     text-align: left;
 
@@ -227,4 +243,8 @@
 
     height: 15rem;
     overflow-y: auto;
+}
+
+.studio-create-sync {
+    width: 100%;
 }

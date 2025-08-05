@@ -1,13 +1,13 @@
 import { useParams } from 'react-router-dom';
 import InputField from '@/components/Auth/InputField';
-import './CreateChallenge.css';
 import { FormControlLabel, MenuItem, Select, Slider, Switch } from '@mui/material';
 import difficulties from '@/utils/difficulties';
 import { useEffect, useState } from 'react';
 import api from '@/lib/api';
 import { MdCloudUpload } from 'react-icons/md';
-import { FaPlus, FaTrashAlt } from 'react-icons/fa';
+import { FaExternalLinkAlt, FaPlus, FaTrashAlt } from 'react-icons/fa';
 import { IoIosSave, IoMdBuild } from 'react-icons/io';
+import '@/assets/css/ModCreate.css';
 
 const getColor = (val: number) => {
     if (val < 3) return 'success.main';
@@ -48,11 +48,14 @@ function CreateChallenge() {
     }, []);
 
     return (
-        <div className="challenge-create">
+        <div className="studio-create">
             <h1>{params.id ? 'Edit' : 'Create'} Challenge</h1>
-            <form className="challenge-create-form">
-                <h2>Challenge Information</h2>
-                <div className="challenge-create-col">
+            <form className="studio-create-form">
+                <h2>
+                    Challenge Information
+                    <a href={`/challenges/${params.id}`} target='_blank' rel='noopener noreferrer'><FaExternalLinkAlt /></a>
+                </h2>
+                <div className="studio-create-col">
                     <InputField
                         type='text'
                         label='Name'
@@ -60,7 +63,7 @@ function CreateChallenge() {
                         // error={basicForm.formState.errors.username?.message}
                         // inputProps={{...basicForm.register('username')}}
                     />
-                    <div className="form-field challenge-create-desc">
+                    <div className="form-field studio-create-desc">
                         <div className="form-label">Description</div>
                         <textarea
                             className={/*basicForm.formState.errors.bio*/false ? 'form-input-error' : 'form-input-normal'}
@@ -78,7 +81,7 @@ function CreateChallenge() {
                         // inputProps={{...basicForm.register('username')}}
                     />
                 </div>
-                <div className="challenge-create-col">
+                <div className="studio-create-col">
                     <div className="form-field">
                         <div className="form-label">Difficulty</div>
                         <Slider
@@ -124,12 +127,12 @@ function CreateChallenge() {
                         />
                         <div className="form-value-show">{points}pts</div>
                     </div>
-                    <div className="challenge-create-switches">
-                        <div className="challenge-create-col form-switch-con">
+                    <div className="studio-create-switches">
+                        <div className="studio-create-col form-switch-con">
                             <div className="form-label">Visibility</div>
                             <FormControlLabel control={<Switch defaultChecked />} label="Label" />
                         </div>
-                        <div className="challenge-create-col form-switch-con">
+                        <div className="studio-create-col form-switch-con">
                             <div className="form-label">Status</div>
                             <FormControlLabel control={<Switch defaultChecked />} label="Label" />
                         </div>
@@ -154,12 +157,12 @@ function CreateChallenge() {
                     </div>
                 </div>
                 <h2>Upload Information</h2>
-                <div className="challenge-create-col">
+                <div className="studio-create-col">
                     <div className="form-field">
                         <div className="form-label">Docker Zip File (Containing Dockerfile)</div>
-                        <div className="challenge-upload-con">
+                        <div className="studio-upload-con">
                             <button type="button"><MdCloudUpload />  Upload</button>
-                            <p className='challenge-no-upload'>No file upload</p>
+                            <p className='studio-no-upload'>No file upload</p>
                         </div>
                         <input
                             type="file"
@@ -170,12 +173,12 @@ function CreateChallenge() {
                         />
                     </div>
                 </div>
-                <div className="challenge-create-col">
+                <div className="studio-create-col">
                     <div className="form-field">
                         <div className="form-label">Challenge Zip File (Available for user)</div>
-                        <div className="challenge-upload-con">
+                        <div className="studio-upload-con">
                             <button type="button"><MdCloudUpload />  Upload</button>
-                            <p className='challenge-no-upload'>No file upload</p>
+                            <p className='studio-no-upload'>No file upload</p>
                         </div>
                         <input
                             type="file"
@@ -186,22 +189,22 @@ function CreateChallenge() {
                         />
                     </div>
                 </div>
-                <div className="challenge-create-buttons">
-                    <button type="button" className='challenge-btn-add'><FaPlus /> Create</button>
-                    <button type="button" className='challenge-btn-save'><IoIosSave /> Save Changes</button>
-                    <button type="button" className='challenge-btn-del'><FaTrashAlt /> Delete</button>
+                <div className="studio-create-buttons">
+                    <button type="button" className='studio-btn-add'><FaPlus /> Create</button>
+                    <button type="button" className='studio-btn-save'><IoIosSave /> Save Changes</button>
+                    <button type="button" className='studio-btn-del'><FaTrashAlt /> Delete</button>
                 </div>
             </form>
-            <div className="challenge-create-con">
+            <div className="studio-create-con">
                 <h2>Docker Image Builder</h2>
-                <div className="challenge-docker-con">
+                <div className="studio-docker-con">
                     <h3>No docker image built</h3>
-                    <div className="challenge-docker-buttons">
-                        <button type="button" className='challenge-btn-add'><IoMdBuild /> Build</button>
-                        <button type="button" className='challenge-btn-del'><FaTrashAlt /> Delete</button>
+                    <div className="studio-docker-buttons">
+                        <button type="button" className='studio-btn-add'><IoMdBuild /> Build</button>
+                        <button type="button" className='studio-btn-del'><FaTrashAlt /> Delete</button>
                     </div>
                     <div className="form-label">Docker build Log</div>
-                    <div className="challenge-docker-logs">
+                    <div className="studio-docker-logs">
                         
                     </div>
                 </div>
