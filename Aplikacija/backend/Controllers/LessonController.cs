@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using backend.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -113,5 +114,47 @@ namespace backend.Controllers
 
             return Ok(difficulties);
         }
-    }
+        
+        [HttpGet("GetLessonDetails/{id}")]
+        public async Task<ActionResult<LessonDto>> GetLessonDetails(int id)
+        {
+            var lesson = await Context.Lessons
+            .Include(l => l.Category)
+            .Include(l => l.Author)
+            .Include(l => l.Tags!)
+            .ThenInclude(t => t.Tag)
+            .Include(l => l.Reviews!)
+            .ThenInclude(r => r.User)
+            .FirstOrDefaultAsync(l => l.Id == id);
+
+            if (lesson == null)
+              return NotFound("Lesson not found");
+
+          var dto = new LessonDto
+         {
+            Id = lesson.Id,
+            Title = lesson.Title,
+            Description = lesson.Description,
+            Difficulty = lesson.Difficulty,
+            CategoryId = lesson.CategoryId,
+            CategoryName = lesson.Category?.Name ?? "Unknown",
+            AuthorId = lesson.Author?.Id ?? 0,
+            AuthorName = lesson.Author?.Username ?? "Unknown",
+            AuthorRole = lesson.Author?.Role.ToString() ?? "Unknown",
+            AuthorCountry = lesson.Author?.Country ?? "Unknown",
+            IsPublic = lesson.Public,
+            QuizId = lesson.QuizId,
+            AverageRating = lesson.Reviews?.Count > 0 ? lesson.Reviews.Average(r => r.Stars) : 0.0,
+            ReviewCount = lesson.Reviews?.Count ?? 0,
+            Tags = lesson.Tags?.Select(t => t.Tag.Name).ToList() ?? new List<string>()
+         };
+
+    return Ok(dto);
 }
+
+
+
+
+}
+}
+    

@@ -12,5 +12,10 @@ namespace backend.DTOs
         public int? QuizId { get; set; }
         public string CategoryName { get; set; }
         public double AverageRating { get; set; }
+        public int ReviewCount { get; set; }
+        public string? AuthorName { get; set; }
+        public string? AuthorRole { get; set; }
+        public string? AuthorCountry { get; set; }
+        public List<string>? Tags { get; set; }
     }
 }

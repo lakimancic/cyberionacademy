@@ -22,6 +22,7 @@ import CreateChallenge from "@/pages/Challenges/CreateChallenge";
 import LessonStudio from "@/pages/Lessons/LessonStudio";
 import CreateLesson from "@/pages/Lessons/CreateLesson";
 import LessonEditor from "@/pages/Lessons/LessonEditor";
+import LessonDetails from "@/pages/Lessons/LessonDetails";
 
 function Routes() {
     const auth = useAuth();
@@ -97,6 +98,10 @@ function Routes() {
                         {
                             path: "/lessons",
                             element: <Lessons />
+                        },
+                        {
+                            path: "/lessons/:id",
+                            element: <LessonDetails />
                         },
                         {
                             path: "/challenges",
