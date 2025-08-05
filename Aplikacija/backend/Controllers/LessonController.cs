@@ -27,13 +27,30 @@ namespace backend.Controllers
             string? category = null,
             string? search = null,
             bool? isPublic = null,
-            int? difficulty = null)
+            int? difficulty = null,
+            bool ownChalls = false)
         {
             var query = Context.Lessons
                 .Include(l => l.Category)
                 .Include(l => l.Author)
                 .Include(l => l.Reviews)
                 .AsQueryable();
+
+            if (ownChalls)
+            {
+                int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
+                if (userId == -1)
+                    return BadRequest("UserId in token is malformed");
+
+                User? user = await Context.Users.FindAsync(userId);
+                if (user == null)
+                    return BadRequest("User for account not found");
+
+                if (user.Role == UserRole.Moderator)
+                    query = query.Where(c => c.AuthorId == userId);
+            }
+            else
+                query = query.Where(c => c.Public);
 
             if (isPublic.HasValue)
                 query = query.Where(l => l.Public == isPublic.Value);
@@ -121,8 +138,6 @@ namespace backend.Controllers
             var lesson = await Context.Lessons
             .Include(l => l.Category)
             .Include(l => l.Author)
-            .Include(l => l.Tags!)
-            .ThenInclude(t => t.Tag)
             .Include(l => l.Reviews!)
             .ThenInclude(r => r.User)
             .FirstOrDefaultAsync(l => l.Id == id);
@@ -146,7 +161,6 @@ namespace backend.Controllers
             QuizId = lesson.QuizId,
             AverageRating = lesson.Reviews?.Count > 0 ? lesson.Reviews.Average(r => r.Stars) : 0.0,
             ReviewCount = lesson.Reviews?.Count ?? 0,
-            Tags = lesson.Tags?.Select(t => t.Tag.Name).ToList() ?? new List<string>()
          };
 
     return Ok(dto);

@@ -21,7 +21,6 @@ public class Challenge
     public User? Author { get; set; }
     public int CategoryId { get; set; }
     public required Category Category { get; set; }
-    public List<TagChallenge>? Tags { get; set; }
     public List<ChallengeReview>? Reviews { get; set; }
     public List<ChallengeSubmission>? Submissions { get; set; }
 }

@@ -24,7 +24,8 @@ public class ChallengeController : ControllerBase
     string? category = null,
     string? search = null,
     bool? archived = null,
-    int? difficulty = null)
+    int? difficulty = null,
+    bool ownChalls = false)
     {
         var query = Context.Challenges
             .Include(c => c.Category)
@@ -32,6 +33,22 @@ public class ChallengeController : ControllerBase
             .Include(c => c.Reviews)
             .Include(c => c.Submissions)
             .AsQueryable();
+
+        if (ownChalls)
+        {
+            int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
+            if (userId == -1)
+                return BadRequest("UserId in token is malformed");
+
+            User? user = await Context.Users.FindAsync(userId);
+            if (user == null)
+                return BadRequest("User for account not found");
+
+            if (user.Role == UserRole.Moderator)
+                query = query.Where(c => c.AuthorId == userId);
+        }
+        else
+            query = query.Where(c => c.Public);
 
         if (archived.HasValue)
             query = query.Where(c => c.Archived == archived.Value);

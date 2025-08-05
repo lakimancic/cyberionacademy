@@ -8,7 +8,6 @@ public class ApplicationDbContext : DbContext
     public DbSet<Course> Courses { get; set; }
     public DbSet<Conversation> Conversations { get; set; }
     public DbSet<Category> Categories { get; set; }
-    public DbSet<Tag> Tags { get; set; }
     public DbSet<RoleRequest> RoleRequests { get; set; }
     public DbSet<ChallengeSubmission> ChallengeSubmissions { get; set; }
     public DbSet<QuizResult> QuizResults { get; set; }

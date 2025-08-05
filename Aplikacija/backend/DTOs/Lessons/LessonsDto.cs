@@ -16,6 +16,5 @@ namespace backend.DTOs
         public string? AuthorName { get; set; }
         public string? AuthorRole { get; set; }
         public string? AuthorCountry { get; set; }
-        public List<string>? Tags { get; set; }
     }
 }

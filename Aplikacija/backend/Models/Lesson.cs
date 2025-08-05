@@ -10,6 +10,7 @@ public class Lesson
     public int Difficulty { get; set; }
     public bool Public { get; set; } = true;
     public DateTime CreatedAt { get; set; }
+    public string? Content { get; set; }
 
     public int? QuizId { get; set; }
     public Quiz? Quiz { get; set; }
@@ -17,6 +18,5 @@ public class Lesson
     public required Category Category { get; set; }
     public int? AuthorId { get; set; }
     public User? Author { get; set; }
-    public List<TagLesson>? Tags { get; set; }
     public List<LessonReview>? Reviews { get; set; }
 }
