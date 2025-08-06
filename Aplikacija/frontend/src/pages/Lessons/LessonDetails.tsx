@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Avatar } from '@mui/material';
+import worldLogo from '@/assets/images/world.png';
 import { useParams, Link } from "react-router-dom";
 import {
   TextField,
@@ -6,7 +8,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import api from "@/lib/api";
-// import './LessonDetails.css';
+import './LessonDetails.css';
 
 const difficultyLabels = ["Very Easy", "Easy", "Medium", "Hard", "Very Hard"];
 
@@ -106,23 +108,31 @@ function LessonDetails() {
               to={`/user/${lesson.authorId}`}
               className="author-card meta-card clickable-card"
             >
-              <h3>Author</h3>
-              <div className="author-info">
-                <img
-                  src={lesson.authorAvatarUrl || "/default-avatar.png"}
-                  alt={lesson.authorName ?? "Author"}
-                  className="author-avatar"
-                  onError={(e) => (e.currentTarget.src = "/default-avatar.png")}
-                />
-                <div className="author-details">
-                  <p className="author-name">{lesson.authorName}</p>
-                  <p className="author-role-country">
-                    {lesson.authorRole} | {lesson.authorCountry}
-                  </p>
-                </div>
-              </div>
+          <h3>Author</h3>
+          <div className="author-info">
+            <div className="author-avatar-wrapper">
+              <Avatar
+                className="author-avatar"
+                src={lesson.authorAvatarUrl || "/default-avatar.png"}
+                alt={lesson.authorName ?? "Author"}
+              />
+              <Avatar
+                className="author-flag"
+                src={`https://flagcdn.com/w160/${lesson.authorCountry?.toLowerCase()}.png`}
+                variant="square"
+              >
+                <img src={worldLogo} alt="world" className="author-world" />
+              </Avatar>
+            </div>
+            <div className="author-details">
+              <p className="author-name">{lesson.authorName}</p>
+              <p className="author-role-country">
+                {lesson.authorRole} | {lesson.authorCountry}
+              </p>
+            </div>
+          </div>        
             </Link>
-          )}
+        )}
         </div>
 
         <div className="challenge-details">
