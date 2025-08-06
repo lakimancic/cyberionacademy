@@ -210,10 +210,6 @@
     margin-right: 0.6rem;
 }
 
-.studio-create-buttons button svg {
-    margin-right: 1rem;
-}
-
 .studio-btn-add {
     background: linear-gradient(90deg, #0fac6f, #239618);
 }
@@ -322,9 +318,10 @@
     row-gap: 1rem;
 }
 
-.studio-quiz-add svg, .studio-quiz-remove svg {
+.studio-icon {
     font-size: 1.6rem;
     cursor: pointer;
+    margin-right: 1rem;
 }
 
 .studio-quiz-add svg {
@@ -348,6 +345,17 @@
     margin: 0 0.5rem;
 }
 
+.studio-quiz-disabled svg {
+    color: gray;
+    cursor: default;
+}
+
 .studio-points-slider {
     margin-top: 1.5rem;
+}
+
+.studio-error {
+    width: 80%;
+    margin-bottom: 1rem;
+    color: #ff7272;
 }

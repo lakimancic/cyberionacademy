@@ -7,6 +7,7 @@ import { IoIosSave } from 'react-icons/io';
 import { IoTrashBinSharp } from 'react-icons/io5';
 import { BiExport, BiImport } from "react-icons/bi";
 import './LessonEditor.css';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 
 function LessonEditor() {
@@ -14,6 +15,8 @@ function LessonEditor() {
     const [leftWidth, setLeftWidth] = useState<number|null>(null);
     const containerRef = useRef<HTMLDivElement|null>(null);
     const isDraggingRef = useRef(false);
+    const location = useLocation();
+    const navigate = useNavigate();
 
     const startDragging = () => {
         isDraggingRef.current = true;
@@ -37,6 +40,20 @@ function LessonEditor() {
         }
     };
 
+    const returnHandle = (save: boolean) => {
+        if(location.state.retPage) {
+            navigate(location.state.retPage, {
+                state: {
+                    lesson: {
+                        ...location.state.lesson,
+                        content: save ? (value.trim().length > 0 ? value : undefined) : location.state.lesson.content
+                    },
+                    replace: true
+                }
+            });
+        }
+    };
+
     useEffect(() => {
         const handleResize = () => {
             if (containerRef.current && leftWidth === null) {
@@ -55,6 +72,10 @@ function LessonEditor() {
         document.addEventListener("mousemove", handleMouseMove);
         document.addEventListener("mouseup", stopDragging);
 
+        if (location.state && location.state.lesson) {
+            setValue(location.state.lesson.content ?? '');
+        }
+
         return () => {
             document.removeEventListener("mousemove", handleMouseMove);
             document.removeEventListener("mouseup", stopDragging);
@@ -65,8 +86,8 @@ function LessonEditor() {
         <div className="editor-con" ref={containerRef}>
             <div className="editor-left" style={{ width: leftWidth ?? 0 }}>
                 <div className="editor-menu">
-                    <button type="button"><IoIosSave /> Save</button>
-                    <button type="button"><IoTrashBinSharp /> Discard</button>
+                    <button type="button" onClick={() => returnHandle(true)}><IoIosSave /> Save</button>
+                    <button type="button" onClick={() => returnHandle(false)}><IoTrashBinSharp /> Discard</button>
                     <button type="button"><BiImport /> Import</button>
                     <button type="button"><BiExport /> Export</button>
                 </div>

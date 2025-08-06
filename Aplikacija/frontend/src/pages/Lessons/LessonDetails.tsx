@@ -8,7 +8,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import api from "@/lib/api";
-import './LessonDetails.css';
+// import './LessonDetails.css';
 
 const difficultyLabels = ["Very Easy", "Easy", "Medium", "Hard", "Very Hard"];
 

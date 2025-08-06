@@ -205,7 +205,8 @@ public class LessonController(ApplicationDbContext context, IQuizService quizSer
 
         await context.Lessons.AddAsync(lesson);
         await context.SaveChangesAsync();
-        return Ok();
+        
+        return Ok(lesson.Id);
     }
 
     [Authorize(Roles = "Moderator,Admin")]
