@@ -129,6 +129,7 @@ public class ChallengeController : ControllerBase
             AutorId = challengeEntity.Author?.Id ?? 0,
             AutorRole = challengeEntity.Author?.Role.ToString() ?? "Unknown",
             AutorCountry = challengeEntity.Author?.Country ?? "Unknown",
+            dockerImage = challengeEntity.DockerImage,
             CreatedAt = challengeEntity.CreatedAt,
             AutorName = challengeEntity.Author?.Username ?? "Unknown",
             IsArchived = challengeEntity.Archived,
@@ -226,6 +227,7 @@ public class ChallengeController : ControllerBase
     [HttpPost("SubmitChallengeReview")]/////ispravi
     public async Task<IActionResult> SubmitReview([FromBody] ChallengeReviewDto dto)
     {
+
         if (!ModelState.IsValid) return BadRequest(ModelState);
         int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
         if (userId == -1)
@@ -237,6 +239,8 @@ public class ChallengeController : ControllerBase
         var challenge = await Context.Challenges.FindAsync(dto.ChallengeId);
         if (challenge == null)
             return NotFound("Challenge not found");
+        var existingReview = await Context.ChallengeReviews
+.FirstOrDefaultAsync(r => r.UserId == userId && r.ChallengeId == dto.ChallengeId);
         var review = new ChallengeReview
         {
             ChallengeId = dto.ChallengeId,
@@ -252,6 +256,60 @@ public class ChallengeController : ControllerBase
 
         return Ok();
     }
+    [HttpGet("HasReviewed")]
+    public async Task<IActionResult> HasUserReviewed(int challengeId)
+    {
+        int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
+        if (userId == -1)
+            return BadRequest("UserId in token is malformed");
+
+        var hasReviewed = await Context.ChallengeReviews
+            .AnyAsync(r => r.UserId == userId && r.ChallengeId == challengeId);
+
+        return Ok(hasReviewed);
+    }
+[HttpGet("GetUserReview")]
+public async Task<IActionResult> GetUserReview(int challengeId)
+{
+    int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
+    if (userId == -1)
+        return BadRequest("UserId in token is malformed");
+
+    var review = await Context.ChallengeReviews
+        .FirstOrDefaultAsync(r => r.ChallengeId == challengeId && r.UserId == userId);
+
+    if (review == null)
+        return NotFound();
+
+    return Ok(new
+    {
+        Stars = review.Stars,
+        Difficulty = (int)review.Difficulty,
+        Text = review.Text
+    });
+}
+[HttpPut("UpdateReview")]
+public async Task<IActionResult> UpdateReview([FromBody] ChallengeReviewDto dto)
+{
+    if (!ModelState.IsValid) return BadRequest(ModelState);
+
+    int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
+    if (userId == -1)
+        return BadRequest("UserId in token is malformed");
+
+    var review = await Context.ChallengeReviews
+        .FirstOrDefaultAsync(r => r.ChallengeId == dto.ChallengeId && r.UserId == userId);
+
+    if (review == null)
+        return NotFound("Review not found");
+
+    review.Stars = dto.Stars;
+    review.Difficulty = dto.Difficulty;
+    review.Text = dto.Text;
+
+    await Context.SaveChangesAsync();
+    return Ok();
+}
 
 
 }

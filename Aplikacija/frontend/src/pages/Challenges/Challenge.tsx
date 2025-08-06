@@ -31,19 +31,23 @@ interface ChallengeDetailsData {
   createdAt: string;
   autorRole: string;
   autorCountry: string;
+  atributZaDownload?: string;////placeholder
+
 }
 
 function ChallengeDetails() {
   const { id } = useParams<{ id: string }>();
   const [challenge, setChallenge] = useState<ChallengeDetailsData | null>(null);
   const [loading, setLoading] = useState(true);
-
+  const [hasReviewed, setHasReviewed] = useState<boolean | null>(null);
   const [flag, setFlag] = useState("");
   const [stars, setStars] = useState<number | null>(0);
   const [reviewDifficulty, setReviewDifficulty] = useState<number | "">("");
   const [reviewText, setReviewText] = useState("");
   const [flagResult, setFlagResult] = useState<null | "correct" | "incorrect">(null);
   const [hasSolved, setHasSolved] = useState<boolean | null>(null);
+  const [editingReview, setEditingReview] = useState(false);
+
 
   useEffect(() => {
     if (!id) return;
@@ -60,6 +64,30 @@ function ChallengeDetails() {
       .then(res => setChallenge(res.data))
       .catch(err => console.error("Greška:", err))
       .finally(() => setLoading(false));
+  }, [id]);
+  useEffect(() => {
+    if (!id) return;
+
+    api.get(`/Challenge/HasReviewed?challengeId=${id}`)
+      .then(res => setHasReviewed(res.data))
+      .catch(() => setHasReviewed(false));
+  }, [id]);
+  useEffect(() => {
+    if (!id) return;
+
+    api.get(`/Challenge/HasReviewed?challengeId=${id}`)
+      .then(res => {
+        setHasReviewed(res.data);
+        if (res.data) {
+          api.get(`/Challenge/GetUserReview?challengeId=${id}`)
+            .then(res => {
+              setStars(res.data.stars);
+              setReviewDifficulty(res.data.difficulty);
+              setReviewText(res.data.text);
+            });
+        }
+      })
+      .catch(() => setHasReviewed(false));
   }, [id]);
 
   const handleSubmitFlag = () => {
@@ -78,32 +106,33 @@ function ChallengeDetails() {
 
 
   const handleSubmitReview = () => {
-    if (!stars || reviewDifficulty === "" || reviewText.trim() === "") {
+    if (stars === null || reviewDifficulty === null || reviewText.trim() === "") {
       alert("Please fill in all fields before submitting your review.");
       return;
     }
 
-    api.post("/Challenge/SubmitChallengeReview", {
+    const payload = {
       challengeId: challenge?.id,
       stars,
       difficulty: reviewDifficulty,
-      text: reviewText
-    }).then(() => {
-      setStars(0);
-      setReviewDifficulty("");
-      setReviewText("");
-      alert("✅ Review submitted successfully!");
-    }).catch(() => {
-      alert("❌ Failed to submit review. Please try again.");
-    }).then(() => {
-      setStars(0);
-      setReviewDifficulty("");
-      setReviewText("");
+      text: reviewText.trim()
+    };
 
-      return api.get(`/Challenge/GetChallengeDetails/${id}`);
+    const request = hasReviewed
+      ? api.put("/Challenge/UpdateReview", payload)
+      : api.post("/Challenge/SubmitChallengeReview", payload);
+
+    request.then(() => {
+      alert("Review submitted successfully!");
+      setEditingReview(false);
+    }).catch(() => {
+      alert("Failed to submit review. Please try again.");
     })
-      .then(res => setChallenge(res.data));
+    .then(() => {
+      return api.get(`/Challenge/GetChallengeDetails/${id}`);
+    }).then(res => setChallenge(res.data));
   };
+
 
 
   if (loading) return <div>Loading...</div>;
@@ -151,22 +180,32 @@ function ChallengeDetails() {
       <div className="challenge-content-row">
         <div className="challenge-sidebar">
           <div className="challenge-actions-section">
-            <div className="action-item">
-              <div className="icon-container"><PlayArrowTwoToneIcon fontSize="large" /></div>
+            <div
+              className={`action-item ${!challenge.dockerImage ? "disabled-action" : ""}`}
+              style={{ pointerEvents: !challenge.dockerImage ? "none" : "auto" }}
+            >
+              <div className="icon-container">
+                <PlayArrowTwoToneIcon fontSize="large" />
+              </div>
               <div className="action-text">
                 <p className="subtitle bold">Start Instance</p>
                 <p className="action-description">
-                  Start playing the challenge.
+                  {challenge.dockerImage ? "Start playing the challenge." : "Not available for this challenge."}
                 </p>
               </div>
             </div>
 
-            <div className="action-item">
-              <div className="icon-container"><GetAppOutlinedIcon fontSize="large" /></div>
+            <div
+              className={`action-item ${!challenge.atributZaDownload ? "disabled-action" : ""}`}
+              style={{ pointerEvents: !challenge.atributZaDownload ? "none" : "auto" }}
+            >
+              <div className="icon-container">
+                <GetAppOutlinedIcon fontSize="large" />
+              </div>
               <div className="action-text">
-                <p className="subtitle bold">Download Files</p>
+                <p className="subtitle bold">Download files</p>
                 <p className="action-description">
-                  Download necessary files to play the challenge.
+                  {challenge.atributZaDownload ? "Download necessary files to play this challenge." : "Not available for this challenge."}
                 </p>
               </div>
             </div>
@@ -257,7 +296,7 @@ function ChallengeDetails() {
                 </div>
 
                 {flagResult === "correct" && (
-                  <p className="flag-result success">✅ Correct flag!</p>
+                  <p className="flag-result success">✅ Congratulations, the flag is correct!</p>
                 )}
                 {flagResult === "incorrect" && (
                   <p className="flag-result error">❌ Incorrect flag. Try again.</p>
@@ -271,49 +310,61 @@ function ChallengeDetails() {
           <div className="challenge-section">
             <div className="section-header">Leave a Review</div>
 
-            <div className="review-form">
-              <div className="form-row">
-                <label className="form-label">Your Rating</label>
-                <div className="rating-stars">
-                  <Rating value={stars} onChange={(_, v) => setStars(v)} />
+            {hasReviewed === null ? (
+              <p>Loading review status...</p>
+            ) : hasReviewed && !editingReview ? (
+              <div className="already-reviewed-message">
+                <p>You have already reviewed this challenge.</p>
+                <button onClick={() => setEditingReview(true)} className="edit-review-button">
+                  ✏️ Edit Review
+                </button>
+              </div>
+            ) : (
+              <div className="review-form">
+                <div className="form-row">
+                  <label className="form-label">Your Rating</label>
+                  <div className="rating-stars">
+                    <Rating value={stars} onChange={(_, v) => setStars(v)} />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <label className="form-label">Difficulty</label>
+                  <TextField
+                    select
+                    size="small"
+                    value={reviewDifficulty}
+                    onChange={(e) => setReviewDifficulty(Number(e.target.value))}
+                    fullWidth
+                  >
+                    {difficultyLabels.map((label, index) => (
+                      <MenuItem key={index} value={index}>{label}</MenuItem>
+                    ))}
+                  </TextField>
+                </div>
+
+                <div className="form-row">
+                  <label className="form-label">Comment</label>
+                  <TextField
+                    multiline
+                    rows={4}
+                    fullWidth
+                    size="small"
+                    value={reviewText}
+                    onChange={(e) => setReviewText(e.target.value)}
+                  />
+                </div>
+
+                <div
+                  className="action-item action-clickable submit-button"
+                  onClick={handleSubmitReview}
+                >
+                  <div className="submit-text">{hasReviewed ? "Update Review" : "Submit"}</div>
                 </div>
               </div>
-
-              <div className="form-row">
-                <label className="form-label">Difficulty</label>
-                <TextField
-                  select
-                  size="small"
-                  value={reviewDifficulty}
-                  onChange={(e) => setReviewDifficulty(Number(e.target.value))}
-                  fullWidth
-                >
-                  {difficultyLabels.map((label, index) => (
-                    <MenuItem key={index} value={index}>{label}</MenuItem>
-                  ))}
-                </TextField>
-              </div>
-
-              <div className="form-row">
-                <label className="form-label">Comment</label>
-                <TextField
-                  multiline
-                  rows={4}
-                  fullWidth
-                  size="small"
-                  value={reviewText}
-                  onChange={(e) => setReviewText(e.target.value)}
-                />
-              </div>
-
-              <div
-                className="action-item action-clickable submit-button"
-                onClick={handleSubmitReview}
-              >
-                <div className="submit-text">Submit</div>
-              </div>
-            </div>
+            )}
           </div>
+
 
         </div>
       </div>

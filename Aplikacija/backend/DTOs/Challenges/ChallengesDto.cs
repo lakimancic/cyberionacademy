@@ -19,4 +19,5 @@ public class ChallengeDto
     public string? AutorRole { get; set; }
     public string? AutorCountry { get; set; }
     public int AutorId { get; set; }
+    public string? dockerImage { get; set; }
 }
