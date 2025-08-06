@@ -68,10 +68,10 @@ public class UserController(ApplicationDbContext context, IConfiguration configu
                 Name = cat.Name,
 
                 Max = context.Lessons
-                    .Count(l => l.Public && l.QuizId != null && l.CategoryId == cat.Id),
+                    .Count(l => l.Public && l.Quiz != null && l.CategoryId == cat.Id),
 
                 Num = context.Lessons
-                    .Where(l => l.Public && l.QuizId != null && l.CategoryId == cat.Id)
+                    .Where(l => l.Public && l.Quiz != null && l.CategoryId == cat.Id)
                     .SelectMany(l => l.Quiz!.Results!
                         .Where(r => r.UserId == userId && r.Points > l.Quiz.TotalPoints / 2.0))
                     .Select(r => r.Quiz!.Lesson!.Id)

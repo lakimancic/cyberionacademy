@@ -40,7 +40,6 @@ public class AccountController(ApplicationDbContext context, IConfiguration conf
         if (user == null)
             return BadRequest("User for account not found");
 
-        Console.WriteLine(request.Username);
         if (request.Username != null)
             user.Username = request.Username;
         if (request.Email != null)
@@ -50,7 +49,6 @@ public class AccountController(ApplicationDbContext context, IConfiguration conf
         user.Country = request.Country;
         user.Bio = request.Bio;
 
-        context.Users.Update(user);
         await context.SaveChangesAsync();
 
         return Ok();
@@ -71,7 +69,6 @@ public class AccountController(ApplicationDbContext context, IConfiguration conf
             return BadRequest("Incorrect current password");
 
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
-        context.Users.Update(user);
         await context.SaveChangesAsync();
 
         return Ok();
@@ -116,7 +113,6 @@ public class AccountController(ApplicationDbContext context, IConfiguration conf
             return BadRequest("User for account not found");
 
         user.Avatar = Path.Combine("users", userIdStr, "profile" + extension);
-        context.Users.Update(user);
         await context.SaveChangesAsync();
 
         return Ok();
@@ -168,7 +164,6 @@ public class AccountController(ApplicationDbContext context, IConfiguration conf
             System.IO.File.Delete(filePath);
 
         user.Avatar = null;
-        context.Users.Update(user);
         await context.SaveChangesAsync();
 
         return Ok();

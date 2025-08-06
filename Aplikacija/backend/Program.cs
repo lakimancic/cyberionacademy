@@ -2,6 +2,7 @@
 using backend.Hubs;
 using backend.Services.Auth;
 using backend.Services.Docker;
+using backend.Services.QuizService;
 using backend.Services.UserServices;
 using backend.Utils.Docker;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -49,6 +50,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IQuizService, QuizService>();
 
 builder.Services.AddSingleton<IDockerInstancer, DockerInstancer>();
 builder.Services.AddHostedService<DockerCleanupService>();

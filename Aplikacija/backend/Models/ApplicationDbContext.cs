@@ -15,6 +15,10 @@ public class ApplicationDbContext : DbContext
     public DbSet<Message> Messages { get; set; }
     public DbSet<ChallengeReview> ChallengeReviews { get; set; }
     public DbSet<LessonReview> LessonReviews { get; set; }
+    public DbSet<Quiz> Quizzes { get; set; }
+    public DbSet<Question> Questions { get; set; }
+    public DbSet<AnswerOption> AnswerOptions { get; set; }
+    public DbSet<ConnectPair> ConnectPairs { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
