@@ -1,14 +1,18 @@
+* { box-sizing: border-box; }
+
 .courses-container {
   backdrop-filter: blur(12px);
   color: #fff;
-  padding: 2rem;
+  padding: 4rem;
   font-family: 'Segoe UI', sans-serif;
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+   
+  
 }
 
 .courses-container h2 {
-  font-size: 2rem;
+  font-size: 2.5rem;
   margin-bottom: 1rem;
   color: #e4e6eb;
 }
@@ -94,45 +98,74 @@
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease;
+  position: relative;
+  height: 350px; 
+
+  
+  
 }
 
 .course-card:hover {
   transform: scale(1.03);
 }
 
-.banner {
-  background: linear-gradient(to right, #6a11cb, #2575fc);
-  height: 100px;
+.course-card img {
   width: 100%;
+  height: 220px; /* 👈 povećana visina banera */
+  object-fit: cover;
+  border-bottom: 1px solid #2c2f45;
 }
 
 .course-content {
+  flex: 1;
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+  height: 100%;
 }
 
 .course-content h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
+  font-size: 1.4rem;
+  margin: 0.5rem 0 0.25rem;
 }
 
 .difficulty {
-  font-size: 0.85rem;
+ font-size: 0.85rem;
   color: #aaa;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.MuiRating-root {
+  align-self: flex-start;
 }
 
 .author {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
 }
 
 .author img {
   border-radius: 50%;
   width: 28px;
   height: 28px;
+  object-fit: cover;
+  border: 2px solid #fff;
+}
+
+.author span {
+  font-size: 0.95rem;
+  color: #fff;
+}
+.rating-bottom-left {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0.2rem;
 }
 
 .pagination {

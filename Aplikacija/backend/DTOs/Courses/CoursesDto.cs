@@ -3,6 +3,8 @@ namespace backend.DTOs;
 public class CoursesDto
 {
     public int Id { get; set; }
+    
+    required
     public string Title { get; set; }
     public string? Description { get; set; }
    

@@ -1,7 +1,7 @@
 import './Courses.css';
 import { useEffect, useState } from 'react';
 import api from '@/lib/api';
-import { Rating } from '@mui/material';
+import { Avatar, Rating } from '@mui/material';
 import AuthImage from '@/components/AuthImage/AuthImage';
 
 interface Course {
@@ -22,7 +22,7 @@ const ImageWrapper: React.FC<ImageWrapperProps> = ({ src, alt = '', ...props }) 
 
 function Courses() {
   const [courses, setCourses] = useState<Course[]>([]);
-  const [sortKey, setSortKey] = useState<'title' | 'rating'>('title');
+  const [sortKey, setSortKey] = useState<'name' | 'rating'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [search, setSearch] = useState('');
   const [inputValue, setInputValue] = useState('');
@@ -62,7 +62,7 @@ function Courses() {
       .catch(err => console.error('Greška pri dohvatanju kurseva', err));
   };
 
-  const renderSortButton = (key: 'title' | 'rating', label: string) => (
+  const renderSortButton = (key: 'name' | 'rating', label: string) => (
     <button
       className={`sort-button ${sortKey === key ? 'active' : ''}`}
       onClick={() => {
@@ -110,7 +110,7 @@ function Courses() {
         </select>
 
         <div className="sort-buttons">
-          {renderSortButton('title', 'Sort by Title')}
+          {renderSortButton('name', 'Sort by Title')}
           {renderSortButton('rating', 'Sort by Rating')}
         </div>
       </div>
@@ -123,7 +123,7 @@ function Courses() {
               <h3>{course.title}</h3>
               <div className="difficulty">{difficulties.find(d => d.value === course.difficulty)?.label}</div>
               <div className="author">
-                <img src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${course.autorId}`} alt="avatar" />
+                <AuthImage src={`/user/${course.autorId}/ProfilePicture`} element={Avatar}/>
                 <span>{course.autorName ?? 'Unknown Author'}</span>
               </div>
               <Rating
@@ -131,6 +131,7 @@ function Courses() {
                 precision={0.1}
                 readOnly
                 size="small"
+                className='rating-bottom-left'
               />
             </div>
           </div>

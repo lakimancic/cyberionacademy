@@ -35,10 +35,14 @@ public class CourseController(ApplicationDbContext context  , IConfiguration con
 
         query = (sortKey?.ToLower(), sortDirection?.ToLower()) switch
         {
-
             ("name", "desc") => query.OrderByDescending(c => c.Title),
+            ("rating", "desc") => query.OrderByDescending(c =>
+                c.Reviews!.Count > 0 ? c.Reviews.Average(r => r.Stars) : 0.0),
+            ("rating", _) => query.OrderBy(c =>
+                c.Reviews!.Count > 0 ? c.Reviews.Average(r => r.Stars) : 0.0),
             ("name", _) => query.OrderBy(c => c.Title),
-            _ => query.OrderBy(c => c.Title)
+            
+            _ => query.OrderBy(c => c.Title)     
         };
 
         var courses = await query
@@ -50,6 +54,7 @@ public class CourseController(ApplicationDbContext context  , IConfiguration con
         {
             Id = c.Id,
             AutorId = c.AuthorId,
+            AutorName = c.Author?.Username,
             Title = c.Title,
             Description = c.Description,
             AverageRating = c.Reviews?.Count > 0 ? c.Reviews.Average(r => r.Stars) : 0.0,
