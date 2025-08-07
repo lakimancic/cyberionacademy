@@ -442,3 +442,22 @@ svg[class^=form-number]:hover {
     color: white;
     background-color: #d42d38;
 }
+
+.studio-upload-disabled {
+    background-color: gray;
+}
+
+.studio-upload-disabled:hover {
+    background-color: gray;
+    color: rgb(13, 21, 63);
+    cursor: default;
+}
+
+.studio-btn-add:disabled, .studio-btn-del:disabled {
+    background: gray;
+    cursor: default;
+}
+
+.studio-btn-add:hover:disabled, .studio-btn-del:hover:disabled {
+    box-shadow: none;
+}

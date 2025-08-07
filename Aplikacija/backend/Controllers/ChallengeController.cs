@@ -105,6 +105,14 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
     [HttpGet("GetChallengeDetails/{id}")]
     public async Task<ActionResult<ChallengeDto>> GetChallengeById(int id)
     {
+        int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
+        if (userId == -1)
+            return BadRequest("UserId in token is malformed");
+
+        User? user = await context.Users.FindAsync(userId);
+        if (user == null)
+            return BadRequest("User for account not found");
+
         var challengeEntity = await context.Challenges
            .Include(c => c.Category)
            .Include(c => c.Author)
@@ -115,28 +123,49 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
         if (challengeEntity == null)
             return NotFound();
 
-        var challenge = new ChallengeDto
+        double? averageReviewDifficuly = challengeEntity.Reviews?.Count > 0
+            ? challengeEntity.Reviews.Average(r => (int)r.Difficulty)
+            : null;
+
+        var rootPath = configuration.GetValue<string>("AppSettings:Storage")!;
+        var publicPath = Path.Combine(rootPath, "challenges", challengeEntity.Id.ToString(), "public");
+        string? downloadFile = null;
+        if (Directory.Exists(publicPath))
         {
-            Id = challengeEntity.Id,
-            Name = challengeEntity.Name,
-            Description = challengeEntity.Description,
+            downloadFile = Directory.GetFiles(publicPath).FirstOrDefault();
+            if (downloadFile != null)
+                downloadFile = Path.GetFileName(downloadFile);
+        }
+
+        var instance = challengeService.GetInstance(userId, challengeEntity.Id);
+        var instanceRet = instance != null ? new
+        {
+            TimeRem = (instance.End - DateTime.Now).TotalSeconds,
+            instance.Services
+        } : null;
+
+        var challenge = new
+        {
+            challengeEntity.Id,
+            challengeEntity.Name,
+            challengeEntity.Description,
             CategoryName = challengeEntity.Category.Name,
-            Points = challengeEntity.Points,
+            challengeEntity.Points,
             SolvedCount = challengeEntity.Submissions?.Count(s => s.Correct) ?? 0,
-            Difficulty = (int)challengeEntity.Difficulty,
+            challengeEntity.Difficulty,
             AutorId = challengeEntity.Author?.Id ?? 0,
             AutorRole = challengeEntity.Author?.Role.ToString() ?? "Unknown",
             AutorCountry = challengeEntity.Author?.Country ?? "Unknown",
             dockerImage = challengeEntity.DockerImage,
-            CreatedAt = challengeEntity.CreatedAt,
+            challengeEntity.CreatedAt,
             AutorName = challengeEntity.Author?.Username ?? "Unknown",
             IsArchived = challengeEntity.Archived,
             IsPublic = challengeEntity.Public,
             ReviewCount = challengeEntity.Reviews?.Count ?? 0,
             AverageRating = challengeEntity.Reviews?.Count > 0 ? challengeEntity.Reviews.Average(r => r.Stars) : 0.0,
-            AverageReviewDifficulty = challengeEntity.Reviews?.Count > 0
-            ? challengeEntity.Reviews.Average(r => (int)r.Difficulty)
-            : null
+            AverageReviewDifficulty = averageReviewDifficuly,
+            DownloadFile = downloadFile,
+            Instance = instanceRet
         };
 
         return Ok(challenge);
@@ -170,6 +199,7 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
 
         return Ok(difficulties);
     }
+
     [HttpPost("SubmitFlag")]
     public async Task<IActionResult> SubmitSubmission([FromBody] SubmissionDto dto)
     {
@@ -204,7 +234,7 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
 
         return Ok(new { correct = isCorrect });
     }
-    [Authorize]
+
     [HttpGet("HasSolved")]
     public async Task<IActionResult> HasUserSolved(int challengeId)
     {
@@ -311,6 +341,121 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
         return Ok();
     }
 
+    [HttpGet("DownloadFile/{id}")]
+    public async Task<ActionResult> DownloadFile(int id)
+    {
+        var challenge = await context.Challenges.FindAsync(id);
+
+        if (challenge == null)
+            return NotFound("Challenge not found");
+
+        var rootPath = configuration.GetValue<string>("AppSettings:Storage")!;
+        var publicPath = Path.Combine(rootPath, "challenges", challenge.Id.ToString(), "public");
+
+        if (!Directory.Exists(publicPath))
+            return NotFound("Directory not found");
+
+        var filePath = Directory.GetFiles(publicPath).FirstOrDefault();
+
+        if (filePath == null)
+            return NotFound("File nout found");
+
+        var fileName = Path.GetFileName(filePath);
+        var fileBytes = System.IO.File.ReadAllBytes(filePath);
+
+        var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
+        if (!provider.TryGetContentType(filePath, out var contentType))
+            contentType = "application/octet-stream";
+
+        return File(fileBytes, contentType, fileName);
+    }
+
+    [HttpGet("StartInstance/{id}")]
+    public async Task<ActionResult> StartInstance(int id)
+    {
+        int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
+        if (userId == -1)
+            return BadRequest("UserId in token is malformed");
+
+        User? user = await context.Users.FindAsync(userId);
+        if (user == null)
+            return NotFound("User for account not found");
+
+        var challenge = await context.Challenges.FindAsync(id);
+        if (challenge == null)
+            return NotFound("Challenge not found");
+
+        if (challenge.DockerImage == null)
+            return BadRequest("Challenge doesn't have instance");
+
+        var result = await challengeService.StartContainer(user.Id, challenge.Id, challenge.DockerImage);
+        if (result != null)
+            return BadRequest(result);
+
+        var instance = challengeService.GetInstance(user.Id, challenge.Id);
+        if (instance == null)
+            return NotFound("Instance not found");
+
+        return Ok(new
+        {
+            instance.Services,
+            TimeRem = (instance.End - DateTime.Now).TotalSeconds
+        });
+    }
+
+    [HttpDelete("StopInstance/{id}")]
+    public async Task<ActionResult> StopInstance(int id)
+    {
+        int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
+        if (userId == -1)
+            return BadRequest("UserId in token is malformed");
+
+        User? user = await context.Users.FindAsync(userId);
+        if (user == null)
+            return NotFound("User for account not found");
+
+        var challenge = await context.Challenges.FindAsync(id);
+        if (challenge == null)
+            return NotFound("Challenge not found");
+
+        if (challenge.DockerImage == null)
+            return BadRequest("Challenge doesn't have instance");
+
+        var result = await challengeService.StopContainer(user.Id, challenge.Id);
+        if (result != null)
+            return BadRequest(result);
+
+        return Ok();
+    }
+
+    [HttpPut("ExtendInstance/{id}")]
+    public async Task<ActionResult> ExtendInstance(int id)
+    {
+        int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
+        if (userId == -1)
+            return BadRequest("UserId in token is malformed");
+
+        User? user = await context.Users.FindAsync(userId);
+        if (user == null)
+            return NotFound("User for account not found");
+
+        var challenge = await context.Challenges.FindAsync(id);
+        if (challenge == null)
+            return NotFound("Challenge not found");
+
+        if (challenge.DockerImage == null)
+            return BadRequest("Challenge doesn't have instance");
+
+        try
+        {
+            return Ok(challengeService.ExtendContainer(user.Id, challenge.Id));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
     [Authorize(Roles = "Moderator,Admin")]
     [HttpPost("CreateChallenge")]
     public async Task<IActionResult> CreateChallenge([FromForm] CreateChallengeDto request)
@@ -339,7 +484,8 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
             Flag = request.Flag,
             Public = request.IsPublic,
             Archived = request.IsArchived,
-            Category = category
+            Category = category,
+            CreatedAt = DateTime.Now
         };
 
         var rootPath = configuration.GetValue<string>("AppSettings:Storage")!;
@@ -368,6 +514,9 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
 
         if (request.DockerFile != null && request.DockerFile.Length > 0)
         {
+            if (Path.GetExtension(request.DockerFile.FileName).ToLowerInvariant() != ".zip")
+                return BadRequest("Docker file must be zip");
+
             var dockerPath = Path.Combine(chalPath, "docker");
             bool success = await BuildHelper.ExtractZipAsync(request.DockerFile.OpenReadStream(), dockerPath);
 
@@ -385,5 +534,178 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
         Directory.Move(chalPath, realChalPath);
 
         return Ok(challenge.Id);
+    }
+
+    [Authorize(Roles = "Moderator,Admin")]
+    [HttpPut("UpdateChallenge")]
+    public async Task<IActionResult> UpdateChallenge([FromForm] CreateChallengeDto request)
+    {
+        int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
+        if (userId == -1)
+            return BadRequest("UserId in token is malformed");
+
+        User? user = await context.Users.FindAsync(userId);
+        if (user == null)
+            return NotFound("User for account not found");
+
+        Challenge? challenge = await context.Challenges.FindAsync(request.Id);
+        if (challenge == null)
+            return NotFound("Challenge not found");
+
+        if (user.Role == UserRole.Moderator && challenge.AuthorId != user.Id)
+            return Forbid("Not owning a challenge");
+
+        if (challenge.Name != request.Name)
+            challenge.Name = request.Name;
+        if (challenge.Description != request.Description)
+            challenge.Description = request.Description;
+        if (challenge.Difficulty != request.Difficulty)
+            challenge.Difficulty = request.Difficulty;
+        if (challenge.Points != request.Points)
+        {
+            if (!challengeService.CheckPointsForDiff(request.Points, request.Difficulty))
+                return BadRequest("Points are invalid for given difficulty");
+
+            challenge.Points = request.Points;
+        }
+        if (challenge.Flag != request.Flag)
+            challenge.Flag = request.Flag;
+        if (challenge.Public != request.IsPublic)
+            challenge.Public = request.IsPublic;
+        if (challenge.Archived != request.IsArchived)
+            challenge.Archived = request.IsArchived;
+        if (challenge.CategoryId != request.CategoryId)
+        {
+            Category? category = await context.Categories.FindAsync(request.CategoryId);
+            if (category == null)
+                return NotFound("Category not found");
+            challenge.Category = category;
+        }
+
+        var rootPath = configuration.GetValue<string>("AppSettings:Storage")!;
+        var chalPath = Path.Combine(rootPath, "challenges", challenge.Id.ToString());
+
+        if (request.DownloadFile != null && request.DownloadFile.Length > 0)
+        {
+            var publicPath = Path.Combine(chalPath, "public");
+            BuildHelper.ForceDeleteDirectory(publicPath);
+            Directory.CreateDirectory(publicPath);
+
+            try
+            {
+                using var downloadStream = new FileStream(Path.Combine(publicPath, request.DownloadFile.FileName), FileMode.Create);
+                await request.DownloadFile.CopyToAsync(downloadStream);
+            }
+            catch (Exception ex)
+            {
+                BuildHelper.ForceDeleteDirectory(publicPath);
+                return BadRequest(ex.Message);
+            }
+        }
+        else if (request.DeleteDownloadFile)
+        {
+            var publicPath = Path.Combine(chalPath, "public");
+            BuildHelper.ForceDeleteDirectory(publicPath);
+        }
+
+        if (request.DockerFile != null && request.DockerFile.Length > 0)
+        {
+            if (Path.GetExtension(request.DockerFile.FileName).ToLowerInvariant() != ".zip")
+                return BadRequest("Docker file must be zip");
+
+            var dockerPath = Path.Combine(chalPath, "docker");
+            bool success = await BuildHelper.ExtractZipAsync(request.DockerFile.OpenReadStream(), dockerPath);
+
+            if (!success)
+            {
+                BuildHelper.ForceDeleteDirectory(dockerPath);
+                return BadRequest("Invalid Docker Zip file");
+            }
+        }
+        else if (request.DeleteDockerFile)
+        {
+            if (challenge.DockerImage != null)
+                return BadRequest("Cannot delete docker files while image exists");
+            var dockerPath = Path.Combine(chalPath, "docker");
+            BuildHelper.ForceDeleteDirectory(dockerPath);
+        }
+
+        await context.SaveChangesAsync();
+
+        return Ok();
+    }
+
+    [Authorize(Roles = "Moderator,Admin")]
+    [HttpGet("ModChallenge")]
+    public async Task<ActionResult> GetModChallenge(int challengeId)
+    {
+        int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
+        if (userId == -1)
+            return BadRequest("UserId in token is malformed");
+
+        User? user = await context.Users.FindAsync(userId);
+        if (user == null)
+            return NotFound("User for account not found");
+
+        Challenge? challenge = await context.Challenges
+            .Where(c => c.Id == challengeId)
+            .Include(c => c.Category)
+            .FirstOrDefaultAsync();
+        if (challenge == null)
+            return NotFound("Challenge not found");
+
+        var rootPath = configuration.GetValue<string>("AppSettings:Storage")!;
+        string? dockerFile = null;
+        string? downloadFile = null;
+
+        var publicPath = Path.Combine(rootPath, "challenges", challenge.Id.ToString(), "public");
+        var dockerPath = Path.Combine(rootPath, "challenges", challenge.Id.ToString(), "docker");
+
+        if (Directory.Exists(dockerPath) && System.IO.File.Exists(Path.Combine(dockerPath, "Dockerfile")))
+            dockerFile = "Dockerfile exists";
+
+        if (Directory.Exists(publicPath))
+        {
+            var filePath = Directory.GetFiles(publicPath).FirstOrDefault();
+            downloadFile = filePath != null ? Path.GetFileName(filePath) : null;
+        }
+
+        return Ok(new
+        {
+            challenge.Id,
+            challenge.Name,
+            challenge.Description,
+            challenge.Points,
+            challenge.Flag,
+            challenge.Difficulty,
+            IsPublic = challenge.Public,
+            IsArchived = challenge.Archived,
+            challenge.DockerImage,
+            CategoryName = challenge.Category.Name,
+            DownloadFile = downloadFile,
+            DockerFile = dockerFile
+        });
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("DeleteChallenge")]
+    public async Task<ActionResult> DeleteChallenge(DeleteIdDto request)
+    {
+        Challenge? challenge = await context.Challenges.FindAsync(request.Id);
+
+        if (challenge == null)
+            return NotFound("Lesson not found");
+
+        var rootPath = configuration.GetValue<string>("AppSettings:Storage")!;
+        var chalPath = Path.Combine(rootPath, "challenges", challenge.Id.ToString());
+        BuildHelper.ForceDeleteDirectory(chalPath);
+
+        if (challenge.DockerImage != null)
+            await challengeService.RemoveImage(challenge.DockerImage, challenge.Id);
+
+        context.Challenges.Remove(challenge);
+        await context.SaveChangesAsync();
+
+        return Ok();
     }
 }

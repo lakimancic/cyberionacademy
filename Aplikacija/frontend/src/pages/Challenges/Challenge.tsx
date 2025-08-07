@@ -4,11 +4,15 @@ import {
   TextField,
   Rating,
   MenuItem,
+  CircularProgress,
 } from "@mui/material";
 import api from "@/lib/api";
 import './Challenge.css';
 import PlayArrowTwoToneIcon from '@mui/icons-material/PlayArrowTwoTone';
 import GetAppOutlinedIcon from '@mui/icons-material/GetAppOutlined';
+import StopIcon from '@mui/icons-material/Stop';
+import MoreTimeIcon from '@mui/icons-material/MoreTime';
+import RouterIcon from '@mui/icons-material/Router';
 
 const difficultyLabels = ["Very Easy", "Easy", "Medium", "Hard", "Very Hard"];
 
@@ -31,9 +35,26 @@ interface ChallengeDetailsData {
   createdAt: string;
   autorRole: string;
   autorCountry: string;
-  atributZaDownload?: string;////placeholder
+  downloadFile?: string;
+};
 
-}
+interface Service {
+  portIn: number;
+  portOut: number;
+  type: number;
+};
+
+interface Instance {
+  timeRem: number;
+  services: Service[];
+};
+
+const formatTime = (time: number) => {
+  const secs = time % 60;
+  const mins = Math.floor(time / 60);
+
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+};
 
 function ChallengeDetails() {
   const { id } = useParams<{ id: string }>();
@@ -47,7 +68,8 @@ function ChallengeDetails() {
   const [flagResult, setFlagResult] = useState<null | "correct" | "incorrect">(null);
   const [hasSolved, setHasSolved] = useState<boolean | null>(null);
   const [editingReview, setEditingReview] = useState(false);
-
+  const [instance, setInstance] = useState<Instance|null>(null);
+  const [instanceLoad, setInstanceLoad] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -61,7 +83,15 @@ function ChallengeDetails() {
     if (!id) return;
     setLoading(true);
     api.get(`/Challenge/GetChallengeDetails/${id}`)
-      .then(res => setChallenge(res.data))
+      .then(res => {
+        setChallenge(res.data);
+        if(res.data.instance) {
+          if(res.data.instance.timeRem < 0)
+            res.data.instance.timeRem = 0;
+          res.data.instance.timeRem = Math.floor(res.data.instance.timeRem);
+        }
+        setInstance(res.data.instance);
+      })
       .catch(err => console.error("Greška:", err))
       .finally(() => setLoading(false));
   }, [id]);
@@ -133,7 +163,70 @@ function ChallengeDetails() {
     }).then(res => setChallenge(res.data));
   };
 
+  const downloadFiles = () => {
+    if (!challenge) return;
 
+    api.get(`/Challenge/DownloadFile/${challenge.id}`, {
+      responseType: 'blob',
+    })
+    .then(resp => {
+      const blob = new Blob([resp.data]);
+      let fileName = challenge.downloadFile ?? 'unknown';
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    })
+    .catch(err => console.log(err));
+  };
+
+  const startInstance = () => {
+    if(!challenge) return;
+    setInstanceLoad(true);
+
+    api.get(`/Challenge/StartInstance/${challenge.id}`)
+      .then(resp => {
+        if(resp.data) {
+          if(resp.data.timeRem < 0)
+            resp.data.timeRem = 0;
+          resp.data.timeRem = Math.floor(resp.data.timeRem);
+        }
+        setInstance(resp.data);
+      })
+      .catch(err => console.error(err))
+      .finally(() => setInstanceLoad(false));
+  };
+
+  const stopInstance = () => {
+    if(!challenge) return;
+
+    api.delete(`/Challenge/StopInstance/${challenge.id}`)
+      .catch(err => console.error(err))
+      .finally(() => setInstance(null));
+  };
+
+  const extendInstance = () => {
+    if(!challenge) return;
+
+    api.put(`/Challenge/ExtendInstance/${challenge.id}`)
+      .then(resp => {
+        setInstance(prev => prev ? ({...prev, timeRem: resp.data }) : null);
+      })
+      .catch(err => console.error(err));
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setInstance(prev => prev ? ({...prev, timeRem: Math.max(prev?.timeRem - 1, 0)}) : null);
+    }, 1000);
+
+    return () => clearInterval(interval); 
+  }, []);
 
   if (loading) return <div>Loading...</div>;
   if (!challenge) return <div>Challenge not found</div>;
@@ -180,24 +273,59 @@ function ChallengeDetails() {
       <div className="challenge-content-row">
         <div className="challenge-sidebar">
           <div className="challenge-actions-section">
+            {instance && <div className="action-instance">
+              <div className="icon-container">
+                <RouterIcon fontSize="large" />
+              </div>
+              <div className="action-text">
+                <p className="subtitle bold">Instance Information</p>
+                {instance.services.map((ins, ind) => (
+                  <p className="instance-info" key={ind}>
+                    <a href={`http://${import.meta.env.VITE_HOST}:${ins.portOut}`} target="_blank" rel="noopener noreferrer">
+                    {import.meta.env.VITE_HOST}:{ins.portOut}</a> / {ins.type === 0 ? 'TCP' : 'UDP'}</p>
+                ))}
+              </div>
+            </div>}
             <div
               className={`action-item ${!challenge.dockerImage ? "disabled-action" : ""}`}
               style={{ pointerEvents: !challenge.dockerImage ? "none" : "auto" }}
+              onClick={() => {
+                if(instance) stopInstance();
+                else startInstance();
+              }}
             >
               <div className="icon-container">
-                <PlayArrowTwoToneIcon fontSize="large" />
+                {instance ? <StopIcon fontSize="large" /> : (instanceLoad ? <CircularProgress /> : <PlayArrowTwoToneIcon fontSize="large" />)}
               </div>
               <div className="action-text">
-                <p className="subtitle bold">Start Instance</p>
+                <p className="subtitle bold">{instance ? 'Stop Instance' : 'Start Instance'}</p>
                 <p className="action-description">
-                  {challenge.dockerImage ? "Start playing the challenge." : "Not available for this challenge."}
+                  {challenge.dockerImage ? (instance ? "Stop instance when you're done." : "Start playing the challenge.") : "Not available for this challenge."}
                 </p>
               </div>
             </div>
 
+            {instance && <div
+              className={`action-item ${instance.timeRem > 600 ? "disabled-action" : ""}`}
+              style={{ pointerEvents: instance.timeRem > 600 ? "none" : "auto" }}
+              onClick={() => extendInstance()}
+            >
+              <div className="icon-container">
+                <MoreTimeIcon fontSize="large" />
+              </div>
+              <div className="action-text">
+                <p className="subtitle bold">Extend Instance</p>
+                <p className="action-description">If you need more time.</p>
+              </div>
+              <div className={`action-time ${instance.timeRem <= 0 ? 'action-time-end' : ''}`}>
+                {formatTime(instance.timeRem)}
+              </div>
+            </div>}
+
             <div
-              className={`action-item ${!challenge.atributZaDownload ? "disabled-action" : ""}`}
-              style={{ pointerEvents: !challenge.atributZaDownload ? "none" : "auto" }}
+              className={`action-item ${!challenge.downloadFile ? "disabled-action" : ""}`}
+              style={{ pointerEvents: !challenge.downloadFile ? "none" : "auto" }}
+              onClick={downloadFiles}
             >
               <div className="icon-container">
                 <GetAppOutlinedIcon fontSize="large" />
@@ -205,7 +333,7 @@ function ChallengeDetails() {
               <div className="action-text">
                 <p className="subtitle bold">Download files</p>
                 <p className="action-description">
-                  {challenge.atributZaDownload ? "Download necessary files to play this challenge." : "Not available for this challenge."}
+                  {challenge.downloadFile ? "Download necessary files to play this challenge." : "Not available for this challenge."}
                 </p>
               </div>
             </div>

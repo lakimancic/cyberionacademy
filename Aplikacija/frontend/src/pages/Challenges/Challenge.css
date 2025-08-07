@@ -89,7 +89,7 @@
   backdrop-filter: blur(16px);
 }
 
-.action-item {
+.action-item, .action-instance {
   display: flex;
   align-items: flex-start;
   gap: 1rem;
@@ -103,6 +103,28 @@
     transform 0.3s ease;
   cursor: pointer;
   will-change: transform, box-shadow;
+}
+
+.action-instance {
+  cursor: default;
+}
+
+.instance-info {
+  font-size: 1rem;
+}
+
+.instance-info a {
+  color: white;
+}
+
+.action-time {
+  font-weight: 600;
+  font-size: 1.4rem;
+  margin-top: 0.5rem;
+}
+
+.action-time-end {
+  color: rgb(255, 105, 105);
 }
 
 .action-item:hover {

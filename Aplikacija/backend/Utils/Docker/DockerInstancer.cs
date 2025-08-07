@@ -138,7 +138,8 @@ public class DockerInstancer : IDockerInstancer
             var userChalInstance = userInstances.FirstOrDefault(uci => uci.ChallengeId == challengeId)
                 ?? throw new Exception("User doesn't have instance for this challenge");
 
-            userChalInstance.End = userChalInstance.End.AddMinutes(30);
+            if(userChalInstance.End.Subtract(DateTime.Now).Minutes < 10)
+                userChalInstance.End = userChalInstance.End.AddMinutes(30);
             return userChalInstance.End;   
         }
     }
