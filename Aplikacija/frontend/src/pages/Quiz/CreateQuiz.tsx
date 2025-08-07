@@ -10,6 +10,7 @@ import React from 'react';
 import '@/assets/css/ModCreate.css';
 import type { AnswerOption, ConnectPair, Question, Quiz } from './QuizTypes';
 import * as yup from 'yup';
+import api from '@/lib/api';
 
 const questionTypes = ['Single Answer', 'Multiple Answer', 'Connect Pairs', 'Text Answer'];
 const typesLabel = ['Select correct one', 'Select correct ones', 'Write matching pairs', 'Keep answer short'];
@@ -61,6 +62,8 @@ function CreateQuiz() {
         questions: []
     });
     const selectRef = useRef<any>(null);
+    const [minQuestions, setMinQuestions] = useState(0);
+    const [maxQuestions, setMaxQuestions] = useState(0);
     const navigate = useNavigate();
     const location = useLocation();
     const [globalError, setGlobalError] = useState("");
@@ -159,10 +162,25 @@ function CreateQuiz() {
     };
 
     const deleteQuiz = () => {
-        navigate(location.state.retPage, { state: {
-            quiz: null,
-            lesson: location.state.lesson
-        }, replace: true })
+        if(params.id) {
+            api.delete("/Quiz/DeleteQuiz", {
+                data: { id: quiz.id }
+            })
+            .then(() => {
+                navigate(location.state.retPage, { state: {
+                    lesson: location.state.lesson
+                }, replace: true })
+            })
+            .catch(err => {
+                console.error(err);
+            })
+        }
+        else {
+            navigate(location.state.retPage, { state: {
+                quiz: null,
+                lesson: location.state.lesson
+            }, replace: true })
+        }
     };
 
     const createQuiz = async () => {
@@ -173,6 +191,21 @@ function CreateQuiz() {
             quiz: quiz,
             lesson: location.state.lesson
         }, replace: true })
+    };
+
+    const saveChanges = async () => {
+        if(!(await validateQuiz()))
+            return;
+
+        api.put("/Quiz/UpdateQuiz", quiz)
+            .then(() => {
+                navigate(location.state.retPage, { state: {
+                    lesson: location.state.lesson
+                }, replace: true });
+            })
+            .catch(err => {
+                console.error(err);
+            });
     };
 
     const validateQuiz = async () => {
@@ -289,10 +322,25 @@ function CreateQuiz() {
     };
 
     useEffect(() => {
+        if (params.id) {
+            api.get("/Quiz/ModQuiz", { params: { quizId: params.id }})
+                .then(res => {
+                    setQuiz(res.data);
+                })
+                .catch(err => {
+                    console.error(err);
+                })
+        }
+
         if(location.state && location.state.quiz) {
             setQuiz(location.state.quiz);
         }
-    }, []);
+    }, [location]);
+
+    useEffect(() => {
+        setMinQuestions(Math.round(quiz.questions.length / 2));
+        setMaxQuestions(Math.round(quiz.questions.length));
+    }, [quiz.questions]);
     
     return (
         <div className="studio-create" ref={containerRef}>
@@ -308,8 +356,8 @@ function CreateQuiz() {
                         label='Questions Count in Quiz'
                         handleChange={() => {}}
                         inputProps={{
-                            min: 1,
-                            max: 5,
+                            min: minQuestions,
+                            max: maxQuestions,
                             step: 1,
                             value: quiz.questionCount.toString(),
                             onChange: e => setQuiz(prev => ({
@@ -507,7 +555,7 @@ function CreateQuiz() {
                     <button type="button" className='studio-btn-add' onClick={createQuiz}><FaPlus /> Create</button>
                 </>}
                 {params.id && <>
-                    <button type="button" className='studio-btn-save'><IoIosSave /> Save Changes</button>
+                    <button type="button" className='studio-btn-save' onClick={saveChanges}><IoIosSave /> Save Changes</button>
                 </>}
                 <button type="button" className='studio-btn-del' onClick={deleteQuiz}><FaTrashAlt  /> Delete</button>
             </div>

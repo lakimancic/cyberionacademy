@@ -17,3 +17,8 @@ main.layout {
 
     max-height: calc(100vh - 4rem);
 }
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(72, 97, 153, 0.5) transparent;
+}

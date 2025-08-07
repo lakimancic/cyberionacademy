@@ -1,19 +1,17 @@
 using backend.DTOs;
+using backend.DTOs.Challenges;
+using backend.Services.ChallengeService;
+using backend.Utils.Docker;
 using System.Security.Claims;
+using System.Security.Cryptography;
 namespace backend.Controllers;
 
 
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class ChallengeController : ControllerBase
+public class ChallengeController(ApplicationDbContext context, IChallengeService challengeService, IConfiguration configuration) : ControllerBase
 {
-    public ApplicationDbContext Context { get; set; }
-
-    public ChallengeController(ApplicationDbContext context)
-    {
-        Context = context;
-    }
 
     [HttpGet("GetChallenges")]
     public async Task<ActionResult<object>> GetChallenges(
@@ -27,7 +25,7 @@ public class ChallengeController : ControllerBase
     int? difficulty = null,
     bool ownChalls = false)
     {
-        var query = Context.Challenges
+        var query = context.Challenges
             .Include(c => c.Category)
             .Include(c => c.Author)
             .Include(c => c.Reviews)
@@ -40,7 +38,7 @@ public class ChallengeController : ControllerBase
             if (userId == -1)
                 return BadRequest("UserId in token is malformed");
 
-            User? user = await Context.Users.FindAsync(userId);
+            User? user = await context.Users.FindAsync(userId);
             if (user == null)
                 return BadRequest("User for account not found");
 
@@ -107,7 +105,7 @@ public class ChallengeController : ControllerBase
     [HttpGet("GetChallengeDetails/{id}")]
     public async Task<ActionResult<ChallengeDto>> GetChallengeById(int id)
     {
-        var challengeEntity = await Context.Challenges
+        var challengeEntity = await context.Challenges
            .Include(c => c.Category)
            .Include(c => c.Author)
            .Include(c => c.Reviews)
@@ -149,7 +147,7 @@ public class ChallengeController : ControllerBase
     [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<string>>> GetCategories()
     {
-        var categories = await Context.Categories
+        var categories = await context.Categories
             .Select(c => c.Name)
             .Distinct()
             .ToListAsync();
@@ -179,11 +177,11 @@ public class ChallengeController : ControllerBase
         if (userId == -1)
             return BadRequest("UserId in token is malformed");
 
-        User? user = await Context.Users.FindAsync(userId);
+        User? user = await context.Users.FindAsync(userId);
         if (user == null)
             return BadRequest("User for account not found");
 
-        var challenge = await Context.Challenges
+        var challenge = await context.Challenges
             .FirstOrDefaultAsync(c => c.Id == dto.ChallengeId);
 
         if (challenge == null)
@@ -201,8 +199,8 @@ public class ChallengeController : ControllerBase
             UserId = userId
         };
 
-        Context.ChallengeSubmissions.Add(submission);
-        await Context.SaveChangesAsync();
+        context.ChallengeSubmissions.Add(submission);
+        await context.SaveChangesAsync();
 
         return Ok(new { correct = isCorrect });
     }
@@ -214,11 +212,11 @@ public class ChallengeController : ControllerBase
         if (userId == -1)
             return BadRequest("UserId in token is malformed");
 
-        User? user = await Context.Users.FindAsync(userId);
+        User? user = await context.Users.FindAsync(userId);
         if (user == null)
             return BadRequest("User for account not found");
 
-        var hasSolved = await Context.ChallengeSubmissions
+        var hasSolved = await context.ChallengeSubmissions
             .AnyAsync(s => s.UserId == userId && s.ChallengeId == challengeId && s.Correct);
 
         return Ok(hasSolved);
@@ -233,13 +231,13 @@ public class ChallengeController : ControllerBase
         if (userId == -1)
             return BadRequest("UserId in token is malformed");
 
-        User? user = await Context.Users.FindAsync(userId);
+        User? user = await context.Users.FindAsync(userId);
         if (user == null)
             return BadRequest("User for account not found");
-        var challenge = await Context.Challenges.FindAsync(dto.ChallengeId);
+        var challenge = await context.Challenges.FindAsync(dto.ChallengeId);
         if (challenge == null)
             return NotFound("Challenge not found");
-        var existingReview = await Context.ChallengeReviews
+        var existingReview = await context.ChallengeReviews
 .FirstOrDefaultAsync(r => r.UserId == userId && r.ChallengeId == dto.ChallengeId);
         var review = new ChallengeReview
         {
@@ -251,8 +249,8 @@ public class ChallengeController : ControllerBase
             UserId = userId,
         };
 
-        Context.ChallengeReviews.Add(review);
-        await Context.SaveChangesAsync();
+        context.ChallengeReviews.Add(review);
+        await context.SaveChangesAsync();
 
         return Ok();
     }
@@ -263,53 +261,129 @@ public class ChallengeController : ControllerBase
         if (userId == -1)
             return BadRequest("UserId in token is malformed");
 
-        var hasReviewed = await Context.ChallengeReviews
+        var hasReviewed = await context.ChallengeReviews
             .AnyAsync(r => r.UserId == userId && r.ChallengeId == challengeId);
 
         return Ok(hasReviewed);
     }
-[HttpGet("GetUserReview")]
-public async Task<IActionResult> GetUserReview(int challengeId)
-{
-    int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
-    if (userId == -1)
-        return BadRequest("UserId in token is malformed");
 
-    var review = await Context.ChallengeReviews
-        .FirstOrDefaultAsync(r => r.ChallengeId == challengeId && r.UserId == userId);
-
-    if (review == null)
-        return NotFound();
-
-    return Ok(new
+    [HttpGet("GetUserReview")]
+    public async Task<IActionResult> GetUserReview(int challengeId)
     {
-        Stars = review.Stars,
-        Difficulty = (int)review.Difficulty,
-        Text = review.Text
-    });
-}
-[HttpPut("UpdateReview")]
-public async Task<IActionResult> UpdateReview([FromBody] ChallengeReviewDto dto)
-{
-    if (!ModelState.IsValid) return BadRequest(ModelState);
+        int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
+        if (userId == -1)
+            return BadRequest("UserId in token is malformed");
 
-    int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
-    if (userId == -1)
-        return BadRequest("UserId in token is malformed");
+        var review = await context.ChallengeReviews
+            .FirstOrDefaultAsync(r => r.ChallengeId == challengeId && r.UserId == userId);
 
-    var review = await Context.ChallengeReviews
-        .FirstOrDefaultAsync(r => r.ChallengeId == dto.ChallengeId && r.UserId == userId);
+        if (review == null)
+            return NotFound();
 
-    if (review == null)
-        return NotFound("Review not found");
+        return Ok(new
+        {
+            Stars = review.Stars,
+            Difficulty = (int)review.Difficulty,
+            Text = review.Text
+        });
+    }
 
-    review.Stars = dto.Stars;
-    review.Difficulty = dto.Difficulty;
-    review.Text = dto.Text;
+    [HttpPut("UpdateReview")]
+    public async Task<IActionResult> UpdateReview([FromBody] ChallengeReviewDto dto)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
-    await Context.SaveChangesAsync();
-    return Ok();
-}
+        int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
+        if (userId == -1)
+            return BadRequest("UserId in token is malformed");
 
+        var review = await context.ChallengeReviews
+            .FirstOrDefaultAsync(r => r.ChallengeId == dto.ChallengeId && r.UserId == userId);
 
+        if (review == null)
+            return NotFound("Review not found");
+
+        review.Stars = dto.Stars;
+        review.Difficulty = dto.Difficulty;
+        review.Text = dto.Text;
+
+        await context.SaveChangesAsync();
+        return Ok();
+    }
+
+    [Authorize(Roles = "Moderator,Admin")]
+    [HttpPost("CreateChallenge")]
+    public async Task<IActionResult> CreateChallenge([FromForm] CreateChallengeDto request)
+    {
+        int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
+        if (userId == -1)
+            return BadRequest("UserId in token is malformed");
+
+        User? user = await context.Users.FindAsync(userId);
+        if (user == null)
+            return NotFound("User for account not found");
+
+        Category? category = await context.Categories.FindAsync(request.CategoryId);
+        if (category == null)
+            return NotFound("Category not found");
+
+        if (!challengeService.CheckPointsForDiff(request.Points, request.Difficulty))
+            return BadRequest("Points are invalid for given difficulty");
+
+        Challenge challenge = new()
+        {
+            Name = request.Name,
+            Description = request.Description,
+            Points = request.Points,
+            Difficulty = request.Difficulty,
+            Flag = request.Flag,
+            Public = request.IsPublic,
+            Archived = request.IsArchived,
+            Category = category
+        };
+
+        var rootPath = configuration.GetValue<string>("AppSettings:Storage")!;
+        var chalPath = Path.Combine(rootPath, "challenges", $"tmp{new Random().Next()}");
+        while (Directory.Exists(chalPath))
+            chalPath = Path.Combine(rootPath, "challenges", $"tmp{new Random().Next()}");
+        Directory.CreateDirectory(chalPath);
+
+        if (request.DownloadFile != null && request.DownloadFile.Length > 0)
+        {
+            var publicPath = Path.Combine(chalPath, "public");
+            BuildHelper.ForceDeleteDirectory(publicPath);
+            Directory.CreateDirectory(publicPath);
+
+            try
+            {
+                using var downloadStream = new FileStream(Path.Combine(publicPath, request.DownloadFile.FileName), FileMode.Create);
+                await request.DownloadFile.CopyToAsync(downloadStream);
+            }
+            catch (Exception ex)
+            {
+                BuildHelper.ForceDeleteDirectory(publicPath);
+                return BadRequest(ex.Message);
+            }
+        }
+
+        if (request.DockerFile != null && request.DockerFile.Length > 0)
+        {
+            var dockerPath = Path.Combine(chalPath, "docker");
+            bool success = await BuildHelper.ExtractZipAsync(request.DockerFile.OpenReadStream(), dockerPath);
+
+            if (!success)
+            {
+                BuildHelper.ForceDeleteDirectory(dockerPath);
+                return BadRequest("Invalid Docker Zip file");
+            }
+        }
+
+        await context.Challenges.AddAsync(challenge);
+        await context.SaveChangesAsync();
+
+        var realChalPath = Path.Combine(rootPath, "challenges", challenge.Id.ToString());
+        Directory.Move(chalPath, realChalPath);
+
+        return Ok(challenge.Id);
+    }
 }

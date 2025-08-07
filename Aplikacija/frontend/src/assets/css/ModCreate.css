@@ -359,3 +359,86 @@
     margin-bottom: 1rem;
     color: #ff7272;
 }
+
+.studio-answer-grid svg {
+    font-size: 1.5rem;
+}
+
+.studio-add-quiz svg {
+    position: absolute;
+    margin: 0;
+    right: 0.6rem;
+    font-size: 2rem;
+    pointer-events: none;
+}
+
+.form-field input[type=number]::-webkit-inner-spin-button,
+.form-field input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.form-field input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+svg.form-number-inc {
+    position: absolute;
+    right: 2rem;
+}
+
+svg[class^=form-number] {
+    width: 1.6rem;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+svg[class^=form-number]:hover {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.studio-back {
+    position: absolute;
+    font-size: 3rem;
+
+    left: 2rem;
+    top: 2rem;
+
+    padding: 0.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+}
+
+.studio-back:hover {
+    background-color: #3385ff2a;
+}
+
+.studio-upload-subcon {
+    display: flex;
+}
+
+.studio-upload-remove {
+    background-color: #FF646E;
+    color: rgb(13, 21, 63);
+
+    border: 0;
+    outline: none;
+
+    font-size: 1.6rem;
+
+    padding: 0.6rem;
+    border-radius: 3px;
+    
+    cursor: pointer;
+
+    margin: 0 1rem;
+
+    transition: all 0.3s ease;
+}
+
+.studio-upload-remove:hover {
+    color: white;
+    background-color: #d42d38;
+}

@@ -7,12 +7,29 @@ import { CircularProgress, FormControlLabel, MenuItem, Select, Slider, Switch } 
 import difficulties from '@/utils/difficulties';
 import { MdQuiz } from 'react-icons/md';
 import '@/assets/css/ModCreate.css';
-import { IoIosSave } from 'react-icons/io';
+import { IoIosSave, IoMdArrowRoundBack } from 'react-icons/io';
 import type { Quiz } from '../Quiz/QuizTypes';
 import * as yup from 'yup';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { useAuth } from '@/contexts/AuthProvider';
 import { getInfoFromToken } from '@/lib/jwt';
+
+interface LessonData {
+    id?: number;
+    title: string;
+    description: string;
+    difficulty: number;
+    categoryId?: number;
+    isPublic: boolean;
+    quizId?: number;
+    content?: string;
+};
+
+interface Category {
+    name: string;
+    shortForm: string;
+    id: number;
+};
 
 const getColor = (val: number) => {
     if (val < 3) return 'success.main';
@@ -41,23 +58,6 @@ const validationSchema = yup.object({
         .min(3, 'Title must be at least 3 characters')
         .max(30, 'Title must be at most 30 characters'),
 });
-
-interface LessonData {
-    id?: number;
-    title: string;
-    description: string;
-    difficulty: number;
-    categoryId?: number;
-    isPublic: boolean;
-    quizId?: number;
-    content?: string;
-};
-
-interface Category {
-    name: string;
-    shortForm: string;
-    id: number;
-};
 
 function CreateLesson() {
     const params = useParams();
@@ -125,7 +125,8 @@ function CreateLesson() {
                     quiz: quiz
                 })
                 .then(res => {
-                    navigate(`/moderator/edit-lesson/${res}`);
+                    navigate(`/moderator/edit-lesson/${res.data}`);
+                    setLoading(false);
                 })
                 .catch(err => {
                     setLoading(false);
@@ -154,8 +155,9 @@ function CreateLesson() {
                     categoryId: lesson.categoryId,
                     quiz: quiz
                 })
-                .then(() => {
+                .then(res => {
                     setLoading(false);
+                    setLesson(prev => ({...prev, quizId: res.data !== '' ? res.data : undefined }));
                 })
                 .catch(err => {
                     setLoading(false);
@@ -191,6 +193,7 @@ function CreateLesson() {
 
     return (
         <div className="studio-create">
+            <IoMdArrowRoundBack className='studio-back' onClick={() => navigate("/moderator/lessons")}/>
             <h1>{params.id ? 'Edit' : 'Create'} Lesson</h1>
             <form className="studio-create-form">
                 <h2>
@@ -297,13 +300,23 @@ function CreateLesson() {
                         <div className="form-label">Quiz</div>
                         <div className="studio-upload-con">
                             <button type="button" onClick={() => {
-                                navigate("/moderator/new-quiz", {
-                                    state: {
-                                        lesson: lesson,
-                                        quiz: quiz,
-                                        retPage: location.pathname
-                                    }
-                                });
+                                if(lesson.quizId) {
+                                    navigate(`/moderator/edit-quiz/${lesson.quizId}`, {
+                                        state: {
+                                            lesson: lesson,
+                                            retPage: location.pathname
+                                        }
+                                    })
+                                }
+                                else {
+                                    navigate("/moderator/new-quiz", {
+                                        state: {
+                                            lesson: lesson,
+                                            quiz: quiz,
+                                            retPage: location.pathname
+                                        }
+                                    });
+                                }
                             }}><MdQuiz />  Quiz Maker</button>
                             <p className='studio-no-upload'>{
                                 lesson.quizId ? `Quiz #${lesson.quizId}` : (

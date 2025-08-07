@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using backend.DTOs;
 using backend.DTOs.Lessons;
 using backend.Services.QuizService;
 
@@ -60,7 +61,7 @@ public class QuizController(ApplicationDbContext context, IQuizService quizServi
 
     [Authorize(Roles = "Moderator,Admin")]
     [HttpDelete("DeleteQuiz")]
-    public async Task<ActionResult> DeleteQuiz([FromBody] int quizId)
+    public async Task<ActionResult> DeleteQuiz(DeleteIdDto request)
     {
         int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
         if (userId == -1)
@@ -71,7 +72,7 @@ public class QuizController(ApplicationDbContext context, IQuizService quizServi
             return NotFound("User for account not found");
 
         Quiz? quiz = await context.Quizzes
-            .Where(qz => qz.Id == quizId)
+            .Where(qz => qz.Id == request.Id)
             .Include(qz => qz.Lesson)
             .FirstOrDefaultAsync();
 
@@ -127,7 +128,7 @@ public class QuizController(ApplicationDbContext context, IQuizService quizServi
                 q.Id,
                 q.Points,
                 q.Text,
-                Options = q.Options?.Select(o => new
+                Answers = q.Options?.Select(o => new
                 {
                     o.Id,
                     o.Text,
