@@ -19,7 +19,16 @@ type ImageWrapperProps = React.ImgHTMLAttributes<HTMLImageElement>;
 const ImageWrapper: React.FC<ImageWrapperProps> = ({ src, alt = '', ...props }) => {
   return <img src={src===""?undefined:src} alt={alt} {...props} />;
 };
+  function truncateText(text: string, maxLength: number): string {
+  if (!text) return '';
+  if (text.length <= maxLength) return text;
 
+  const trimmed = text.slice(0, maxLength);
+  const lastSpace = trimmed.lastIndexOf(' ');
+  if (lastSpace === -1) return trimmed + '...';
+
+  return trimmed.slice(0, lastSpace) + '...';
+}
 function Courses() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [sortKey, setSortKey] = useState<'name' | 'rating'>('name');
@@ -133,6 +142,9 @@ function Courses() {
                 size="small"
                 className='rating-bottom-left'
               />
+            </div>
+            <div className="course-description">
+            {course.description ? truncateText(course.description, 400) : ''}
             </div>
           </div>
         ))}
