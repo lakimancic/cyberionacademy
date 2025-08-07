@@ -1,4 +1,4 @@
-* { box-sizing: border-box; }
+.courses-container * { box-sizing: border-box; }
 
 .courses-container {
   backdrop-filter: blur(12px);
@@ -29,7 +29,7 @@
   justify-content: space-between;
 }
 
-.search-group {
+.courses-container .search-group {
   display: flex;
   align-items: center;
   background-color: #1a1d2e;
@@ -38,7 +38,7 @@
   overflow: hidden;
 }
 
-.search-group input {
+.courses-container .search-group input {
   background: none;
   border: none;
   padding: 1rem;
@@ -47,7 +47,7 @@
   outline: none;
 }
 
-.search-group button {
+.courses-container .search-group button {
   background: none;
   border: none;
   color: white;
@@ -57,11 +57,11 @@
   transition: background-color 0.2s ease;
 }
 
-.search-group button:hover {
+.courses-container .search-group button:hover {
   background-color: #252a40;
 }
 
-.controls-bar select {
+.courses-container .controls-bar select {
   background-color: #1a1d2e;
   color: #fff;
   border: 1px solid #2c2f45;
@@ -70,7 +70,7 @@
   font-size: 0.9rem;
 }
 
-.sort-buttons .sort-button {
+.courses-container .sort-buttons .sort-button {
   background-color: #1a1d2e;
   color: #fff;
   border: 1px solid #2c2f45;
@@ -79,18 +79,18 @@
   cursor: pointer;
 }
 
-.sort-buttons .sort-button.active {
+.courses-container .sort-buttons .sort-button.active {
   background-color: #2d324a;
 }
 
-.course-grid {
+.courses-container .course-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
   margin-top: 2rem;
 }
 
-.course-card {
+.courses-container .course-card {
   background-color: #1a1d2e;
   border: 1px solid #2c2f45;
   border-radius: 12px;
@@ -105,18 +105,18 @@
   
 }
 
-.course-card:hover {
+.courses-container .course-card:hover {
   transform: scale(1.03);
 }
 
-.course-card img {
+.courses-container .course-card img {
   width: 100%;
   height: 220px; /* 👈 povećana visina banera */
   object-fit: cover;
   border-bottom: 1px solid #2c2f45;
 }
 
-.course-content {
+.courses-container .course-content {
   flex: 1;
   padding: 1rem;
   display: flex;
@@ -126,22 +126,22 @@
   height: 100%;
 }
 
-.course-content h3 {
+.courses-container .course-content h3 {
   font-size: 1.4rem;
   margin: 0.5rem 0 0.25rem;
 }
 
-.difficulty {
+.courses-container .difficulty {
  font-size: 0.85rem;
   color: #aaa;
   margin-bottom: 1.5rem;
 }
 
-.MuiRating-root {
+.courses-container .MuiRating-root {
   align-self: flex-start;
 }
 
-.author {
+.courses-container .author {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -150,7 +150,7 @@
   right: 1rem;
 }
 
-.author img {
+.courses-container .author img {
   border-radius: 50%;
   width: 28px;
   height: 28px;
@@ -158,17 +158,17 @@
   border: 2px solid #fff;
 }
 
-.author span {
+.courses-container .author span {
   font-size: 0.95rem;
   color: #fff;
 }
-.rating-bottom-left {
+.courses-container .rating-bottom-left {
   position: absolute;
   bottom: 0.5rem;
   left: 0.2rem;
 }
 
-.pagination {
+.courses-container .pagination {
   margin-top: 2rem;
   display: flex;
   justify-content: center;
@@ -176,7 +176,7 @@
   align-items: center;
 }
 
-.pagination button {
+.courses-container .pagination button {
   background-color: #1a1d2e;
   color: white;
   border: 1px solid #2c2f45;
@@ -185,7 +185,7 @@
   cursor: pointer;
 }
 
-.pagination button:disabled {
+.courses-container .pagination button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
