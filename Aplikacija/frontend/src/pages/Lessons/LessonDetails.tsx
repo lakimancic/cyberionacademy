@@ -61,8 +61,9 @@ function LessonDetails() {
       setReviewDifficulty("");
       setReviewText("");
       alert("✅ Review submitted!");
-    }).catch(() => {
-      alert("❌ Failed to submit review.");
+    }).catch((error) => {
+    const errorMessage = error?.response?.data || "❌ Failed to submit review.";
+    alert(errorMessage);
     }).then(() => {
       return api.get(`/Lesson/GetLessonDetails/${id}`);
     }).then(res => setLesson(res.data));
