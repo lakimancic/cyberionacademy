@@ -326,10 +326,12 @@
 
 .studio-quiz-add svg {
     color: #0fac6f;
+    cursor: pointer;
 }
 
 .studio-quiz-remove svg {
     color: #e75a5a;
+    cursor: pointer;
 }
 
 .studio-quiz-answer {

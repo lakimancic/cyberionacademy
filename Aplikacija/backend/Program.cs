@@ -56,6 +56,7 @@ builder.Services.AddScoped<IChallengeService, ChallengeService>();
 
 builder.Services.AddSingleton<IDockerInstancer, DockerInstancer>();
 builder.Services.AddHostedService<DockerCleanupService>();
+// builder.Services.AddHostedService<QuizCleanupService>();
 
 builder.Services.AddSignalR();
 

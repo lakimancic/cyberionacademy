@@ -24,6 +24,7 @@ import CreateLesson from "@/pages/Lessons/CreateLesson";
 import LessonEditor from "@/pages/Lessons/LessonEditor";
 import CreateQuiz from "@/pages/Quiz/CreateQuiz";
 import LessonDetails from "@/pages/Lessons/LessonDetails";
+import Quiz from "@/pages/Quiz/Quiz";
 
 function Routes() {
     const auth = useAuth();
@@ -111,6 +112,10 @@ function Routes() {
                         {
                             path: "/lessons/:id",
                             element: <LessonDetails />
+                        },
+                        {
+                            path: "/quiz/:id",
+                            element: <Quiz />
                         },
                         {
                             path: "/challenges",

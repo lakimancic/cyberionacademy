@@ -8,6 +8,7 @@ type InputProps = {
     handleChange: () => void;
     error?: string;
     inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
+    setNumberValue?: (val: number) => void;
 };
 
 function InputField(props : InputProps) {
@@ -30,8 +31,14 @@ function InputField(props : InputProps) {
                     <IoEyeOff onClick={() => setPasswordVisible(true)}/>
                 )}
                 {props.type === 'number' && <>
-                    <FiPlusCircle className="form-number-inc" onClick={() => inputRef.current?.stepUp()} />
-                    <FiMinusCircle className="form-number-dec" onClick={() => inputRef.current?.stepDown()} />
+                    <FiPlusCircle className="form-number-inc" onClick={() => {
+                        inputRef.current?.stepUp();
+                        props.setNumberValue?.(parseInt(inputRef.current?.value ?? '0'));
+                    }} />
+                    <FiMinusCircle className="form-number-dec" onClick={() => {
+                        inputRef.current?.stepDown();
+                        props.setNumberValue?.(parseInt(inputRef.current?.value ?? '0'));
+                    }} />
                 </>}
             </div>
             <div className={`form-error ${props.error ? '' : 'form-hidden'}`}>{props.error ?? ''}</div>

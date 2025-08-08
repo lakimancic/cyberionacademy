@@ -62,8 +62,6 @@ function CreateQuiz() {
         questions: []
     });
     const selectRef = useRef<any>(null);
-    const [minQuestions, setMinQuestions] = useState(0);
-    const [maxQuestions, setMaxQuestions] = useState(0);
     const navigate = useNavigate();
     const location = useLocation();
     const [globalError, setGlobalError] = useState("");
@@ -107,8 +105,11 @@ function CreateQuiz() {
             text: 'New option',
             isCorrect: false
         };
-        if (questions[qIndex].answers)
+        if (questions[qIndex].answers) {
+            if (questions[qIndex].answers.length === 8) return;
+
             questions[qIndex].answers.push(newOption);
+        }
         
         setQuiz(prev => ({
             ...prev,
@@ -137,8 +138,11 @@ function CreateQuiz() {
             left: 'New Left',
             right: 'New Right'
         };
-        if (questions[qIndex].pairs)
+        if (questions[qIndex].pairs) {
+            if (questions[qIndex].pairs.length === 8) return;
+
             questions[qIndex].pairs.push(newPair);
+        }
         
         setQuiz(prev => ({
             ...prev,
@@ -336,11 +340,6 @@ function CreateQuiz() {
             setQuiz(location.state.quiz);
         }
     }, [location]);
-
-    useEffect(() => {
-        setMinQuestions(Math.round(quiz.questions.length / 2));
-        setMaxQuestions(Math.round(quiz.questions.length));
-    }, [quiz.questions]);
     
     return (
         <div className="studio-create" ref={containerRef}>
@@ -356,8 +355,8 @@ function CreateQuiz() {
                         label='Questions Count in Quiz'
                         handleChange={() => {}}
                         inputProps={{
-                            min: minQuestions,
-                            max: maxQuestions,
+                            min: Math.round(quiz.questions.length / 2),
+                            max: quiz.questions.length,
                             step: 1,
                             value: quiz.questionCount.toString(),
                             onChange: e => setQuiz(prev => ({
@@ -365,6 +364,10 @@ function CreateQuiz() {
                                 questionCount: parseInt(e.target.value) || 0
                             }))
                         }}
+                        setNumberValue={val => setQuiz(prev => ({
+                            ...prev,
+                            questionCount: val
+                        }))}
                     />
                 </div>
                 <div className="studio-create-col">
@@ -382,6 +385,10 @@ function CreateQuiz() {
                                 timeMinutes: parseInt(e.target.value) || 0
                             }))
                         }}
+                        setNumberValue={val => setQuiz(prev => ({
+                            ...prev,
+                            timeMinutes: val
+                        }))}
                     />
                 </div>
             </form>

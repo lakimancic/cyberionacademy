@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Threading.Tasks;
 using backend.DTOs.Lessons;
 
@@ -52,98 +53,120 @@ public class QuizService(ApplicationDbContext context) : IQuizService
             switch (question.Type)
             {
                 case QuestionType.SingleAnswer:
-                    var qobj1 = new SingleAnswerQuestion
-                    {
-                        Text = question.Text,
-                        Points = question.Points,
-                        Options = []
-                    };
-
-                    if (question.Answers == null || question.Answers.Count < 2)
-                        throw new Exception("Single Answer questions need at least 2 answers");
-                    if (question.Answers.Count(qa => qa.IsCorrect) > 1)
-                        throw new Exception("Single Answer question must have only 1 correct answer");
-
-                    foreach (var answer in question.Answers)
-                        qobj1.Options.Add(new AnswerOption
-                        {
-                            Text = answer.Text,
-                            IsCorrect = answer.IsCorrect,
-                            Question = qobj1,
-                        });
-
-                    quiz.Questions?.Add(qobj1);
+                    quiz.Questions?.Add(CreateSingleAnswerQuestion(question));
                     break;
 
                 case QuestionType.MultiAnswer:
-                    var qobj2 = new MultiAnswerQuestion
-                    {
-                        Text = question.Text,
-                        Points = question.Points,
-                        Options = []
-                    };
-
-                    if (question.Answers == null || question.Answers.Count < 2)
-                        throw new Exception("Multi-Answer questions need at least 2 answers");
-                    if (!question.Answers.Any(qa => qa.IsCorrect))
-                        throw new Exception("Multi-Answer question must have at least 1 correct answer");
-
-                    foreach (var answer in question.Answers)
-                        qobj2.Options?.Add(new AnswerOption
-                        {
-                            Text = answer.Text,
-                            IsCorrect = answer.IsCorrect,
-                            Question = qobj2
-                        });
-
-                    quiz.Questions?.Add(qobj2);
+                    quiz.Questions?.Add(CreateMultiAnswerQuestion(question));
                     break;
 
                 case QuestionType.Connect:
-                    var qobj3 = new ConnectQuestion
-                    {
-                        Text = question.Text,
-                        Points = question.Points,
-                        Pairs = []
-                    };
-
-                    if (question.Pairs == null || question.Pairs.Count < 2)
-                        throw new Exception("Connect questions need at least 2 pairs");
-
-                    foreach (var pair in question.Pairs)
-                        qobj3.Pairs?.Add(new ConnectPair
-                        {
-                            Left = pair.Left,
-                            Right = pair.Right,
-                            Question = qobj3
-                        });
-
-                    quiz.Questions?.Add(qobj3);
+                    quiz.Questions?.Add(CreateConnectQuestion(question));
                     break;
 
                 case QuestionType.Text:
-                    var qobj4 = new TextQuestion
-                    {
-                        Text = question.Text,
-                        Points = question.Points,
-                        Options = []
-                    };
-
-                    if (question.Answers == null || question.Answers.Count != 1)
-                        throw new Exception("Text questions must have an answer");
-
-                    qobj4.Options?.Add(new AnswerOption
-                    {
-                        Text = question.Answers[0].Text,
-                        IsCorrect = true,
-                        Question = qobj4
-                    });
-
-                    quiz.Questions?.Add(qobj4);
+                    quiz.Questions?.Add(CreateTextQuestion(question));
                     break;
             }
         }
         quiz.TotalPoints = totalPoints;
+    }
+
+    public SingleAnswerQuestion CreateSingleAnswerQuestion(CreateQuestionDto question)
+    {
+        var obj = new SingleAnswerQuestion
+        {
+            Text = question.Text,
+            Points = question.Points,
+            Options = []
+        };
+
+        if (question.Answers == null || question.Answers.Count < 2)
+            throw new Exception("Single Answer questions need at least 2 answers");
+        if (question.Answers.Count(qa => qa.IsCorrect) > 1)
+            throw new Exception("Single Answer question must have only 1 correct answer");
+        if (question.Answers.Count > 8)
+            throw new Exception("Single Answer question have 8 options at maximum");
+
+        foreach (var answer in question.Answers)
+            obj.Options.Add(new AnswerOption
+            {
+                Text = answer.Text,
+                IsCorrect = answer.IsCorrect,
+                Question = obj,
+            });
+        return obj;
+    }
+
+    public MultiAnswerQuestion CreateMultiAnswerQuestion(CreateQuestionDto question)
+    {
+        var obj = new MultiAnswerQuestion
+        {
+            Text = question.Text,
+            Points = question.Points,
+            Options = []
+        };
+
+        if (question.Answers == null || question.Answers.Count < 2)
+            throw new Exception("Multi-Answer questions need at least 2 answers");
+        if (!question.Answers.Any(qa => qa.IsCorrect))
+            throw new Exception("Multi-Answer question must have at least 1 correct answer");
+        if (question.Answers.Count > 8)
+            throw new Exception("Multi-Answer question have 8 options at maximum");
+
+        foreach (var answer in question.Answers)
+            obj.Options?.Add(new AnswerOption
+            {
+                Text = answer.Text,
+                IsCorrect = answer.IsCorrect,
+                Question = obj
+            });
+        return obj;
+    }
+
+    public ConnectQuestion CreateConnectQuestion(CreateQuestionDto question)
+    {
+        var obj = new ConnectQuestion
+        {
+            Text = question.Text,
+            Points = question.Points,
+            Pairs = []
+        };
+
+        if (question.Pairs == null || question.Pairs.Count < 2)
+            throw new Exception("Connect questions need at least 2 pairs");
+        if (question.Pairs.Count > 8)
+            throw new Exception("Connect question have 8 pairs at maximum");
+
+        foreach (var pair in question.Pairs)
+            obj.Pairs?.Add(new ConnectPair
+            {
+                Left = pair.Left,
+                Right = pair.Right,
+                Question = obj
+            });
+        return obj;
+    }
+
+    public TextQuestion CreateTextQuestion(CreateQuestionDto question)
+    {
+        var obj = new TextQuestion
+        {
+            Text = question.Text,
+            Points = question.Points,
+            Options = []
+        };
+
+        if (question.Answers == null || question.Answers.Count != 1)
+            throw new Exception("Text questions must have an answer");
+
+        obj.Options?.Add(new AnswerOption
+        {
+            Text = question.Answers[0].Text,
+            IsCorrect = true,
+            Question = obj
+        });
+        return obj;
     }
 
     public void UpdateQuestion(Question? question, CreateQuestionDto request)
@@ -160,117 +183,141 @@ public class QuizService(ApplicationDbContext context) : IQuizService
             question.Points = request.Points;
 
         switch (question.Type)
+        {
+            case QuestionType.SingleAnswer:
+                UpdateSingleAnswerQuestion((SingleAnswerQuestion)question, request);
+                break;
+
+            case QuestionType.MultiAnswer:
+                UpdateMultiAnswerQuestion((MultiAnswerQuestion)question, request);
+                break;
+
+            case QuestionType.Connect:
+                UpdateConnectQuestion((ConnectQuestion)question, request);
+                break;
+
+            case QuestionType.Text:
+                UpdateTextQuestion((TextQuestion)question, request);
+                break;
+        }
+    }
+
+    public void UpdateSingleAnswerQuestion(SingleAnswerQuestion question, CreateQuestionDto request)
+    {
+        if (request.Answers == null || request.Answers.Count < 2)
+            throw new Exception("Single Answer questions need at least 2 answers");
+        if (request.Answers.Count(qa => qa.IsCorrect) > 1)
+            throw new Exception("Single Answer question must have only 1 correct answer");
+
+        var forUpdate1 = request.Answers.Where(a => a.Id.HasValue);
+        var forCreate1 = request.Answers.Where(a => !a.Id.HasValue);
+
+        var incomindIds1 = forUpdate1.Select(a => a.Id!.Value);
+        var forDelete1 = question.Options!.Where(ao => !incomindIds1.Contains(ao.Id));
+
+        context.AnswerOptions.RemoveRange(forDelete1);
+        foreach (var answer in forCreate1)
+            question.Options!.Add(new AnswerOption
             {
-                case QuestionType.SingleAnswer:
-                    if (request.Answers == null || request.Answers.Count < 2)
-                        throw new Exception("Single Answer questions need at least 2 answers");
-                    if (request.Answers.Count(qa => qa.IsCorrect) > 1)
-                        throw new Exception("Single Answer question must have only 1 correct answer");
+                Text = answer.Text,
+                IsCorrect = answer.IsCorrect,
+                Question = question
+            });
 
-                    SingleAnswerQuestion saq = (question as SingleAnswerQuestion)!;
-                    var forUpdate1 = request.Answers.Where(a => a.Id.HasValue);
-                    var forCreate1 = request.Answers.Where(a => !a.Id.HasValue);
+        if (question.Options!.Count > 8)
+            throw new Exception("Single Answer question have 8 options at maximum");
 
-                    var incomindIds1 = forUpdate1.Select(a => a.Id!.Value);
-                    var forDelete1 = saq.Options!.Where(ao => !incomindIds1.Contains(ao.Id));
+        foreach (var answer in forUpdate1)
+        {
+            AnswerOption? answer1 = question.Options!.FirstOrDefault(ao => ao.Id == answer.Id)
+                ?? throw new Exception("Answer for update not found");
+            if (answer1.IsCorrect != answer.IsCorrect)
+                answer1.IsCorrect = answer.IsCorrect;
+            if (answer1.Text != answer.Text)
+                answer1.Text = answer.Text;
+        }
+    }
 
-                    context.AnswerOptions.RemoveRange(forDelete1);
-                    foreach (var answer in forCreate1)
-                        saq.Options!.Add(new AnswerOption
-                        {
-                            Text = answer.Text,
-                            IsCorrect = answer.IsCorrect,
-                            Question = saq
-                        });
+    public void UpdateMultiAnswerQuestion(MultiAnswerQuestion question, CreateQuestionDto request)
+    {
+        if (request.Answers == null || request.Answers.Count < 2)
+            throw new Exception("Multi-Answer questions need at least 2 answers");
+        if (!request.Answers.Any(qa => qa.IsCorrect))
+            throw new Exception("Multi-Answer question must have at least 1 correct answer");
 
-                    foreach (var answer in forUpdate1)
-                    {
-                        AnswerOption? answer1 = saq.Options!.FirstOrDefault(ao => ao.Id == answer.Id)
-                            ?? throw new Exception("Answer for update not found");
-                        if (answer1.IsCorrect != answer.IsCorrect)
-                            answer1.IsCorrect = answer.IsCorrect;
-                        if (answer1.Text != answer.Text)
-                            answer1.Text = answer.Text;
-                    }
-                    break;
+        var forUpdate2 = request.Answers.Where(a => a.Id.HasValue);
+        var forCreate2 = request.Answers.Where(a => !a.Id.HasValue);
 
-                case QuestionType.MultiAnswer:
-                    if (request.Answers == null || request.Answers.Count < 2)
-                        throw new Exception("Multi-Answer questions need at least 2 answers");
-                    if (!request.Answers.Any(qa => qa.IsCorrect))
-                        throw new Exception("Multi-Answer question must have at least 1 correct answer");
+        var incomindIds2 = forUpdate2.Select(a => a.Id!.Value);
+        var forDelete2 = question.Options!.Where(ao => !incomindIds2.Contains(ao.Id));
 
-                    MultiAnswerQuestion maq = (question as MultiAnswerQuestion)!;
-                    var forUpdate2 = request.Answers.Where(a => a.Id.HasValue);
-                    var forCreate2 = request.Answers.Where(a => !a.Id.HasValue);
+        context.AnswerOptions.RemoveRange(forDelete2);
+        foreach (var answer in forCreate2)
+            question.Options!.Add(new AnswerOption
+            {
+                Text = answer.Text,
+                IsCorrect = answer.IsCorrect,
+                Question = question
+            });
 
-                    var incomindIds2 = forUpdate2.Select(a => a.Id!.Value);
-                    var forDelete2 = maq.Options!.Where(ao => !incomindIds2.Contains(ao.Id));
+        if (question.Options!.Count > 8)
+            throw new Exception("Multi-Answer question have 8 options at maximum");
 
-                    context.AnswerOptions.RemoveRange(forDelete2);
-                    foreach (var answer in forCreate2)
-                        maq.Options!.Add(new AnswerOption
-                        {
-                            Text = answer.Text,
-                            IsCorrect = answer.IsCorrect,
-                            Question = maq
-                        });
+        foreach (var answer in forUpdate2)
+        {
+            AnswerOption? answer1 = question.Options!.FirstOrDefault(ao => ao.Id == answer.Id)
+                ?? throw new Exception("Answer for update not found");
+            if (answer1.IsCorrect != answer.IsCorrect)
+                answer1.IsCorrect = answer.IsCorrect;
+            if (answer1.Text != answer.Text)
+                answer1.Text = answer.Text;
+        }
+    }
 
-                    foreach (var answer in forUpdate2)
-                    {
-                        AnswerOption? answer1 = maq.Options!.FirstOrDefault(ao => ao.Id == answer.Id)
-                            ?? throw new Exception("Answer for update not found");
-                        if (answer1.IsCorrect != answer.IsCorrect)
-                            answer1.IsCorrect = answer.IsCorrect;
-                        if (answer1.Text != answer.Text)
-                            answer1.Text = answer.Text;
-                    }
-                    break;
+    public void UpdateConnectQuestion(ConnectQuestion question, CreateQuestionDto request)
+    {
+        if (request.Pairs == null || request.Pairs.Count < 2)
+            throw new Exception("Connect questions need at least 2 pairs");
 
-                case QuestionType.Connect:
-                    if (request.Pairs == null || request.Pairs.Count < 2)
-                        throw new Exception("Connect questions need at least 2 pairs");
+        var forUpdate3 = request.Pairs.Where(a => a.Id.HasValue);
+        var forCreate3 = request.Pairs.Where(a => !a.Id.HasValue);
 
-                    ConnectQuestion cq = (question as ConnectQuestion)!;
-                    var forUpdate3 = request.Pairs.Where(a => a.Id.HasValue);
-                    var forCreate3 = request.Pairs.Where(a => !a.Id.HasValue);
+        var incomindIds3 = forUpdate3.Select(a => a.Id!.Value);
+        var forDelete3 = question.Pairs!.Where(ao => !incomindIds3.Contains(ao.Id));
 
-                    var incomindIds3 = forUpdate3.Select(a => a.Id!.Value);
-                    var forDelete3 = cq.Pairs!.Where(ao => !incomindIds3.Contains(ao.Id));
+        context.ConnectPairs.RemoveRange(forDelete3);
+        foreach (var answer in forCreate3)
+            question.Pairs!.Add(new ConnectPair
+            {
+                Left = answer.Left,
+                Right = answer.Right,
+                Question = question
+            });
 
-                    context.ConnectPairs.RemoveRange(forDelete3);
-                    foreach (var answer in forCreate3)
-                        cq.Pairs!.Add(new ConnectPair
-                        {
-                            Left = answer.Left,
-                            Right = answer.Right,
-                            Question = cq
-                        });
+        if (question.Pairs!.Count > 8)
+            throw new Exception("Connect question have 8 pairs at maximum");
 
-                    foreach (var answer in forUpdate3)
-                    {
-                        ConnectPair? answer1 = cq.Pairs!.FirstOrDefault(ao => ao.Id == answer.Id)
-                            ?? throw new Exception("Connect Pair for update not found");
-                        if (answer1.Left != answer.Left)
-                            answer1.Left = answer.Left;
-                        if (answer1.Right != answer.Right)
-                            answer1.Right = answer.Right;
-                    }
-                    break;
+        foreach (var answer in forUpdate3)
+        {
+            ConnectPair? answer1 = question.Pairs!.FirstOrDefault(ao => ao.Id == answer.Id)
+                ?? throw new Exception("Connect Pair for update not found");
+            if (answer1.Left != answer.Left)
+                answer1.Left = answer.Left;
+            if (answer1.Right != answer.Right)
+                answer1.Right = answer.Right;
+        }
+    }
 
-                case QuestionType.Text:
-                    if (request.Answers == null || request.Answers.Count != 1)
-                        throw new Exception("Text questions must have an answer");
+    public void UpdateTextQuestion(TextQuestion question, CreateQuestionDto request)
+    {
+        if (request.Answers == null || request.Answers.Count != 1)
+            throw new Exception("Text questions must have an answer");
 
-                    TextQuestion tq = (question as TextQuestion)!;
-                    AnswerOption answer2 = tq.Options![0];
-                    AnswerOptionDto answerDto = request.Answers[0];
+        AnswerOption answer2 = question.Options![0];
+        AnswerOptionDto answerDto = request.Answers[0];
 
-                    if (answer2.Text != answerDto.Text)
-                        answer2.Text = answerDto.Text;
-                    break;
-
-            }
+        if (answer2.Text != answerDto.Text)
+            answer2.Text = answerDto.Text;
     }
 
     public async Task DeleteQuiz(int quizId)
@@ -284,5 +331,78 @@ public class QuizService(ApplicationDbContext context) : IQuizService
             context.Questions.Remove(question);
 
         context.Quizzes.Remove(quiz);
+    }
+
+    public int CheckQuiz(Quiz quiz, SubmitQuizDto request)
+    {
+        return quiz.Questions!
+            .Join(
+                request.Questions.DistinctBy(q => q.Id),
+                q1 => q1.Id,
+                q2 => q2.Id,
+                CheckQuestion
+            )
+            .Sum();
+    }
+
+    public int CheckQuestion(Question question, SubmitQuestionDto request)
+    {
+        return question.Type switch
+        {
+            QuestionType.SingleAnswer => CheckSingleAnswerQuestion((SingleAnswerQuestion)question, request),
+            QuestionType.MultiAnswer => CheckMultiAnswerQuestion((MultiAnswerQuestion)question, request),
+            QuestionType.Connect => CheckConnectPairQuestion((ConnectQuestion)question, request),
+            QuestionType.Text => CheckTextAnswerQuestion((TextQuestion)question, request),
+            _ => 0,
+        };
+    }
+
+    public int CheckSingleAnswerQuestion(SingleAnswerQuestion question, SubmitQuestionDto request)
+    {
+        return question.Options!
+            .Join(
+                (request.Answers ?? []).DistinctBy(a => a.Id),
+                a1 => a1.Id,
+                a2 => a2.Id,
+                (a1, a2) => a1.IsCorrect == a2.IsCorrect
+            )
+            .All(a => a) ? question.Points : 0;
+    }
+
+    public int CheckMultiAnswerQuestion(MultiAnswerQuestion question, SubmitQuestionDto request)
+    {
+        var count = question.Options!
+            .Join(
+                (request.Answers ?? []).DistinctBy(a => a.Id),
+                a1 => a1.Id,
+                a2 => a2.Id,
+                (a1, a2) => a1.IsCorrect == a2.IsCorrect
+            )
+            .Count(a => a);
+        var fullCount = question.Options!.Count;
+        if (count == fullCount)
+            return question.Points;
+        return count >= fullCount / 2 ? (question.Points / 2) : 0;
+    }
+
+    public int CheckConnectPairQuestion(ConnectQuestion question, SubmitQuestionDto request)
+    {
+        var count = question.Pairs!
+            .Join(
+                (request.Pairs ?? []).DistinctBy(a => a.Id),
+                a1 => a1.Id,
+                a2 => a2.Id,
+                (a1, a2) => a1.Left == a2.Left && a1.Right == a2.Right
+            )
+            .Count(a => a);
+        var fullCount = question.Options!.Count;
+        if (count == fullCount)
+            return question.Points;
+        return count >= fullCount / 2 ? (question.Points / 2) : 0;
+    }
+
+    public int CheckTextAnswerQuestion(TextQuestion question, SubmitQuestionDto request)
+    {
+        return question.Options![0].Text == request.Answer ? question.Points : 0;
     }
 }
