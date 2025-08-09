@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import api from '@/lib/api';
 import { Rating } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import Switch from '@mui/material/Switch';
 
 
 
@@ -17,9 +18,10 @@ interface Challenge {
     isPublic: boolean;
     avatarUrl?: string;
     difficulty: number;
+    hasSolved: boolean;
 }
 
-type SortKey = 'name' | 'points' | 'categoryName';
+type SortKey = 'name' | 'points' | 'categoryName' | 'averageRating' | 'solvedCount';
 type Tab = 'active' | 'retired' | 'all';
 
 function Challenges() {
@@ -35,6 +37,7 @@ function Challenges() {
     const [totalPages, setTotalPages] = useState(1);
     const [categories, setCategories] = useState<string[]>([]);
     const [difficulties, setDifficulties] = useState<{ value: number; label: string }[]>([]);
+     const [showUnsolvedOnly, setShowUnsolvedOnly] = useState(false);
     const difficultyLabels = ['Very Easy', 'Easy', 'Medium', 'Hard', 'Very Hard'];
     const getDifficultyLabel = (value: number) => {
         return difficultyLabels[value] ?? 'Unknown';
@@ -45,7 +48,7 @@ function Challenges() {
 
     useEffect(() => {
         fetchChallenges();
-    }, [sortKey, sortDirection, activeTab, searchQuery, selectedCategory, selectedDifficulty, currentPage]);
+    }, [sortKey, sortDirection, activeTab, searchQuery, selectedCategory, selectedDifficulty, currentPage, showUnsolvedOnly]);
 
     useEffect(() => {
         api.get('/Challenge/GetCategories')
@@ -70,7 +73,8 @@ function Challenges() {
             category: selectedCategory !== 'all' ? selectedCategory : undefined,
             search: searchQuery !== '' ? searchQuery : undefined,
             archived: archivedParam,
-            difficulty: selectedDifficulty !== '' ? Number(selectedDifficulty) : undefined
+            difficulty: selectedDifficulty !== '' ? Number(selectedDifficulty) : undefined,
+            unsolvedOnly: showUnsolvedOnly ? true : undefined
         };
         console.log("Params sent to backend:", params);
         api.get('/Challenge/GetChallenges', { params })
@@ -113,6 +117,17 @@ function Challenges() {
                         </button>
                     ))}
                 </div>
+                <label style={{display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'white'}}>
+          Show Unsolved Only
+          <Switch
+            checked={showUnsolvedOnly}
+            onChange={e => {
+              setCurrentPage(1);
+              setShowUnsolvedOnly(e.target.checked);
+            }}
+            color="primary"
+          />
+        </label>
 
                 <div className="controls">
                     <div className="search-group">
@@ -162,31 +177,29 @@ function Challenges() {
                         <th onClick={() => handleSort('name')}>Challenge {renderSortArrow('name')}</th>
                         <th onClick={() => handleSort('categoryName')}>Category {renderSortArrow('categoryName')}</th>
                         <th onClick={() => handleSort('points')}>Points {renderSortArrow('points')}</th>
-                        <th>Avg. Rating</th>
-                        <th>Users Solves</th>
+                        <th onClick={() => handleSort('averageRating')}>Avg. Rating {renderSortArrow('averageRating')}</th>
+                        <th onClick={() => handleSort('solvedCount')}>Users Solves {renderSortArrow('solvedCount')}</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     {challenges.map(c => (
-                        <tr key={c.id} onClick={() => navigate(`/challenges/${c.id}`)}>
-
+                        <tr
+                            key={c.id}
+                            className={c.hasSolved ? 'solved' : ''}
+                            onClick={() => navigate(`/challenges/${c.id}`)}
+                        >
                             <td>
                                 <div className="challenge-name">
                                     <strong>{c.name}</strong>
+                                    {c.hasSolved && <span style={{ color: '#28a745', marginLeft: '6px' }}>✔</span>}
                                     <div className="difficulty">{getDifficultyLabel(c.difficulty)}</div>
                                 </div>
-
                             </td>
                             <td>{c.categoryName}</td>
                             <td>{c.points}</td>
                             <td>
-                                <Rating
-                                    value={c.averageRating}
-                                    precision={0.1}
-                                    readOnly
-                                    size="small"
-                                />
+                                <Rating value={c.averageRating} precision={0.1} readOnly size="small" />
                             </td>
                             <td>{c.solvedCount}</td>
                             <td>
@@ -195,6 +208,7 @@ function Challenges() {
                         </tr>
                     ))}
                 </tbody>
+
             </table>
 
             <div className="pagination">

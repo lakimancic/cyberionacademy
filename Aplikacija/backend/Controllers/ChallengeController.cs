@@ -15,6 +15,7 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
 
     [HttpGet("GetChallenges")]
     public async Task<ActionResult<object>> GetChallenges(
+
     int page = 1,
     int pageSize = 8,
     string? sortKey = "Name",
@@ -23,8 +24,17 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
     string? search = null,
     bool? archived = null,
     int? difficulty = null,
-    bool ownChalls = false)
+    bool ownChalls = false,
+    bool? unsolvedOnly = null)
     {
+        int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
+            if (userId == -1)
+                return BadRequest("UserId in token is malformed");
+
+            User? user = await context.Users.FindAsync(userId);
+            if (user == null)
+                return BadRequest("User for account not found");
+
         var query = context.Challenges
             .Include(c => c.Category)
             .Include(c => c.Author)
@@ -34,14 +44,7 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
 
         if (ownChalls)
         {
-            int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
-            if (userId == -1)
-                return BadRequest("UserId in token is malformed");
-
-            User? user = await context.Users.FindAsync(userId);
-            if (user == null)
-                return BadRequest("User for account not found");
-
+            
             if (user.Role == UserRole.Moderator)
                 query = query.Where(c => c.AuthorId == userId);
         }
@@ -59,6 +62,13 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
 
         if (difficulty.HasValue)
             query = query.Where(c => c.Difficulty == difficulty.Value);
+        if (unsolvedOnly == true)
+        {
+            {
+                query = query.Where(c =>
+                    !c.Submissions.Any(s => s.UserId == userId && s.Correct));
+            }
+        }
 
         var totalCount = await query.CountAsync();
         var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
@@ -71,6 +81,10 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
             ("name", _) => query.OrderBy(c => c.Name),
             ("categoryname", "desc") => query.OrderByDescending(c => c.Category.Name),
             ("categoryname", _) => query.OrderBy(c => c.Category.Name),
+            ("averagerating", "desc") => query.OrderByDescending(c => c.Reviews.Average(r => r.Stars)),
+            ("averagerating", _) => query.OrderBy(c => c.Reviews.Average(r => r.Stars)),
+            ("solvedcount", "desc") => query.OrderByDescending(c => c.Submissions.Count(s => s.Correct)),
+            ("solvedcount", _) => query.OrderBy(c => c.Submissions.Count(s => s.Correct)),
             _ => query.OrderBy(c => c.Name)
         };
 
@@ -90,7 +104,8 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
             CategoryName = c.Category.Name,
             AverageRating = c.Reviews?.Count > 0 ? c.Reviews.Average(r => r.Stars) : 0.0,
             SolvedCount = c.Submissions?.Count(s => s.Correct) ?? 0,
-            Difficulty = c.Difficulty
+            Difficulty = c.Difficulty,
+            HasSolved = c.Submissions?.Any(s => s.UserId == int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value ?? "-1") && s.Correct) ?? false,
         }).ToList();
         Console.WriteLine($"Queried with difficulty={difficulty}");
         return Ok(new

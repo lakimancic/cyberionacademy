@@ -206,3 +206,6 @@
     background-color: #252a40;
 }
 
+.challenge-table tr.solved {
+    background-color: rgba(40, 167, 69, 0.15) !important;
+}

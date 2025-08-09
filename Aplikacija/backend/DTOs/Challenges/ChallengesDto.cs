@@ -20,4 +20,5 @@ public class ChallengeDto
     public string? AutorCountry { get; set; }
     public int AutorId { get; set; }
     public string? dockerImage { get; set; }
+    public bool HasSolved { get; set; }
 }
