@@ -105,7 +105,7 @@ function User() {
                         />
                         <Avatar 
                             className='user-flag'
-                            src={`https://flagcdn.com/w160/${userInfo?.country}.png`}
+                            src={userInfo?.country ? `https://flagcdn.com/w160/${userInfo.country}.png` : undefined}
                         >
                             <img src={worldLogo} className='user-world'/>
                         </Avatar>

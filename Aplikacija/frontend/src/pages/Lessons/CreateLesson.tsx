@@ -251,9 +251,8 @@ function CreateLesson() {
                     <div className="studio-create-switches">
                         <div className="studio-create-full form-switch-con">
                             <div className="form-label">Visibility</div>
-                            <FormControlLabel control={<Switch 
-                                defaultChecked
-                                value={lesson.isPublic}
+                            <FormControlLabel control={<Switch
+                                checked={lesson.isPublic}
                                 onChange={e => handleInputChange(e.target.checked, 'isPublic')}
                             />} label={lesson.isPublic ? 'Public' : 'Private'} />
                         </div>

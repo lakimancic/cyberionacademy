@@ -47,7 +47,8 @@ function ChallengeStudio() {
             page: currentPage,
             search: searchQuery,
             category: selectedCategory !== '' ? selectedCategory : undefined,
-            difficulty: selectedDifficulty !== '' ? Number(selectedDifficulty) : undefined
+            difficulty: selectedDifficulty !== '' ? Number(selectedDifficulty) : undefined,
+            ownChalls: true
         };
 
         api.get('/Challenge/GetChallenges', { params })

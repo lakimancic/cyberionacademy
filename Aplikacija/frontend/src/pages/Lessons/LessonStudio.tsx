@@ -47,7 +47,8 @@ function LessonStudio() {
             page: currentPage,
             search: searchQuery,
             category: selectedCategory !== '' ? selectedCategory : undefined,
-            difficulty: selectedDifficulty !== '' ? Number(selectedDifficulty) : undefined
+            difficulty: selectedDifficulty !== '' ? Number(selectedDifficulty) : undefined,
+            ownLessons: true
         };
 
         api.get('/Lesson/GetLessons', { params })

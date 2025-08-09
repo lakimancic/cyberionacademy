@@ -375,17 +375,15 @@ function CreateChallenge() {
                     <div className="studio-create-switches">
                         <div className="studio-create-col form-switch-con">
                             <div className="form-label">Visibility</div>
-                            <FormControlLabel control={<Switch 
-                                defaultChecked
-                                value={challenge.isPublic}
+                            <FormControlLabel control={<Switch
+                                checked={challenge.isPublic}
                                 onChange={e => handleInputChange(e.target.checked, 'isPublic')}
                             />} label={challenge.isPublic ? 'Public' : 'Private'} />
                         </div>
                         <div className="studio-create-col form-switch-con">
                             <div className="form-label">Status</div>
-                            <FormControlLabel control={<Switch 
-                                defaultChecked
-                                value={!challenge.isArchived}
+                            <FormControlLabel control={<Switch
+                                checked={!challenge.isArchived}
                                 onChange={e => handleInputChange(!e.target.checked, 'isArchived')}
                             />} label={challenge.isArchived ? 'Archived' : 'Active'} />
                         </div>

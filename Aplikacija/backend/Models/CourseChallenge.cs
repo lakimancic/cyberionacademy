@@ -7,4 +7,5 @@ public class CourseChallenge
     public required Course Course { get; set; }
     public int ChallengeId { get; set; }
     public required Challenge Challenge { get; set; }
+    public int Order { get; set; }
 }

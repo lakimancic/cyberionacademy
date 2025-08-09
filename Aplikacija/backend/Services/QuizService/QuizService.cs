@@ -359,21 +359,23 @@ public class QuizService(ApplicationDbContext context) : IQuizService
 
     public int CheckSingleAnswerQuestion(SingleAnswerQuestion question, SubmitQuestionDto request)
     {
-        return question.Options!
+        var count = question.Options!
             .Join(
-                (request.Answers ?? []).DistinctBy(a => a.Id),
+                (request.Options ?? []).DistinctBy(a => a.Id),
                 a1 => a1.Id,
                 a2 => a2.Id,
                 (a1, a2) => a1.IsCorrect == a2.IsCorrect
             )
-            .All(a => a) ? question.Points : 0;
+            .Count(a => a);
+        var fullCount = question.Options!.Count;
+        return count == fullCount ? question.Points : 0;
     }
 
     public int CheckMultiAnswerQuestion(MultiAnswerQuestion question, SubmitQuestionDto request)
     {
         var count = question.Options!
             .Join(
-                (request.Answers ?? []).DistinctBy(a => a.Id),
+                (request.Options ?? []).DistinctBy(a => a.Id),
                 a1 => a1.Id,
                 a2 => a2.Id,
                 (a1, a2) => a1.IsCorrect == a2.IsCorrect
@@ -395,7 +397,7 @@ public class QuizService(ApplicationDbContext context) : IQuizService
                 (a1, a2) => a1.Left == a2.Left && a1.Right == a2.Right
             )
             .Count(a => a);
-        var fullCount = question.Options!.Count;
+        var fullCount = question.Pairs!.Count;
         if (count == fullCount)
             return question.Points;
         return count >= fullCount / 2 ? (question.Points / 2) : 0;

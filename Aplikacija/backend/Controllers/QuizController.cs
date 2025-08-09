@@ -165,6 +165,9 @@ public class QuizController(ApplicationDbContext context, IQuizService quizServi
 
         Quiz? quiz = await context.Quizzes
             .Include(q => q.Lesson)
+            .ThenInclude(l => l.Author)
+            .Include(q => q.Lesson)
+            .ThenInclude(l => l.Category)
             .Where(q => q.Id == id)
             .FirstOrDefaultAsync();
 
@@ -178,27 +181,24 @@ public class QuizController(ApplicationDbContext context, IQuizService quizServi
 
         var latest = results.FirstOrDefault();
         int? cooldown = (latest != null && latest.StartedAt.AddDays(30) >= DateTime.Now)
-            ? (int)Math.Ceiling((latest.StartedAt.AddDays(30) - DateTime.Now).TotalHours) : null;
-        int? doingNow = (latest != null && !latest.FinishedAt.HasValue)
-            ? (int)(latest.StartedAt.AddMinutes(quiz.TimeMinutes) - DateTime.Now).TotalSeconds : null;
-
-        if (latest != null && doingNow.HasValue && doingNow < 0)
-        {
-            latest.FinishedAt = latest.StartedAt.AddMinutes(quiz.TimeMinutes);
-        }
+            ? (int)Math.Ceiling((latest.StartedAt.AddDays(30) - DateTime.Now).TotalDays) : null;
+        bool doingNow = latest != null && !latest.FinishedAt.HasValue;
 
         return Ok(new
         {
+            quiz.Id,
+            LessonId = quiz.Lesson.Id,
             quiz.Lesson.Title,
             quiz.Lesson.Category,
             quiz.Lesson.Difficulty,
+            quiz.Lesson.CreatedAt,
             AuthorId = quiz.Lesson.Author?.Id,
             AuthorName = quiz.Lesson.Author?.Username,
             quiz.TotalPoints,
             quiz.QuestionCount,
-            quiz.TimeMinutes,
+            Time = quiz.TimeMinutes * 60,
             Cooldown = cooldown,
-            DointNow = doingNow,
+            DoingNow = doingNow,
             Results = results.Select(qr => new
             {
                 qr.Points,
@@ -251,13 +251,10 @@ public class QuizController(ApplicationDbContext context, IQuizService quizServi
             .Take(quiz.QuestionCount)
             .Select(q => new
             {
+                q.Id,
+                q.Type,
                 q.Points,
                 q.Text,
-                Answer = q.Type == QuestionType.Text ? new
-                {
-                    q.Options!.FirstOrDefault()!.Id,
-                    q.Options!.FirstOrDefault()!.Text
-                } : null,
                 Options = q.Type < QuestionType.Text ? q.Options!.Select(o => new
                 {
                     o.Id,
@@ -277,7 +274,7 @@ public class QuizController(ApplicationDbContext context, IQuizService quizServi
 
         return Ok(new
         {
-            TimeMinutes = (int)(latest.StartedAt.AddMinutes(quiz.TimeMinutes) - DateTime.Now).TotalMinutes,
+            Time = (int)(latest.StartedAt.AddMinutes(quiz.TimeMinutes) - DateTime.Now).TotalSeconds,
             Questions = questions
         });
     }
@@ -327,13 +324,10 @@ public class QuizController(ApplicationDbContext context, IQuizService quizServi
             .Take(quiz.QuestionCount)
             .Select(q => new
             {
+                q.Id,
+                q.Type,
                 q.Points,
                 q.Text,
-                Answer = q.Type == QuestionType.Text ? new
-                {
-                    q.Options!.FirstOrDefault()!.Id,
-                    q.Options!.FirstOrDefault()!.Text
-                } : null,
                 Options = q.Type < QuestionType.Text ? q.Options!.Select(o => new
                 {
                     o.Id,
@@ -362,11 +356,7 @@ public class QuizController(ApplicationDbContext context, IQuizService quizServi
         await context.QuizResults.AddAsync(quizResult);
         await context.SaveChangesAsync();
 
-        return Ok(new
-        {
-            quiz.TimeMinutes,
-            Questions = questions
-        });
+        return Ok(questions);
     }
 
     [HttpPut("Submit")]
@@ -415,7 +405,8 @@ public class QuizController(ApplicationDbContext context, IQuizService quizServi
         int prevBest = await context.QuizResults
             .Where(qr => qr.UserId == user.Id && qr.QuizId == quiz.Id && qr.FinishedAt.HasValue)
             .Select(qr => qr.Points)
-            .MaxAsync();
+            .OrderByDescending(p => p)
+            .FirstOrDefaultAsync();
 
         if (points > prevBest)
             user.TotalPoints += points - prevBest;

@@ -23,7 +23,7 @@ public class LessonController(ApplicationDbContext context, IQuizService quizSer
         string? search = null,
         bool? isPublic = null,
         int? difficulty = null,
-        bool ownChalls = false)
+        bool ownLessons = false)
     {
         var query = context.Lessons
             .Include(l => l.Category)
@@ -32,7 +32,7 @@ public class LessonController(ApplicationDbContext context, IQuizService quizSer
             .Include(l => l.Quiz)
             .AsQueryable();
 
-        if (ownChalls)
+        if (ownLessons)
         {
             int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
             if (userId == -1)
@@ -85,7 +85,7 @@ public class LessonController(ApplicationDbContext context, IQuizService quizSer
             Difficulty = l.Difficulty,
             IsPublic = l.Public,
             CategoryId = l.CategoryId,
-            AuthorId = (int)l.AuthorId,
+            AuthorId = l.AuthorId,
             QuizId = l.Quiz?.Id,
             CategoryName = l.Category.Name,
             AverageRating = l.Reviews != null && l.Reviews.Count > 0 ? l.Reviews.Average(r => r.Stars) : 0.0

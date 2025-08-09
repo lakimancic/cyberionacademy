@@ -44,7 +44,6 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
 
         if (ownChalls)
         {
-            
             if (user.Role == UserRole.Moderator)
                 query = query.Where(c => c.AuthorId == userId);
         }
@@ -66,7 +65,7 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
         {
             {
                 query = query.Where(c =>
-                    !c.Submissions.Any(s => s.UserId == userId && s.Correct));
+                    !c.Submissions!.Any(s => s.UserId == userId && s.Correct));
             }
         }
 
@@ -81,10 +80,10 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
             ("name", _) => query.OrderBy(c => c.Name),
             ("categoryname", "desc") => query.OrderByDescending(c => c.Category.Name),
             ("categoryname", _) => query.OrderBy(c => c.Category.Name),
-            ("averagerating", "desc") => query.OrderByDescending(c => c.Reviews.Average(r => r.Stars)),
-            ("averagerating", _) => query.OrderBy(c => c.Reviews.Average(r => r.Stars)),
-            ("solvedcount", "desc") => query.OrderByDescending(c => c.Submissions.Count(s => s.Correct)),
-            ("solvedcount", _) => query.OrderBy(c => c.Submissions.Count(s => s.Correct)),
+            ("averagerating", "desc") => query.OrderByDescending(c => c.Reviews!.Average(r => r.Stars)),
+            ("averagerating", _) => query.OrderBy(c => c.Reviews!.Average(r => r.Stars)),
+            ("solvedcount", "desc") => query.OrderByDescending(c => c.Submissions!.Count(s => s.Correct)),
+            ("solvedcount", _) => query.OrderBy(c => c.Submissions!.Count(s => s.Correct)),
             _ => query.OrderBy(c => c.Name)
         };
 
@@ -105,7 +104,7 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
             AverageRating = c.Reviews?.Count > 0 ? c.Reviews.Average(r => r.Stars) : 0.0,
             SolvedCount = c.Submissions?.Count(s => s.Correct) ?? 0,
             Difficulty = c.Difficulty,
-            HasSolved = c.Submissions?.Any(s => s.UserId == int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value ?? "-1") && s.Correct) ?? false,
+            HasSolved = c.Submissions?.Any(s => s.UserId == userId && s.Correct) ?? false,
         }).ToList();
         Console.WriteLine($"Queried with difficulty={difficulty}");
         return Ok(new
