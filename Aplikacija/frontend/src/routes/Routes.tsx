@@ -27,6 +27,7 @@ import LessonDetails from "@/pages/Lessons/LessonDetails";
 import Quiz from "@/pages/Quiz/Quiz";
 import CourseStudio from "@/pages/Courses/CourseStudio";
 import CreateCourse from "@/pages/Courses/CreateCourse";
+import Course from "@/pages/Courses/Course";
 
 function Routes() {
     const auth = useAuth();
@@ -142,6 +143,10 @@ function Routes() {
                         {
                             path: "/courses",
                             element: <Courses />
+                        },
+                        {
+                            path: "/course/:id",
+                            element: <Course />
                         },
                         {
                             path: "/settings",

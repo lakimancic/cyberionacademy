@@ -1,5 +1,3 @@
-.courses-container * { box-sizing: border-box; }
-
 .courses-container {
   backdrop-filter: blur(12px);
   color: #fff;
@@ -7,90 +5,78 @@
   font-family: 'Segoe UI', sans-serif;
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-   
-  
 }
 
 .courses-container h2 {
   font-size: 2.5rem;
   margin-bottom: 1rem;
   color: #e4e6eb;
+  text-align: left;
 }
 
-.controls-bar {
+.course-controls-bar {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
   align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   background-color: #131623ad;
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;
-  justify-content: space-between;
 }
 
-.courses-container .search-group {
+.courses-select {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 15rem;
+  margin: 0;
+  text-align: left;
+}
+
+.course-controls-bar .search-bar-container {
+  margin: 0;
+}
+
+.course-controls-bar .search-bar-container input {
+  width: 15rem;
+}
+
+.courses-select .MuiSelect-select {
+  padding: 0.8rem 1rem;
+}
+
+.courses-container .sort-buttons {
   display: flex;
-  align-items: center;
   background-color: #1a1d2e;
-  border: 1px solid #2c2f45;
-  border-radius: 6px;
-  overflow: hidden;
 }
 
-.courses-container .search-group input {
-  background: none;
-  border: none;
-  padding: 1rem;
-  color: white;
-  font-size: 0.9rem;
-  outline: none;
-}
-
-.courses-container .search-group button {
-  background: none;
-  border: none;
-  color: white;
-  padding: 1rem;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.2s ease;
-}
-
-.courses-container .search-group button:hover {
-  background-color: #252a40;
-}
-
-.courses-container .controls-bar select {
-  background-color: #1a1d2e;
-  color: #fff;
-  border: 1px solid #2c2f45;
-  border-radius: 6px;
-  padding: 1rem;
-  font-size: 0.9rem;
+.courses-container .sort-buttons svg {
+  margin-left: 0.5rem;
 }
 
 .courses-container .sort-buttons .sort-button {
   background-color: #1a1d2e;
   color: #fff;
-  border: 1px solid #2c2f45;
+  border: 1px solid transparent;
   border-radius: 6px;
   padding: 1rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 
 .courses-container .sort-buttons .sort-button.active {
   background-color: #2d324a;
+  border: 1px solid #2c2f45;
 }
 
 .courses-container .course-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(4, minmax(280px, 1fr));
   gap: 1.5rem;
   margin-top: 2rem;
 }
 
-.courses-container .course-card {
+/* .courses-container .course-card {
   background-color: #1a1d2e;
   border: 1px solid #2c2f45;
   border-radius: 12px;
@@ -100,9 +86,6 @@
   transition: transform 0.2s ease;
   position: relative;
   height: 350px; 
-
-  
-  
 }
 
 .courses-container .course-card:hover {
@@ -129,19 +112,19 @@
 .courses-container .course-content h3 {
   font-size: 1.4rem;
   margin: 0.5rem 0 0.25rem;
-}
+} */
 
-.courses-container .difficulty {
+/* .courses-container .difficulty {
  font-size: 0.85rem;
   color: #aaa;
   margin-bottom: 2.4rem;
-}
+} */
 
 .courses-container .MuiRating-root {
   align-self: flex-start;
 }
 
-.courses-container .author {
+/* .courses-container .author {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -161,12 +144,13 @@
 .courses-container .author span {
   font-size: 0.95rem;
   color: #fff;
-}
-.courses-container .rating-bottom-left {
+} */
+
+/* .courses-container .rating-bottom-left {
   position: absolute;
   bottom: 1.3rem;
   left: 0.6rem;
-}
+} */
 
 .courses-container .pagination {
   margin-top: 2rem;
@@ -189,7 +173,7 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
-.course-description {
+/* .course-description {
   position: absolute;
   inset: 0;
   height: 220px;
@@ -211,6 +195,4 @@
 .course-card:hover .course-description {
   opacity: 1;
   pointer-events: auto;
-}
-
-
+} */

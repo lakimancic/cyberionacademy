@@ -11,12 +11,11 @@ namespace backend.Controllers;
 [Authorize]
 public class CourseController(ApplicationDbContext context, IConfiguration configuration) : ControllerBase
 {
+    static readonly int pageSize = 8;
 
     [HttpGet("GetCourses")]
-
     public async Task<ActionResult<object>> GetCourses(
         int page = 1,
-        int pageSize = 8,
         string? sortKey = "Name",
         string? sortDirection = "asc",
         string? search = null,
@@ -27,6 +26,8 @@ public class CourseController(ApplicationDbContext context, IConfiguration confi
         var query = context.Courses
             .Include(c => c.Author)
             .Include(c => c.Reviews)
+            .Include(c => c.Challenges)
+            .Include(c => c.Lessons)
             .AsQueryable();
 
         if (ownCourses)
@@ -73,12 +74,14 @@ public class CourseController(ApplicationDbContext context, IConfiguration confi
         {
             c.Id,
             c.AuthorId,
-            AutorName = c.Author?.Username,
+            AuthorName = c.Author?.Username,
             c.Title,
             c.Description,
             AverageRating = c.Reviews?.Count > 0 ? c.Reviews.Average(r => r.Stars) : 0.0,
             c.Difficulty,
-            HasBanner = c.Banner != null
+            HasBanner = c.Banner != null,
+            LessonCount = c.Lessons!.Count,
+            ChallengeCount = c.Challenges!.Count
         }).ToList();
 
         return Ok(new
@@ -133,6 +136,14 @@ public class CourseController(ApplicationDbContext context, IConfiguration confi
     [HttpGet("CourseDetails/{id}")]
     public async Task<IActionResult> GetCourseDetails(int id)
     {
+        int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
+        if (userId == -1)
+            return BadRequest("UserId in token is malformed");
+
+        User? user = await context.Users.FindAsync(userId);
+        if (user == null)
+            return NotFound("User for account not found");
+
         var course = await context.Courses
             .Where(c => c.Id == id)
             .Include(c => c.Challenges!)
@@ -141,6 +152,7 @@ public class CourseController(ApplicationDbContext context, IConfiguration confi
             .Include(c => c.Lessons!)
             .ThenInclude(cl => cl.Lesson)
             .ThenInclude(l => l.Category)
+            .Include(l => l.Author)
             .FirstOrDefaultAsync();
 
         if (course == null)
@@ -158,6 +170,8 @@ public class CourseController(ApplicationDbContext context, IConfiguration confi
                 Type = CourseItemType.Challenge
             });
 
+        var challengeCount = challengeItems.Count();
+
         var lessonItems = course.Lessons!
             .Select(lc => new
             {
@@ -170,6 +184,17 @@ public class CourseController(ApplicationDbContext context, IConfiguration confi
                 Type = CourseItemType.Lesson
             });
 
+        var lessonCount = lessonItems.Count();
+
+        var review = await context.CourseReviews
+            .Where(cr => cr.CourseId == course.Id && cr.UserId == user.Id)
+            .Select(cr => new
+            {
+                cr.Text,
+                cr.Stars,
+                cr.Difficulty
+            }).FirstOrDefaultAsync();
+
         var items = challengeItems
             .Union(lessonItems)
             .OrderBy(i => i.Order)
@@ -181,8 +206,14 @@ public class CourseController(ApplicationDbContext context, IConfiguration confi
             course.Title,
             course.Description,
             course.Difficulty,
+            course.AuthorId,
+            AuthorName = course.Author?.Username,
+            AuthorRole = course.Author?.Role.ToString(),
             HasBanner = course.Banner != null,
-            Items = items
+            Items = items,
+            lessonCount,
+            challengeCount,
+            review
         });
     }
 
@@ -313,6 +344,9 @@ public class CourseController(ApplicationDbContext context, IConfiguration confi
 
         if (course == null)
             return NotFound("Course not found");
+
+        if (user.Role == UserRole.Moderator && course.AuthorId != user.Id)
+            return Forbid("Not owning a course");
 
         if (course.Title != request.Title)
             course.Title = request.Title;

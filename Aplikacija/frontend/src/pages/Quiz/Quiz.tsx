@@ -24,6 +24,7 @@ interface QuizDetails {
     createdAt: string;
     authorId: number;
     authorName: string;
+    authorRole: string;
     totalPoints: number;
     questionCount: number;
     time: number;
@@ -217,6 +218,7 @@ function Quiz() {
                         <div className="author-info">
                         <AuthImage src={`/User/${quiz.authorId}/ProfilePicture`} element={Avatar} />
                         <div className="author-details">
+                            <p className={`author-role role-${quiz.authorRole.toLowerCase()}`}>{quiz.authorRole}</p>
                             <p className="author-name">{quiz.authorName}</p>
                         </div>
                         </div>

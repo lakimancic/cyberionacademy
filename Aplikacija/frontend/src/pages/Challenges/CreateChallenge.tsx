@@ -1,12 +1,12 @@
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import InputField from '@/components/Auth/InputField';
 import { CircularProgress, FormControlLabel, MenuItem, Select, Slider, Switch } from '@mui/material';
-import difficulties from '@/utils/difficulties';
+import difficulties, { getColor, getColorHex } from '@/utils/difficulties';
 import { useEffect, useRef, useState } from 'react';
 import api from '@/lib/api';
 import { MdCloudUpload, MdDelete } from 'react-icons/md';
 import { FaExternalLinkAlt, FaPlus, FaTrashAlt } from 'react-icons/fa';
-import { IoIosSave, IoMdBuild } from 'react-icons/io';
+import { IoIosSave, IoMdArrowRoundBack, IoMdBuild } from 'react-icons/io';
 import '@/assets/css/ModCreate.css';
 import { useAuth } from '@/contexts/AuthProvider';
 import { getInfoFromToken } from '@/lib/jwt';
@@ -33,18 +33,6 @@ interface Category {
     name: string;
     shortForm: string;
     id: number;
-};
-
-const getColor = (val: number) => {
-    if (val < 3) return 'success.main';
-    if (val < 7) return 'warning.main';
-    return 'error.main';
-};
-
-const getColorHex = (val: number) => {
-    if (val < 3) return '#66bb6a';
-    if (val < 7) return '#ffa726';
-    return '#f44336';
 };
 
 const pointsValues = [
@@ -282,6 +270,7 @@ function CreateChallenge() {
 
     return (
         <div className="studio-create">
+            <IoMdArrowRoundBack className='studio-back' onClick={() => navigate("/moderator/challenges")}/>
             <h1>{params.id ? 'Edit' : 'Create'} Challenge</h1>
             <form className="studio-create-form">
                 <h2>

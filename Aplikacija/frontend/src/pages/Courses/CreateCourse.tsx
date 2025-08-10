@@ -5,35 +5,19 @@ import SearchBar from '@/components/SearchBar/SearchBar';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { getInfoFromToken } from '@/lib/jwt';
-import difficulties from '@/utils/difficulties';
+import difficulties, { getColor, getColorHex } from '@/utils/difficulties';
 import categories from '@/utils/categories';
 import { CircularProgress, Slider } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import { FaAngleDoubleRight, FaPlus, FaTrashAlt } from 'react-icons/fa';
-import { IoIosSave } from 'react-icons/io';
+import { IoIosSave, IoMdArrowRoundBack } from 'react-icons/io';
 import { MdCloudUpload, MdDelete } from 'react-icons/md';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { FaRegCircleDown, FaRegCircleUp, FaRegCircleXmark } from 'react-icons/fa6';
 import api from '@/lib/api';
 import * as yup from 'yup';
-
-interface CourseData {
-    id?: number;
-    title: string;
-    difficulty: number;
-    description: string;
-    hasBanner: boolean;
-    items: CourseItem[];
-};
-
-interface CourseItem {
-    id: number;
-    name: string;
-    categoryName: string;
-    categoryShort: string;
-    difficulty: number;
-    type: number;
-};
+import type { CourseData, CourseItem } from './CourseTypes';
+import ImageWrapper from '@/components/AuthImage/ImageWrapper';
 
 interface ChallengeItem {
     id: number;
@@ -53,24 +37,6 @@ interface LessonItem {
         shortForm: string;
     },
     difficulty: number;
-};
-
-const getColor = (val: number) => {
-    if (val < 3) return 'success.main';
-    if (val < 7) return 'warning.main';
-    return 'error.main';
-};
-
-const getColorHex = (val: number) => {
-    if (val < 3) return '#66bb6a';
-    if (val < 7) return '#ffa726';
-    return '#f44336';
-};
-
-type ImageWrapperProps = React.ImgHTMLAttributes<HTMLImageElement>;
-
-const ImageWrapper: React.FC<ImageWrapperProps> = ({ src, alt = '', ...props }) => {
-    return <img src={src===""?undefined:src} alt={alt} {...props} />;
 };
 
 const validationSchema = yup.object({
@@ -334,6 +300,7 @@ function CreateCourse() {
 
     return (
         <div className="studio-create">
+            <IoMdArrowRoundBack className='studio-back' onClick={() => navigate("/moderator/courses")}/>
             <h1>{params.id ? 'Edit' : 'Create'} Course</h1>
             <form className="studio-create-form">
                 <h2>

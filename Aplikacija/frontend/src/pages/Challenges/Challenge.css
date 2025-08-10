@@ -408,7 +408,8 @@
   color: white;
 }
 
-.author-role-country {
+.author-role {
+  margin: 0;
   font-size: 0.9rem;
   color: #9ca3af;
 }

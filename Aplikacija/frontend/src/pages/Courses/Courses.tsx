@@ -1,56 +1,40 @@
 import './Courses.css';
 import { useEffect, useState } from 'react';
 import api from '@/lib/api';
-import { Avatar, Rating } from '@mui/material';
-import AuthImage from '@/components/AuthImage/AuthImage';
+import { MenuItem, Select } from '@mui/material';
+import difficulties from '@/utils/difficulties';
+import SearchBar from '@/components/SearchBar/SearchBar';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import CourseCard from './CourseCard';
 
 interface Course {
   id: number;
   title: string;
   description?: string;
-  autorName?: string;
-  autorId?: number;
+  authorName?: string;
+  authorId?: number;
   averageRating: number;
   difficulty: number;
-}
-
-type ImageWrapperProps = React.ImgHTMLAttributes<HTMLImageElement>;
-
-const ImageWrapper: React.FC<ImageWrapperProps> = ({ src, alt = '', ...props }) => {
-  return <img src={src===""?undefined:src} alt={alt} {...props} />;
+  hasBanner: boolean;
+  lessonCount: number;
+  challengeCount: number;
 };
-  function truncateText(text: string, maxLength: number): string {
-  if (!text) return '';
-  if (text.length <= maxLength) return text;
 
-  const trimmed = text.slice(0, maxLength);
-  const lastSpace = trimmed.lastIndexOf(' ');
-  if (lastSpace === -1) return trimmed + '...';
 
-  return trimmed.slice(0, lastSpace) + '...';
-}
 function Courses() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [sortKey, setSortKey] = useState<'name' | 'rating'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [search, setSearch] = useState('');
-  const [inputValue, setInputValue] = useState('');
-  const [difficulties, setDifficulties] = useState<{ value: number; label: string }[]>([]);
-  const [selectedDifficulty, setSelectedDifficulty] = useState<number | ''>('');
+  const [selectedDifficulty, setSelectedDifficulty] = useState<number>(-1);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
   const pageSize = 9;
 
   useEffect(() => {
-    api.get('/Course/GetDifficulties')
-      .then(res => setDifficulties(res.data))
-      .catch(err => console.error('Greška pri dohvatanju težina', err));
-  }, []);
-
-  useEffect(() => {
     fetchCourses();
-  }, [sortKey, sortDirection, search, selectedDifficulty, currentPage]);
+  }, [sortKey, sortDirection, selectedDifficulty, currentPage]);
 
   const fetchCourses = () => {
     const params: any = {
@@ -59,7 +43,7 @@ function Courses() {
       page: currentPage,
       pageSize,
       search: search !== '' ? search : undefined,
-      difficulty: selectedDifficulty !== '' ? Number(selectedDifficulty) : undefined
+      difficulty: selectedDifficulty !== -1 ? selectedDifficulty : undefined
     };
 
     api.get('/Course/GetCourses', { params })
@@ -82,7 +66,7 @@ function Courses() {
           setSortDirection('asc');
         }
       }}>
-      {label} {sortKey === key ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+      {label} {sortKey === key ? (sortDirection === 'asc' ? <FaChevronUp /> : <FaChevronDown />) : ''}
     </button>
   );
 
@@ -90,33 +74,31 @@ function Courses() {
     <div className="courses-container">
       <h2 className="title">Courses</h2>
 
-      <div className="controls-bar">
-        <div className="search-group">
-          <input
-            type="text"
-            placeholder="Search Courses..."
-            value={inputValue}
-            onChange={e => setInputValue(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && setSearch(inputValue)}
-          />
-          <button onClick={() => {
-            setCurrentPage(1);
-            setSearch(inputValue);
-          }}>🔍</button>
-        </div>
+      <div className="course-controls-bar">
+        <SearchBar 
+          label='Courses'
+          searchWord={search}
+          setSearchWord={setSearch}
+          onSearch={() => fetchCourses()}
+        />
 
-        <select
+        <Select
+          className='courses-select'
           value={selectedDifficulty}
-          onChange={e => {
-            setCurrentPage(1);
-            const value = e.target.value;
-            setSelectedDifficulty(value === '' ? '' : Number(value));
-          }}>
-          <option value="">All Difficulties</option>
-          {difficulties.map(diff => (
-            <option key={diff.value} value={diff.value}>{diff.label}</option>
-          ))}
-        </select>
+          displayEmpty
+          onChange={e => setSelectedDifficulty(e.target.value)}
+          renderValue={selected => {
+            if(selected === -1)
+              return <span className='admin-placeholder'>Filter by Difficulty</span>;
+
+            return difficulties[Number(selected)];
+          }}
+          >
+            <MenuItem value={-1}>All Difficulties</MenuItem>
+            {difficulties.map((diff, idx) => (<MenuItem key={idx} value={idx}>
+              {diff}
+            </MenuItem>))}
+        </Select>
 
         <div className="sort-buttons">
           {renderSortButton('name', 'Sort by Title')}
@@ -126,27 +108,7 @@ function Courses() {
 
       <div className="course-grid">
         {courses.map(course => (
-          <div className="course-card" key={course.id}>
-            <AuthImage src={`/Course/${course.id}/Banner`} element={ImageWrapper}/>
-            <div className="course-content">
-              <h3>{course.title}</h3>
-              <div className="difficulty">{difficulties.find(d => d.value === course.difficulty)?.label}</div>
-              <div className="author">
-                <AuthImage src={`/user/${course.autorId}/ProfilePicture`} element={Avatar}/>
-                <span>{course.autorName ?? 'Unknown Author'}</span>
-              </div>
-              <Rating
-                value={course.averageRating}
-                precision={0.1}
-                readOnly
-                size="small"
-                className='rating-bottom-left'
-              />
-            </div>
-            <div className="course-description">
-            {course.description ? truncateText(course.description, 400) : ''}
-            </div>
-          </div>
+          <CourseCard course={course} />
         ))}
       </div>
 

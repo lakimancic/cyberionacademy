@@ -194,6 +194,7 @@ public class QuizController(ApplicationDbContext context, IQuizService quizServi
             quiz.Lesson.CreatedAt,
             AuthorId = quiz.Lesson.Author?.Id,
             AuthorName = quiz.Lesson.Author?.Username,
+            AuthorRole = quiz.Lesson.Author?.Role.ToString(),
             quiz.TotalPoints,
             quiz.QuestionCount,
             Time = quiz.TimeMinutes * 60,

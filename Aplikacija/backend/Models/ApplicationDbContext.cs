@@ -15,6 +15,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Message> Messages { get; set; }
     public DbSet<ChallengeReview> ChallengeReviews { get; set; }
     public DbSet<LessonReview> LessonReviews { get; set; }
+    public DbSet<CourseReview> CourseReviews { get; set; }
     public DbSet<Quiz> Quizzes { get; set; }
     public DbSet<Question> Questions { get; set; }
     public DbSet<AnswerOption> AnswerOptions { get; set; }

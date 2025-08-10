@@ -4,6 +4,7 @@ using backend.Services.Auth;
 using backend.Services.ChallengeService;
 using backend.Services.Docker;
 using backend.Services.QuizService;
+using backend.Services.Recommendations;
 using backend.Services.UserServices;
 using backend.Utils.Docker;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -53,6 +54,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IQuizService, QuizService>();
 builder.Services.AddScoped<IChallengeService, ChallengeService>();
+
+builder.Services.AddScoped<UserProfileService>();
 
 builder.Services.AddSingleton<IDockerInstancer, DockerInstancer>();
 builder.Services.AddHostedService<DockerCleanupService>();
