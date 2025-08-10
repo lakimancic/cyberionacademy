@@ -19,6 +19,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<Question> Questions { get; set; }
     public DbSet<AnswerOption> AnswerOptions { get; set; }
     public DbSet<ConnectPair> ConnectPairs { get; set; }
+    public DbSet<CourseChallenge> CourseChallenges { get; set; }
+    public DbSet<CourseLesson> CourseLessons { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)

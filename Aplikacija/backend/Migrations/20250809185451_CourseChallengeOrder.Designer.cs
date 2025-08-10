@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using backend.Models;
 
@@ -11,9 +12,11 @@ using backend.Models;
 namespace backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250809185451_CourseChallengeOrder")]
+    partial class CourseChallengeOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -348,8 +351,8 @@ namespace backend.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Banner")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -384,7 +387,7 @@ namespace backend.Migrations
 
                     b.HasIndex("ChallengeId");
 
-                    b.ToTable("CourseChallenges");
+                    b.ToTable("CourseChallenge");
                 });
 
             modelBuilder.Entity("backend.Models.CourseLesson", b =>
@@ -402,7 +405,7 @@ namespace backend.Migrations
 
                     b.HasIndex("LessonId");
 
-                    b.ToTable("CourseLessons");
+                    b.ToTable("CourseLesson");
                 });
 
             modelBuilder.Entity("backend.Models.CourseReview", b =>

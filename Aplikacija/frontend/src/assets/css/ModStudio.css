@@ -75,3 +75,148 @@
 .studio-con-add:hover {
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
+
+.studio-con .lone-difficulty {
+    margin: 0.5rem;
+}
+
+.studio-course-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+
+    margin: 2rem;
+    margin-bottom: 3rem;
+}
+
+.studio-course-content .search-bar-container {
+    margin: 0;
+    height: 2.5rem;
+}
+
+.studio-course-content .search-bar-container input {
+    padding: 0rem 0.5rem;
+    width: 15rem;
+}
+
+.studio-course-content .search-bar-container svg {
+    font-size: 1rem;
+}
+
+.studio-course-col a {
+    display: block;
+    color: white;
+    font-size: 1.2rem;
+    margin-top: 0.5rem;
+}
+
+.studio-course-items {
+    display: grid;
+    grid-template-rows: repeat(10, 1fr);
+
+    background: rgba(0, 0, 0, 0.2);
+
+    min-height: 37rem;
+}
+
+.studio-course-item, .studio-course-myitem {
+    display: flex;
+    align-items: center;
+
+    overflow: hidden;
+    padding: 0.4rem;
+    cursor: pointer;
+
+    height: 2.7rem;
+}
+
+.studio-course-item img, .studio-course-myitem img {
+    margin: 0.6rem;
+}
+
+.studio-create-form .studio-course-item h2,
+.studio-create-form .studio-course-myitem h2 {
+    margin: 0;
+    padding: 0;
+    font-size: 1rem;
+
+    text-align: left;
+}
+
+.studio-course-item:hover {
+    background-color: #3385ff0c;
+}
+
+.studio-course-active {
+    background-color: #3385ff1c;
+}
+
+.studio-course-active:hover {
+    background-color: #3385ff2c;
+}
+
+.studio-course-content > svg {
+    font-size: 2rem;
+    padding: 0.6rem;
+    background-color: #5083cf3c;
+
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.studio-course-content > svg:hover {
+    background-color: #5083cf5c;
+}
+
+.studio-course-item p, .studio-course-myitem p {
+    margin: 0;
+    font-size: 0.8rem;
+
+    text-align: left;
+}
+
+
+.studio-course-myitems {
+    height: 41.5em;
+    overflow-y: scroll;
+
+    display: flex;
+    flex-direction: column;
+
+    background: rgba(0, 0, 0, 0.2);
+
+    min-width: 15rem;
+}
+
+.studio-course-myitem {
+    padding: 0.4rem 0.8rem;
+
+    flex-shrink: 0;
+    position: relative;
+
+    padding-right: 8rem;
+}
+
+.studio-course-moving {
+    display: flex;
+    gap: 0.5rem;
+
+    position: absolute;
+    right: 0.5rem;
+}
+
+.studio-course-moving svg {
+    font-size: 1.4rem;
+    cursor: pointer;
+}
+
+svg.studio-move-disabled {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.studio-course-delete {
+    color:rgb(219, 84, 84);
+
+    margin-left: 0.5rem;
+}

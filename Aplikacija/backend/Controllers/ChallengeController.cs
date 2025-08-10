@@ -28,12 +28,12 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
     bool? unsolvedOnly = null)
     {
         int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
-            if (userId == -1)
-                return BadRequest("UserId in token is malformed");
+        if (userId == -1)
+            return BadRequest("UserId in token is malformed");
 
-            User? user = await context.Users.FindAsync(userId);
-            if (user == null)
-                return BadRequest("User for account not found");
+        User? user = await context.Users.FindAsync(userId);
+        if (user == null)
+            return BadRequest("User for account not found");
 
         var query = context.Challenges
             .Include(c => c.Category)
@@ -470,6 +470,39 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
         }
     }
 
+    [HttpGet("Search")]
+    public async Task<ActionResult> SearchChallenge(string? search, [FromQuery(Name = "exclude[]")]int[]? exclude, int limit = 10)
+    {
+        var query = context.Challenges
+            .Include(c => c.Category)
+            .Include(c => c.Author)
+            .Include(c => c.Reviews)
+            .Include(c => c.Submissions)
+            .Where(c => c.Public)
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(search))
+            query = query.Where(c => c.Name.ToLower().Contains(search.ToLower()));
+
+        if (exclude != null)
+            query = query.Where(c => !exclude.Contains(c.Id));
+
+        var challenges = await query.Take(Math.Min(limit, 10)).ToListAsync();
+
+        return Ok(challenges.Select(c => new
+        {
+            c.Id,
+            c.Name,
+            c.Description,
+            IsArchived = c.Archived,
+            c.Points,
+            c.Category,
+            AverageRating = c.Reviews?.Count > 0 ? c.Reviews.Average(r => r.Stars) : 0.0,
+            SolvedCount = c.Submissions?.Count(s => s.Correct) ?? 0,
+            c.Difficulty,
+        }));
+    } 
+
     [Authorize(Roles = "Moderator,Admin")]
     [HttpPost("CreateChallenge")]
     public async Task<IActionResult> CreateChallenge([FromForm] CreateChallengeDto request)
@@ -521,7 +554,7 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
             }
             catch (Exception ex)
             {
-                BuildHelper.ForceDeleteDirectory(publicPath);
+                BuildHelper.ForceDeleteDirectory(chalPath);
                 return BadRequest(ex.Message);
             }
         }
@@ -529,14 +562,17 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
         if (request.DockerFile != null && request.DockerFile.Length > 0)
         {
             if (Path.GetExtension(request.DockerFile.FileName).ToLowerInvariant() != ".zip")
+            {
+                BuildHelper.ForceDeleteDirectory(chalPath);
                 return BadRequest("Docker file must be zip");
+            }
 
             var dockerPath = Path.Combine(chalPath, "docker");
             bool success = await BuildHelper.ExtractZipAsync(request.DockerFile.OpenReadStream(), dockerPath);
 
             if (!success)
             {
-                BuildHelper.ForceDeleteDirectory(dockerPath);
+                BuildHelper.ForceDeleteDirectory(chalPath);
                 return BadRequest("Invalid Docker Zip file");
             }
         }

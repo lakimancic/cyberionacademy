@@ -7,6 +7,8 @@
 
     width: 100%;
     z-index: 2;
+
+    padding-bottom: 2rem;
 }
 
 .studio-create h1 {
@@ -76,6 +78,14 @@
 
 .studio-create-desc textarea {
     height: 11rem;
+}
+
+.studio-large-desc {
+    margin-top: 4rem;
+}
+
+.studio-large-desc textarea {
+    height: 16.5rem;
 }
 
 .studio-create-col .form-value-show {
@@ -462,4 +472,33 @@ svg[class^=form-number]:hover {
 
 .studio-btn-add:hover:disabled, .studio-btn-del:hover:disabled {
     box-shadow: none;
+}
+
+.studio-banner-upload {
+    margin-top: 2rem;
+}
+
+.studio-banner-preview {
+    width: 100%;
+    height: 15rem;
+    background-color: rgba(21, 47, 85, 0.3);
+    border-radius: 10px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: rgba(255, 255, 255, 0.2);
+    font-size: 2rem;
+
+    margin-bottom: 1rem;
+
+    position: relative;
+    overflow: hidden;
+}
+
+.studio-banner-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }

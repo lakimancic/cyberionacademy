@@ -8,7 +8,7 @@ public class Course
     public required string Title { get; set; }
     public int Difficulty { get; set; }
     public string? Description { get; set; }
-    [MaxLength(20)]
+    [MaxLength(50)]
     public string? Banner { get; set; }
 
     public int? AuthorId { get; set; }

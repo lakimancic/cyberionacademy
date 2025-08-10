@@ -156,10 +156,9 @@ public class LessonController(ApplicationDbContext context, IQuizService quizSer
             AuthorCountry = lesson.Author?.Country ?? "Unknown",
             IsPublic = lesson.Public,
             QuizId = lesson.Quiz?.Id,
-           AverageRating = lesson.Reviews != null && lesson.Reviews.Count > 0 
+            AverageRating = lesson.Reviews != null && lesson.Reviews.Count > 0 
                 ? lesson.Reviews.Average(r => r.Stars) 
                 : 0,
-
             ReviewCount = lesson.Reviews != null ? lesson.Reviews.Count : 0
         };
 
@@ -168,42 +167,71 @@ public class LessonController(ApplicationDbContext context, IQuizService quizSer
 
     
     [HttpPost("SubmitReview")]
-public async Task<IActionResult> SubmitReview([FromBody] LessonReviewDto reviewDto)
-{
-    var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    if (userIdClaim == null)
-        return Unauthorized();
-
-    int userId = int.Parse(userIdClaim);
-
-    var lesson = await context.Lessons.FindAsync(reviewDto.LessonId);
-    if (lesson == null)
-        return NotFound("Lesson not found.");
-
-    var existingReview = await context.LessonReviews
-        .FirstOrDefaultAsync(r => r.LessonId == reviewDto.LessonId && r.UserId == userId);
-
-    if (existingReview != null)
-        return BadRequest("You have already reviewed this lesson.");
-
-    var review = new LessonReview
+    public async Task<IActionResult> SubmitReview([FromBody] LessonReviewDto reviewDto)
     {
-        LessonId = reviewDto.LessonId,
-        Lesson = lesson,
-        Stars = reviewDto.Stars,
-        Difficulty = reviewDto.Difficulty,
-        Text = reviewDto.Text,
-        UserId = userId
-    };
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userIdClaim == null)
+            return Unauthorized();
 
-    context.LessonReviews.Add(review);
+        int userId = int.Parse(userIdClaim);
 
-    await context.SaveChangesAsync(); 
+        var lesson = await context.Lessons.FindAsync(reviewDto.LessonId);
+        if (lesson == null)
+            return NotFound("Lesson not found.");
 
-    return Ok();
-}
+        var existingReview = await context.LessonReviews
+            .FirstOrDefaultAsync(r => r.LessonId == reviewDto.LessonId && r.UserId == userId);
 
+        if (existingReview != null)
+            return BadRequest("You have already reviewed this lesson.");
 
+        var review = new LessonReview
+        {
+            LessonId = reviewDto.LessonId,
+            Lesson = lesson,
+            Stars = reviewDto.Stars,
+            Difficulty = reviewDto.Difficulty,
+            Text = reviewDto.Text,
+            UserId = userId
+        };
+
+        context.LessonReviews.Add(review);
+
+        await context.SaveChangesAsync(); 
+
+        return Ok();
+    }
+
+    [HttpGet("Search")]
+    public async Task<ActionResult> SearchLesson(string? search, [FromQuery(Name = "exclude[]")]int[]? exclude, int limit = 10)
+    {
+        var query = context.Lessons
+            .Include(l => l.Category)
+            .Include(l => l.Author)
+            .Include(l => l.Reviews)
+            .Include(l => l.Quiz)
+            .Where(c => c.Public)
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(search))
+            query = query.Where(c => c.Title.ToLower().Contains(search.ToLower()));
+
+        if (exclude != null)
+            query = query.Where(c => !exclude.Contains(c.Id));
+
+        var lessons = await query.Take(Math.Min(limit, 10)).ToListAsync();
+
+        return Ok(lessons.Select(l => new
+        {
+            l.Id,
+            l.Title,
+            l.Description,
+            l.Category,
+            AverageRating = l.Reviews?.Count > 0 ? l.Reviews.Average(r => r.Stars) : 0.0,
+            l.Difficulty,
+            QuizId = l.Quiz?.Id
+        }));
+    }
 
     [Authorize(Roles = "Moderator,Admin")]
     [HttpPost("CreateLesson")]

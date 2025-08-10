@@ -25,6 +25,8 @@ import LessonEditor from "@/pages/Lessons/LessonEditor";
 import CreateQuiz from "@/pages/Quiz/CreateQuiz";
 import LessonDetails from "@/pages/Lessons/LessonDetails";
 import Quiz from "@/pages/Quiz/Quiz";
+import CourseStudio from "@/pages/Courses/CourseStudio";
+import CreateCourse from "@/pages/Courses/CreateCourse";
 
 function Routes() {
     const auth = useAuth();
@@ -82,6 +84,18 @@ function Routes() {
         {
             path: "/moderator/edit-quiz/:id",
             element: <CreateQuiz />
+        },
+        {
+            path: "/moderator/courses",
+            element: <CourseStudio />
+        },
+        {
+            path: "/moderator/new-course",
+            element: <CreateCourse />
+        },
+        {
+            path: "/moderator/edit-course/:id",
+            element: <CreateCourse />
         },
     ];
 

@@ -135,7 +135,7 @@ function ChallengeStudio() {
                             return difficulties[Number(selected)];
                         }}
                         >
-                            <MenuItem value=''>All Categories</MenuItem>
+                            <MenuItem value=''>All Difficulties</MenuItem>
                             {difficulties.map((diff, idx) => (<MenuItem key={idx} value={idx}>
                                 {diff}
                             </MenuItem>))}

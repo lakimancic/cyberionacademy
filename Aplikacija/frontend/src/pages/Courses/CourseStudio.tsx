@@ -1,127 +1,96 @@
-import { useEffect, useMemo, useState } from 'react';
+import '@/assets/css/ModStudio.css';
+import SearchBar from '@/components/SearchBar/SearchBar';
 import DataTable from '@/components/Table/DataTable';
+import api from '@/lib/api';
 import difficulties from '@/utils/difficulties';
 import { MenuItem, Rating, Select } from '@mui/material';
-import api from '@/lib/api';
-import SearchBar from '@/components/SearchBar/SearchBar';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '@/assets/css/ModStudio.css';
 
-interface Lesson {
-  id: number;
-  title: string;
-  description?: string;
-  difficulty: number;
-  isPublic: boolean;
-  categoryId: number;
-  authorId: number;
-  quizId?: number;
-  categoryName: string;
-  averageRating: number;
+interface Course {
+    id: number;
+    title: string;
+    averageRating: number;
+    difficulty: number;
+    hasBanner: boolean;
 }
 
-type SortKey = 'name' | 'categoryName';
+type SortKey = 'name' | 'rating';
 
-function LessonStudio() {
+function CourseStudio() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const [lessons, setLessons] = useState<Lesson[]>([]);
+    const [courses, setCourses] = useState<Course[]>([]);
     const [searchWord, setSearchWord] = useState('');
     const [sortKey, setSortKey] = useState<SortKey>('name');
     const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc');
-    const [selectedCategory, setSelectedCategory] = useState<string>('');
     const [selectedDifficulty, setSelectedDifficulty] = useState<string>('');
-    const [categories, setCategories] = useState<string[]>([]);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        api.get('/Challenge/GetCategories')
-            .then(res => setCategories(res.data))
-            .catch(err => console.error('Greška pri dohvatanju kategorija', err));
-    }, []);
-
-    const fetchChallenges = (searchQuery?: string) => {
+    const fetchCourses = (searchQuery?: string) => {
         const params = {
             sortKey,
             sortDirection: sortDir,
             page: currentPage,
             search: searchQuery,
-            category: selectedCategory !== '' ? selectedCategory : undefined,
             difficulty: selectedDifficulty !== '' ? Number(selectedDifficulty) : undefined,
-            ownLessons: true
+            ownCourses: true
         };
 
-        api.get('/Lesson/GetLessons', { params })
+        api.get('/Course/GetCourses', { params })
             .then(response => {
-                setLessons(response.data.items);
+                setCourses(response.data.items);
                 setTotalPages(response.data.totalPages);
             })
             .catch(error => console.error('Greška pri dohvatanju izazova:', error));
     };
 
     const onSearch = () => {
-        fetchChallenges(searchWord);
+        fetchCourses(searchWord);
     };
 
     useEffect(() => {
-        fetchChallenges();
-    }, [currentPage, sortKey, sortDir, selectedCategory, selectedDifficulty]);
+        fetchCourses();
+    }, [currentPage, sortKey, sortDir, selectedDifficulty]);
 
-    const mappedLessons = useMemo(() => {
-        return lessons.map(l => {
+    const mappedCourses = useMemo(() => {
+        return courses.map(course => {
             return {
                 name: <div className='challenge-name'>
-                    <strong>{l.title}</strong>
-                    <div className="difficulty">{(difficulties as any)[l.difficulty] ?? 'Unknown'}</div>
+                    <strong>{course.title}</strong>
                 </div>,
-                categoryName: l.categoryName,
+                difficulty: 
+                    <div className="lone-difficulty">{(difficulties as any)[course.difficulty] ?? 'Unknown'}</div>,
                 rating: <Rating 
-                    value={l.averageRating}
+                    value={course.averageRating}
                     precision={0.1}
                     readOnly
                     size="small"
                 />,
-                quiz: l.quizId ? `Quiz #${l.quizId}` : 'No quiz',
-                visible: l.isPublic ? 'Public' : 'Private',
-                id: l.id
+                hasBanner: course.hasBanner ? 'Yes' : 'No',
+                id: course.id,
             }
         })
-    }, [lessons]);
+    }, [courses]);
 
     return (
         <div className="studio-con">
-            <h2>Create new or edit Lessons</h2>
+            <h2>Create new or edit Courses</h2>
 
             <div className="studio-con-filters">
                 <button
                     className='studio-con-add'
                     onClick={() => {
-                        navigate("/moderator/new-lesson")
+                        navigate("/moderator/new-course")
                     }}
-                >Add New Lesson</button>
+                >Add New Course</button>
                 <div className="studio-con-right">
                     <SearchBar 
-                        label='Lessons'
+                        label='Courses'
                         searchWord={searchWord}
                         setSearchWord={setSearchWord}
                         onSearch={onSearch}
                     />
-                    <Select
-                        value={selectedCategory}
-                        displayEmpty
-                        onChange={e => setSelectedCategory(e.target.value)}
-                        renderValue={selected => {
-                            if(selected.length === 0)
-                                return <span className='admin-placeholder'>Filter by Category</span>;
-
-                            return selected;
-                        }}
-                        >
-                            <MenuItem value=''>All Categories</MenuItem>
-                            {categories.map((cat, idx) => (<MenuItem key={idx} value={cat}>
-                                {cat}
-                            </MenuItem>))}
-                    </Select>
                     <Select
                         value={selectedDifficulty}
                         displayEmpty
@@ -143,13 +112,12 @@ function LessonStudio() {
 
             <DataTable 
                 className='studio-con-table'
-                data={mappedLessons}
+                data={mappedCourses}
                 columns={[
-                    { key: 'name', header: 'Lesson', sortable: true },
-                    { key: 'categoryName', header: 'Category', sortable: true },
-                    { key: 'rating', header: 'Avg. Rating' },
-                    { key: 'quiz', header: 'Quiz' },
-                    { key: 'visible', header: 'Visibility' },
+                    { key: 'name', header: 'Course Title', sortable: true },
+                    { key: 'difficulty', header: 'Difficulty' },
+                    { key: 'rating', header: 'Avg. Rating', sortable: true },
+                    { key: 'hasBanner', header: 'Has Banner' },
                 ]}
                 pagination={{
                     page: currentPage,
@@ -163,11 +131,11 @@ function LessonStudio() {
                     onSetSortKey: arg => setSortKey(arg as SortKey)
                 }}
                 onRowClick={row => {
-                    navigate(`/moderator/edit-lesson/${row.id}`);
+                    navigate(`/moderator/edit-course/${row.id}`);
                 }}
             />
         </div>
     )
 }
 
-export default LessonStudio;
+export default CourseStudio;
