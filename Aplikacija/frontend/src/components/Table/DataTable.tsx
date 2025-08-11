@@ -25,6 +25,7 @@ type Props<T> = {
     columns: Column<T>[];
     className?: string;
     onRowClick?: (row: T, ind: number) => void;
+    rowClass?: (row: T) => string;
     pagination?: Pagination;
     sort?: Sort<T>;
 };
@@ -33,7 +34,7 @@ type ValidRow = {
     [key: string]: React.ReactNode;
 };
 
-function DataTable<T extends ValidRow>({ data, columns, className, onRowClick, pagination, sort } : Props<T>) {
+function DataTable<T extends ValidRow>({ data, columns, className, onRowClick, rowClass, pagination, sort } : Props<T>) {
     return (
         <div className={`data-table-con ${className ? className + '-con' : ''}`}>
             <table className={`data-table ${className ?? ''}`}>
@@ -66,6 +67,7 @@ function DataTable<T extends ValidRow>({ data, columns, className, onRowClick, p
                         <tr
                             key={ind}
                             onClick={() => onRowClick?.(row, ind)}
+                            className={rowClass?.(row)}
                         >
                             {columns.map(col => (
                                 <td key={String(col.key)}>

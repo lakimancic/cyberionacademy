@@ -13,16 +13,17 @@ using Microsoft.EntityFrameworkCore;
 [Authorize]
 public class LessonController(ApplicationDbContext context, IQuizService quizService) : ControllerBase
 {
+    static readonly int pageSize = 8;
+
     [HttpGet("GetLessons")]
     public async Task<ActionResult<object>> GetLessons(
         int page = 1,
-        int pageSize = 8,
         string? sortKey = "Title",
         string? sortDirection = "asc",
         string? category = null,
         string? search = null,
-        bool? isPublic = null,
         int? difficulty = null,
+        bool? quizOnly = null,
         bool ownLessons = false)
     {
         var query = context.Lessons
@@ -48,9 +49,6 @@ public class LessonController(ApplicationDbContext context, IQuizService quizSer
         else
             query = query.Where(c => c.Public);
 
-        if (isPublic.HasValue)
-            query = query.Where(l => l.Public == isPublic.Value);
-
         if (!string.IsNullOrEmpty(category) && category != "all")
             query = query.Where(l => l.Category.Name == category);
 
@@ -59,6 +57,9 @@ public class LessonController(ApplicationDbContext context, IQuizService quizSer
 
         if (difficulty.HasValue)
             query = query.Where(l => l.Difficulty == difficulty.Value);
+
+        if (quizOnly.HasValue && quizOnly.Value)
+            query = query.Where(l => l.Quiz != null);
 
         var totalCount = await query.CountAsync();
         var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
@@ -69,6 +70,10 @@ public class LessonController(ApplicationDbContext context, IQuizService quizSer
             ("title", _) => query.OrderBy(l => l.Title),
             ("categoryname", "desc") => query.OrderByDescending(l => l.Category.Name),
             ("categoryname", _) => query.OrderBy(l => l.Category.Name),
+            ("difficulty", "desc") => query.OrderByDescending(l => l.Difficulty),
+            ("difficulty", _) => query.OrderBy(l => l.Difficulty),
+            ("rating", "desc") => query.OrderByDescending(l => l.Reviews!.Average(r => r.Stars)),
+            ("rating", _) => query.OrderBy(l => l.Reviews!.Average(r => r.Stars)),
             _ => query.OrderBy(l => l.Title)
         };
 
@@ -77,17 +82,18 @@ public class LessonController(ApplicationDbContext context, IQuizService quizSer
             .Take(pageSize)
             .ToListAsync();
 
-        var lessonDtos = lessons.Select(l => new LessonDto
+        var lessonDtos = lessons.Select(l => new
         {
-            Id = l.Id,
-            Title = l.Title,
-            Description = l.Description,
-            Difficulty = l.Difficulty,
+            l.Id,
+            l.Title,
+            l.Description,
+            l.Difficulty,
             IsPublic = l.Public,
-            CategoryId = l.CategoryId,
-            AuthorId = l.AuthorId,
+            l.AuthorId,
             QuizId = l.Quiz?.Id,
+            l.CategoryId,
             CategoryName = l.Category.Name,
+            CategoryShort = l.Category.ShortForm,
             AverageRating = l.Reviews != null && l.Reviews.Count > 0 ? l.Reviews.Average(r => r.Stars) : 0.0
         }).ToList();
 
@@ -112,92 +118,147 @@ public class LessonController(ApplicationDbContext context, IQuizService quizSer
         return Ok(categories);
     }
 
-    [HttpGet("GetDifficulties")]
-    [AllowAnonymous]
-    public ActionResult<IEnumerable<object>> GetDifficulties()
-    {
-        var difficulties = new[]
-        {
-                new { value = 0, label = "Very Easy" },
-                new { value = 1, label = "Easy" },
-                new { value = 2, label = "Medium" },
-                new { value = 3, label = "Hard" },
-                new { value = 4, label = "Very Hard" }
-            };
-
-        return Ok(difficulties);
-    }
-
     [HttpGet("GetLessonDetails/{id}")]
     public async Task<ActionResult<LessonDto>> GetLessonDetails(int id)
     {
+        int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
+        if (userId == -1)
+            return BadRequest("UserId in token is malformed");
+
+        User? user = await context.Users.FindAsync(userId);
+        if (user == null)
+            return NotFound("User for account not found");
+        
         var lesson = await context.Lessons
-        .Include(l => l.Category)
-        .Include(l => l.Author)
-        .Include(l => l.Reviews!)
-        .ThenInclude(r => r.User)
-        .Include(l => l.Quiz)
-        .FirstOrDefaultAsync(l => l.Id == id);
+            .Include(l => l.Category)
+            .Include(l => l.Author)
+            .Include(l => l.Reviews!)
+            .ThenInclude(r => r.User)
+            .Include(l => l.Quiz)
+            .FirstOrDefaultAsync(l => l.Id == id);
 
         if (lesson == null)
             return NotFound("Lesson not found");
 
-        var dto = new LessonDto
+        var review = await context.LessonReviews
+            .Where(cr => cr.LessonId == lesson.Id && cr.UserId == user.Id)
+            .Select(cr => new
+            {
+                cr.Text,
+                cr.Stars,
+                cr.Difficulty
+            }).FirstOrDefaultAsync();
+
+        double? averageReviewDifficuly = lesson.Reviews?.Count > 0
+            ? lesson.Reviews.Average(r => r.Difficulty)
+            : null;
+
+        var difficultyCounts = Enumerable.Range(0, 10)
+            .Select(d => new
+            {
+                Difficulty = d,
+                Count = lesson.Reviews?.Count(r => r.Difficulty == d) ?? 0
+            })
+            .ToList();
+
+        var dto = new
         {
-            Id = lesson.Id,
-            Title = lesson.Title,
-            Description = lesson.Description,
-            Difficulty = lesson.Difficulty,
-            CategoryId = lesson.CategoryId,
+            lesson.Id,
+            lesson.Title,
+            lesson.Description,
+            lesson.Difficulty,
+            lesson.CategoryId,
+            lesson.Content,
             CategoryName = lesson.Category?.Name ?? "Unknown",
+            CategoryShort = lesson.Category?.ShortForm ?? "Unknown",
             AuthorId = lesson.Author?.Id ?? 0,
             AuthorName = lesson.Author?.Username ?? "Unknown",
             AuthorRole = lesson.Author?.Role.ToString() ?? "Unknown",
             AuthorCountry = lesson.Author?.Country ?? "Unknown",
             IsPublic = lesson.Public,
             QuizId = lesson.Quiz?.Id,
+            review,
             AverageRating = lesson.Reviews != null && lesson.Reviews.Count > 0 
                 ? lesson.Reviews.Average(r => r.Stars) 
                 : 0,
+            AverageReviewDifficulty = averageReviewDifficuly,
+            difficultyCounts,
             ReviewCount = lesson.Reviews != null ? lesson.Reviews.Count : 0
         };
 
         return Ok(dto);
     }
-
     
     [HttpPost("SubmitReview")]
-    public async Task<IActionResult> SubmitReview([FromBody] LessonReviewDto reviewDto)
+    public async Task<IActionResult> SubmitReview(ReviewDto request)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userIdClaim == null)
-            return Unauthorized();
+        int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
+        if (userId == -1)
+            return BadRequest("UserId in token is malformed");
 
-        int userId = int.Parse(userIdClaim);
+        User? user = await context.Users.FindAsync(userId);
+        if (user == null)
+            return NotFound("User for account not found");
 
-        var lesson = await context.Lessons.FindAsync(reviewDto.LessonId);
+        var lesson = await context.Lessons.FindAsync(request.Id);
         if (lesson == null)
-            return NotFound("Lesson not found.");
+            return NotFound("Lesson not found");
 
-        var existingReview = await context.LessonReviews
-            .FirstOrDefaultAsync(r => r.LessonId == reviewDto.LessonId && r.UserId == userId);
+        var review = await context.LessonReviews
+            .Where(cr => cr.LessonId == lesson.Id && cr.UserId == userId)
+            .FirstOrDefaultAsync();
+        if (review != null)
+            return BadRequest("You have already reviewed this lesson");
 
-        if (existingReview != null)
-            return BadRequest("You have already reviewed this lesson.");
-
-        var review = new LessonReview
+        LessonReview newReview = new()
         {
-            LessonId = reviewDto.LessonId,
             Lesson = lesson,
-            Stars = reviewDto.Stars,
-            Difficulty = reviewDto.Difficulty,
-            Text = reviewDto.Text,
-            UserId = userId
+            User = user,
+            Text = request.Text,
+            Stars = request.Stars,
+            Difficulty = request.Difficulty
         };
 
-        context.LessonReviews.Add(review);
+        await context.LessonReviews.AddAsync(newReview);
+        await context.SaveChangesAsync();
 
-        await context.SaveChangesAsync(); 
+        return Ok(new
+        {
+            newReview.Text,
+            newReview.Stars,
+            newReview.Difficulty
+        });
+    }
+
+    [HttpPut("UpdateReview")]
+    public async Task<IActionResult> UpdateReview(ReviewDto request)
+    {
+        int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
+        if (userId == -1)
+            return BadRequest("UserId in token is malformed");
+
+        User? user = await context.Users.FindAsync(userId);
+        if (user == null)
+            return NotFound("User for account not found");
+
+        var lesson = await context.Lessons.FindAsync(request.Id);
+        if (lesson == null)
+            return NotFound("Lesson not found");
+
+        var review = await context.LessonReviews
+            .Where(cr => cr.LessonId == lesson.Id && cr.UserId == userId)
+            .FirstOrDefaultAsync();
+        if (review == null)
+            return NotFound("Review not found");
+
+        if (review.Difficulty != request.Difficulty)
+            review.Difficulty = request.Difficulty;
+        if (review.Stars != request.Stars)
+            review.Stars = request.Stars;
+        if (review.Text != request.Text)
+            review.Text = request.Text;
+
+        await context.SaveChangesAsync();
 
         return Ok();
     }

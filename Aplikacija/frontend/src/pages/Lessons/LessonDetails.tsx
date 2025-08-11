@@ -1,86 +1,121 @@
-import { useEffect, useState } from "react";
-import { Avatar } from '@mui/material';
-import worldLogo from '@/assets/images/world.png';
+import { useEffect, useState, type SetStateAction } from "react";
 import { useParams, Link } from "react-router-dom";
-import {
-  TextField,
-  Rating,
-  MenuItem,
-} from "@mui/material";
 import api from "@/lib/api";
-// import './LessonDetails.css';
-
-const difficultyLabels = ["Very Easy", "Easy", "Medium", "Hard", "Very Hard"];
+import "./LessonDetails.css";
+import difficulties, { getColorHex } from "@/utils/difficulties";
+import categories from "@/utils/categories";
+import ReactMarkdown from "react-markdown";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import Review from "@/components/Review/Review";
+import AuthImage from "@/components/AuthImage/AuthImage";
+import { Avatar, Rating } from "@mui/material";
+import { useNotification } from "@/contexts/Notification/NotificationProvider";
 
 interface LessonDetailsData {
   id: number;
   title: string;
   description: string;
   categoryName: string;
+  categoryShort: string;
   difficulty: number;
   isPublic: boolean;
-  averageRating: number;
-  reviewCount: number;
   authorId?: number;
   authorName?: string;
   authorRole?: string;
   authorCountry?: string;
   authorAvatarUrl?: string;
+  quizId?: number;
+  reviewCount: number;
+  averageRating: number;
+  averageReviewDifficulty: number;
+  difficultyCounts: {
+    difficulty: number;
+    count: number;
+  }[];
+  review?: {
+    text: string;
+    stars: number;
+    difficulty: number;
+  };
+  content?: string;
 }
 
 function LessonDetails() {
+  const { showNotification } = useNotification();
   const { id } = useParams<{ id: string }>();
   const [lesson, setLesson] = useState<LessonDetailsData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const [stars, setStars] = useState<number | null>(0);
-  const [reviewDifficulty, setReviewDifficulty] = useState<number | "">("");
-  const [reviewText, setReviewText] = useState("");
-
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    api.get(`/Lesson/GetLessonDetails/${id}`)
-      .then(res => setLesson(res.data))
-      .finally(() => setLoading(false));
+    fetchLesson();
   }, [id]);
 
-  const handleSubmitReview = () => {
-    if (!stars || reviewDifficulty === "" || reviewText.trim() === "") {
-      alert("Please fill in all fields.");
-      return;
-    }
+  const fetchLesson = () => {
+    api
+      .get(`/Lesson/GetLessonDetails/${id}`)
+      .then((res) => setLesson(res.data))
+      .finally(() => setLoading(false));
+  };
 
-    api.post("/Lesson/SubmitReview", {
-      lessonId: lesson?.id,
-      stars,
-      difficulty: reviewDifficulty,
-      text: reviewText
-    }).then(() => {
-      setStars(0);
-      setReviewDifficulty("");
-      setReviewText("");
-      alert("✅ Review submitted!");
-    }).catch((error) => {
-    const errorMessage = error?.response?.data || "❌ Failed to submit review.";
-    alert(errorMessage);
-    }).then(() => {
-      return api.get(`/Lesson/GetLessonDetails/${id}`);
-    }).then(res => setLesson(res.data));
+  const handleSubmitReview = (
+    text: string,
+    stars: number,
+    difficulty: number,
+    edit: boolean,
+    setEdit: React.Dispatch<SetStateAction<boolean>>
+  ) => {
+    if (edit) {
+      api
+        .put("/Lesson/UpdateReview", {
+          id: lesson?.id,
+          text: text.trim().length > 0 ? text.trim() : undefined,
+          stars: stars,
+          difficulty: difficulty,
+        })
+        .then(() => {
+          showNotification("Review updated successfully", "success");
+          setEdit(false);
+          fetchLesson();
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    } else {
+      api
+        .post("/Lesson/SubmitReview", {
+          id: lesson?.id,
+          text: text.trim().length > 0 ? text.trim() : undefined,
+          stars: stars,
+          difficulty: difficulty,
+        })
+        .then(() => {
+          showNotification("Review submitted successfully", "success");
+          fetchLesson();
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
   };
 
   if (loading) return <div>Loading...</div>;
   if (!lesson) return <div>Lesson not found.</div>;
 
   return (
-    <div className="challenge-details-container"> 
-      <div className="challenge-header">
-        <div className="challenge-header-left">
-          <h2>{lesson.title}</h2>
-          <p>{lesson.description}</p>
+    <div className="lesson-details-container">
+      <div className="lesson-header">
+        <div className="lesson-header-left">
+          <img src={(categories as any)[lesson.categoryShort]} />
+          <div className="lesson-header-info">
+            <h2>{lesson.title}</h2>
+            <p>{lesson.description}</p>
+          </div>
         </div>
 
-        <div className="challenge-header-right">
+        <div className="lesson-header-right">
           <div className="meta-card">
             <p className="meta-label">🌐 Access</p>
             <p>{lesson.isPublic ? "Public" : "Private"}</p>
@@ -91,59 +126,129 @@ function LessonDetails() {
           </div>
           <div className="meta-card">
             <p className="meta-label">🧠 Difficulty</p>
-            <p>{difficultyLabels[lesson.difficulty]}</p>
+            <p
+              style={{
+                color: getColorHex(lesson.difficulty),
+                fontWeight: 600,
+              }}
+            >
+              {difficulties[lesson.difficulty]}
+            </p>
           </div>
-          <Link to={`/lesson/play/${lesson.id}`} className="meta-card btn-action">
-            Start Learning
-          </Link>
-          <Link to={`/lesson/quiz/${lesson.id}`} className="meta-card btn-action">
-            Quiz
-          </Link>
+          {lesson.quizId && (
+            <Link
+              to={`/quiz/${lesson.quizId}`}
+              className="meta-card btn-action"
+            >
+              Quiz
+            </Link>
+          )}
         </div>
       </div>
-
-      <div className="challenge-content-row">
-        <div className="challenge-sidebar">
-          {lesson.authorId && (
-            <Link
-              to={`/user/${lesson.authorId}`}
-              className="author-card meta-card clickable-card"
-            >
-          <h3>Author</h3>
-          <div className="author-info">
-            <div className="author-avatar-wrapper">
-              <Avatar
-                className="author-avatar"
-                src={lesson.authorAvatarUrl || "/default-avatar.png"}
-                alt={lesson.authorName ?? "Author"}
-              />
-              <Avatar
-                className="author-flag"
-                src={`https://flagcdn.com/w160/${lesson.authorCountry?.toLowerCase()}.png`}
-                variant="square"
-              >
-                <img src={worldLogo} alt="world" className="author-world" />
-              </Avatar>
-            </div>
-            <div className="author-details">
-              <p className="author-name">{lesson.authorName}</p>
-              <p className="author-role-country">
-                {lesson.authorRole} | {lesson.authorCountry}
-              </p>
-            </div>
-          </div>        
-            </Link>
-        )}
+      <div className="lesson-content-con">
+        <div className="lesson-content">
+          <ReactMarkdown
+            children={lesson.content}
+            components={{
+              code({ node, className, children, ...props }) {
+                const match = /language-(\w+)/.exec(className || "");
+                return match ? (
+                  <SyntaxHighlighter
+                    // @ts-ignore
+                    style={atomDark}
+                    children={String(children ?? "").replace(/\n$/, "")}
+                    language={match[1]}
+                    PreTag="div"
+                    {...props}
+                  />
+                ) : (
+                  <code className={className} {...props}>
+                    {children}
+                  </code>
+                );
+              },
+            }}
+          />
         </div>
-
-        <div className="challenge-details">
-          <div className="challenge-section">
+        <div className="lesson-right">
+          <Link
+            to={`/user/${lesson.authorId}`}
+            className="author-card meta-card clickable-card"
+          >
+            <h3>Author</h3>
+            <div className="author-info">
+              <AuthImage
+                src={`/User/${lesson.authorId}/ProfilePicture`}
+                element={Avatar}
+              />
+              <div className="author-details">
+                <p
+                  className={`author-role role-${lesson.authorRole?.toLowerCase()}`}
+                >
+                  {lesson.authorRole}
+                </p>
+                <p className="author-name">{lesson.authorName}</p>
+              </div>
+            </div>
+          </Link>
+          <div className="review-section">
             <h3>Ratings</h3>
             <div className="ratings-grid">
               <div className="rating-item">
                 <div className="rating-label">⭐ Avg. Rating</div>
                 <div className="rating-stars">
-                  <Rating value={lesson.averageRating} precision={0.1} readOnly />
+                  <Rating
+                    value={lesson.averageRating}
+                    precision={0.1}
+                    readOnly
+                  />
+                </div>
+                <div className="rating-description">Based on user reviews</div>
+              </div>
+              <div className="rating-item">
+                <div className="rating-label">🧠 Review Difficulty</div>
+                {lesson.reviewCount > 0 && (
+                  <div className="rating-counts">
+                    {lesson.difficultyCounts.map((diff, i) => {
+                      const maxCount = lesson.difficultyCounts
+                        .map((dc) => dc.count)
+                        .reduce((max, current) =>
+                          current > max ? current : max
+                        );
+                      return (
+                        <div
+                          className="rating-count"
+                          key={i}
+                          style={{
+                            height: `${(diff.count * 100) / maxCount}%`,
+                            backgroundColor: getColorHex(diff.difficulty),
+                          }}
+                        ></div>
+                      );
+                    })}
+                  </div>
+                )}
+                <div
+                  className="rating-value"
+                  style={{
+                    color: getColorHex(
+                      Math.round(
+                        lesson.averageReviewDifficulty ?? lesson.difficulty
+                      )
+                    ),
+                    fontWeight: 600,
+                  }}
+                >
+                  {
+                    difficulties[
+                      Math.round(
+                        lesson.averageReviewDifficulty ?? lesson.difficulty
+                      )
+                    ]
+                  }
+                </div>
+                <div className="rating-description">
+                  Avg. reported difficulty
                 </div>
               </div>
               <div className="rating-description">
@@ -151,52 +256,14 @@ function LessonDetails() {
               </div>
             </div>
           </div>
-
-          <div className="challenge-section">
-            <h3>Leave a Review</h3>
-            <div className="review-form">
-              <div className="form-row">
-                <label className="form-label">Your Rating</label>
-                <div className="rating-stars">
-                  <Rating value={stars} onChange={(_, v) => setStars(v)} />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <label className="form-label">Difficulty</label>
-                <TextField
-                  select
-                  size="small"
-                  value={reviewDifficulty}
-                  onChange={(e) => setReviewDifficulty(Number(e.target.value))}
-                  fullWidth
-                >
-                  {difficultyLabels.map((label, index) => (
-                    <MenuItem key={index} value={index}>{label}</MenuItem>
-                  ))}
-                </TextField>
-              </div>
-
-              <div className="form-row">
-                <label className="form-label">Comment</label>
-                <TextField
-                  multiline
-                  rows={4}
-                  fullWidth
-                  size="small"
-                  value={reviewText}
-                  onChange={(e) => setReviewText(e.target.value)}
-                />
-              </div>
-
-              <div
-                className="action-item action-clickable submit-button"
-                onClick={handleSubmitReview}
-              >
-                <div className="submit-text">Submit</div>
-              </div>
-            </div>
-          </div>
+          <Review
+            text={lesson.review?.text}
+            difficulty={lesson.review?.difficulty}
+            stars={lesson.review?.stars}
+            hasReview={lesson.review ? true : false}
+            label="lesson"
+            handleSubmit={handleSubmitReview}
+          />
         </div>
       </div>
     </div>

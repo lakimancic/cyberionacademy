@@ -66,8 +66,8 @@
 }
 
 .course-description {
-    font-size: 1.1rem;
-    margin-left: 1.5rem;
+    color: #b2bac7;
+    font-size: 1.4rem;
 }
 
 .course-content {
@@ -79,7 +79,7 @@
 
 .course-items-list {
     position: relative;
-    left: 20%;
+    left: 10%;
 
     display: flex;
     flex-direction: column;
@@ -104,7 +104,9 @@
 
     display: flex;
     flex-direction: column;
-    align-items: end;
+    align-items: flex-end;
+
+    gap: 2rem;
 }
 
 .course-right .author-card p {
@@ -112,8 +114,13 @@
 }
 
 .course-right .author-card {
-    width: 60%;
+    width: 18rem;
     margin-bottom: 2rem;
+}
+
+.course-right .review-section {
+    width: 20rem;
+    flex: 0;
 }
 
 .course-list-item {
@@ -152,4 +159,21 @@
 
     left: -2.4rem;
     top: 2rem;
+}
+
+.rating-counts {
+    width: 70%;
+    margin: 0 auto;
+    height: 3.5rem;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    align-items: end;
+    gap: 0.5rem;
+
+    box-sizing: border-box;
+}
+
+.rating-count {
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
 }

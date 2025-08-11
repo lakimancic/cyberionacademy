@@ -93,22 +93,6 @@ public class CourseController(ApplicationDbContext context, IConfiguration confi
         });
     }
 
-    [HttpGet("GetDifficulties")]
-    [AllowAnonymous]
-    public ActionResult<IEnumerable<object>> GetDifficulties()
-    {
-        var difficulties = new[]
-        {
-        new { value = 0, label = "Very Easy" },
-        new { value = 1, label = "Easy" },
-        new { value = 2, label = "Medium" },
-        new { value = 3, label = "Hard" },
-        new { value = 4, label = "Very Hard" }
-    };
-
-        return Ok(difficulties);
-    }
-
     [HttpGet("{courseId}/Banner")]
     public async Task<IActionResult> GetBanner(int courseId)
     {
@@ -153,6 +137,7 @@ public class CourseController(ApplicationDbContext context, IConfiguration confi
             .ThenInclude(cl => cl.Lesson)
             .ThenInclude(l => l.Category)
             .Include(l => l.Author)
+            .Include(c => c.Reviews)
             .FirstOrDefaultAsync();
 
         if (course == null)
@@ -200,6 +185,18 @@ public class CourseController(ApplicationDbContext context, IConfiguration confi
             .OrderBy(i => i.Order)
             .ToList();
 
+        double? averageReviewDifficuly = course.Reviews?.Count > 0
+            ? course.Reviews.Average(r => r.Difficulty)
+            : null;
+
+        var difficultyCounts = Enumerable.Range(0, 10)
+            .Select(d => new
+            {
+                Difficulty = d,
+                Count = course.Reviews?.Count(r => r.Difficulty == d) ?? 0
+            })
+            .ToList();
+
         return Ok(new
         {
             course.Id,
@@ -213,8 +210,86 @@ public class CourseController(ApplicationDbContext context, IConfiguration confi
             Items = items,
             lessonCount,
             challengeCount,
-            review
+            review,
+            AverageRating = course.Reviews?.Count > 0 ? course.Reviews.Average(r => r.Stars) : 0.0,
+            AverageReviewDifficulty = averageReviewDifficuly,
+            difficultyCounts,
+            ReviewCount = course.Reviews?.Count ?? 0
         });
+    }
+
+    [HttpPost("SubmitReview")]
+    public async Task<IActionResult> SubmitReview(ReviewDto request)
+    {
+        int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
+        if (userId == -1)
+            return BadRequest("UserId in token is malformed");
+
+        User? user = await context.Users.FindAsync(userId);
+        if (user == null)
+            return NotFound("User for account not found");
+
+        var course = await context.Courses.FindAsync(request.Id);
+        if (course == null)
+            return NotFound("Course not found");
+
+        var review = await context.CourseReviews
+            .Where(cr => cr.CourseId == course.Id && cr.UserId == userId)
+            .FirstOrDefaultAsync();
+        if (review != null)
+            return BadRequest("You have already reviewed this course");
+
+        CourseReview newReview = new()
+        {
+            Course = course,
+            User = user,
+            Text = request.Text,
+            Stars = request.Stars,
+            Difficulty = request.Difficulty
+        };
+
+        await context.CourseReviews.AddAsync(newReview);
+        await context.SaveChangesAsync();
+
+        return Ok(new
+        {
+            newReview.Text,
+            newReview.Stars,
+            newReview.Difficulty
+        });
+    }
+
+    [HttpPut("UpdateReview")]
+    public async Task<IActionResult> UpdateReview(ReviewDto request)
+    {
+        int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
+        if (userId == -1)
+            return BadRequest("UserId in token is malformed");
+
+        User? user = await context.Users.FindAsync(userId);
+        if (user == null)
+            return NotFound("User for account not found");
+
+        var course = await context.Courses.FindAsync(request.Id);
+        if (course == null)
+            return NotFound("Course not found");
+
+        var review = await context.CourseReviews
+            .Where(cr => cr.CourseId == course.Id && cr.UserId == userId)
+            .FirstOrDefaultAsync();
+        if (review == null)
+            return NotFound("Review not found");
+
+        if (review.Difficulty != request.Difficulty)
+            review.Difficulty = request.Difficulty;
+        if (review.Stars != request.Stars)
+            review.Stars = request.Stars;
+        if (review.Text != request.Text)
+            review.Text = request.Text;
+
+        await context.SaveChangesAsync();
+
+        return Ok();
     }
 
     [Authorize(Roles = "Moderator,Admin")]

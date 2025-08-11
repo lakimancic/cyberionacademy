@@ -11,6 +11,8 @@ public class CreateCourseDto
     [MinLength(10, ErrorMessage = "Description must be at least 10 characters")]
     [MaxLength(300, ErrorMessage = "Description must be at most 300 characters")]
     public string Description { get; set; } = null!;
+    [Required(ErrorMessage = "Difficulty is required")]
+    [Range(0, 9, ErrorMessage = "Difficulty must be between 0 and 9")]
     public int Difficulty { get; set; }
     public bool DeleteBanner { get; set; }
 

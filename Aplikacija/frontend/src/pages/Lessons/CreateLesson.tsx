@@ -74,15 +74,18 @@ function CreateLesson() {
             })
             .catch(err => console.error('Greška pri dohvatanju kategorija', err));
 
+        let lessonSet = false;
         if (location.state) {
-            if(location.state.lesson)
+            if(location.state.lesson) {
+                lessonSet = true;
                 setLesson(location.state.lesson);
+            }
 
             if(location.state.quiz !== undefined)
                 setQuiz(location.state.quiz);
         }
 
-        if (params.id) {
+        if (params.id && !lessonSet) {
             api.get(`/Lesson/GetLessonDetails/${params.id}`)
                 .then(res => {
                     setLesson(res.data);

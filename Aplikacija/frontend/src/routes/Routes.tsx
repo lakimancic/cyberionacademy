@@ -28,9 +28,11 @@ import Quiz from "@/pages/Quiz/Quiz";
 import CourseStudio from "@/pages/Courses/CourseStudio";
 import CreateCourse from "@/pages/Courses/CreateCourse";
 import Course from "@/pages/Courses/Course";
+import { useNotification } from "@/contexts/Notification/NotificationProvider";
 
 function Routes() {
     const auth = useAuth();
+    const { showNotification } = useNotification();
 
     const token = getInfoFromToken(auth?.token ?? null);
     const roleInd = ['User', 'Helper', 'Moderator', 'Admin'].indexOf(token?.role ?? 'User');
@@ -118,7 +120,7 @@ function Routes() {
                     children: [
                         {
                             path: "/",
-                            element: <div>HELLO WORLD</div> 
+                            element: <div onClick={() => showNotification("Review submitted successfully", 'warning')}>HELLO WORLD</div> 
                         },
                         {
                             path: "/lessons",

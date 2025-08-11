@@ -166,7 +166,7 @@ function Quiz() {
                 <div className="quiz-left">
                     <img src={(categories as any)[quiz.category.shortForm]} />
                     <div className="quiz-title">
-                        <h1>Quiz for: <Link to={`/lesson/${quiz.lessonId}`}>{quiz.title}</Link></h1>
+                        <h1>Quiz for: <Link to={`/lessons/${quiz.lessonId}`}>{quiz.title}</Link></h1>
                         <h2>{quiz.category.name}</h2>
                     </div>
                 </div>

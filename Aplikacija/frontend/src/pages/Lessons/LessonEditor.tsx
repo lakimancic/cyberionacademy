@@ -15,6 +15,7 @@ function LessonEditor() {
     const [leftWidth, setLeftWidth] = useState<number|null>(null);
     const containerRef = useRef<HTMLDivElement|null>(null);
     const isDraggingRef = useRef(false);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -54,6 +55,36 @@ function LessonEditor() {
         }
     };
 
+    const exportFile = () => {
+        const blob = new Blob([value], { type: "text/markdown" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "export.md";
+        a.click();
+
+        URL.revokeObjectURL(url);
+    };
+
+    const importFile = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const text = event.target?.result;
+            if (typeof text === "string") {
+                setValue(text);
+            }
+        };
+        reader.readAsText(file);
+    };
+
     useEffect(() => {
         const handleResize = () => {
             if (containerRef.current && leftWidth === null) {
@@ -88,8 +119,15 @@ function LessonEditor() {
                 <div className="editor-menu">
                     <button type="button" onClick={() => returnHandle(true)}><IoIosSave /> Save</button>
                     <button type="button" onClick={() => returnHandle(false)}><IoTrashBinSharp /> Discard</button>
-                    <button type="button"><BiImport /> Import</button>
-                    <button type="button"><BiExport /> Export</button>
+                    <button type="button" onClick={importFile}><BiImport /> Import</button>
+                    <button type="button" onClick={exportFile}><BiExport /> Export</button>
+                    <input
+                        type="file"
+                        accept=".md"
+                        ref={fileInputRef}
+                        style={{ display: "none" }}
+                        onChange={handleFileChange}
+                    />
                 </div>
                 <div className="editor-content">
                     <Editor 

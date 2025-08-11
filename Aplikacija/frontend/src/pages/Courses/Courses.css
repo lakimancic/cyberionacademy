@@ -76,81 +76,9 @@
   margin-top: 2rem;
 }
 
-/* .courses-container .course-card {
-  background-color: #1a1d2e;
-  border: 1px solid #2c2f45;
-  border-radius: 12px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.2s ease;
-  position: relative;
-  height: 350px; 
-}
-
-.courses-container .course-card:hover {
-  transform: scale(1.03);
-}
-
-.courses-container .course-card img {
-  width: 100%;
-  height: 220px; 
-  object-fit: cover;
-  border-bottom: 1px solid #2c2f45;
-}
-
-.courses-container .course-content {
-  flex: 1;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  position: relative;
-  height: 100%;
-}
-
-.courses-container .course-content h3 {
-  font-size: 1.4rem;
-  margin: 0.5rem 0 0.25rem;
-} */
-
-/* .courses-container .difficulty {
- font-size: 0.85rem;
-  color: #aaa;
-  margin-bottom: 2.4rem;
-} */
-
 .courses-container .MuiRating-root {
   align-self: flex-start;
 }
-
-/* .courses-container .author {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  position: absolute;
-  bottom: 0.7rem;
-  right: 0.8rem;
-}
-
-.courses-container .author img {
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  object-fit: cover;
-  border: 2px solid #fff;
-}
-
-.courses-container .author span {
-  font-size: 0.95rem;
-  color: #fff;
-} */
-
-/* .courses-container .rating-bottom-left {
-  position: absolute;
-  bottom: 1.3rem;
-  left: 0.6rem;
-} */
 
 .courses-container .pagination {
   margin-top: 2rem;
@@ -173,26 +101,4 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
-/* .course-description {
-  position: absolute;
-  inset: 0;
-  height: 220px;
-  background-color: rgba(26, 29, 46, 0.965);
-  color: white;
-  padding: 12px;
-  font-size: 0.9rem;
-  text-align: left;
 
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease;
-
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-}
-.course-card:hover .course-description {
-  opacity: 1;
-  pointer-events: auto;
-} */

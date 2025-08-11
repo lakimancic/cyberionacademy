@@ -55,9 +55,15 @@
   gap: 1rem;
 }
 
+.challenge-header-left img {
+  height: 3.2rem;
+  margin: 1.5rem;
+}
+
 .challenge-header-left {
   flex: 2;
   min-width: 300px;
+  display: flex;
 }
 
 .challenge-header-right {
@@ -373,7 +379,11 @@
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: white;
-  
+}
+
+.author-card .MuiAvatar-root {
+  width: 3rem;
+  height: 3rem;
 }
 
 .author-card h3 {
@@ -411,6 +421,7 @@
 .author-role {
   margin: 0;
   font-size: 0.9rem;
+  font-weight: 600;
   color: #9ca3af;
 }
 

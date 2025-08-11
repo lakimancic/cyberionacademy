@@ -92,21 +92,22 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
             .Take(pageSize)
             .ToListAsync();
 
-        var challengeDtos = challenges.Select(c => new ChallengeDto
+        var challengeDtos = challenges.Select(c => new
         {
-            Id = c.Id,
-            Name = c.Name,
-            Description = c.Description,
+            c.Id,
+            c.Name,
+            c.Description,
             IsArchived = c.Archived,
             IsPublic = c.Public,
-            Points = c.Points,
+            c.Points,
             CategoryName = c.Category.Name,
+            CategoryShort = c.Category.ShortForm,
             AverageRating = c.Reviews?.Count > 0 ? c.Reviews.Average(r => r.Stars) : 0.0,
             SolvedCount = c.Submissions?.Count(s => s.Correct) ?? 0,
-            Difficulty = c.Difficulty,
+            c.Difficulty,
             HasSolved = c.Submissions?.Any(s => s.UserId == userId && s.Correct) ?? false,
         }).ToList();
-        Console.WriteLine($"Queried with difficulty={difficulty}");
+
         return Ok(new
         {
             items = challengeDtos,
@@ -137,9 +138,26 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
         if (challengeEntity == null)
             return NotFound();
 
+        var review = await context.ChallengeReviews
+            .Where(cr => cr.ChallengeId == challengeEntity.Id && cr.UserId == user.Id)
+            .Select(cr => new
+            {
+                cr.Text,
+                cr.Stars,
+                cr.Difficulty
+            }).FirstOrDefaultAsync();
+
         double? averageReviewDifficuly = challengeEntity.Reviews?.Count > 0
-            ? challengeEntity.Reviews.Average(r => (int)r.Difficulty)
+            ? challengeEntity.Reviews.Average(r => r.Difficulty)
             : null;
+
+        var difficultyCounts = Enumerable.Range(0, 10)
+            .Select(d => new
+            {
+                Difficulty = d,
+                Count = challengeEntity.Reviews?.Count(r => r.Difficulty == d) ?? 0
+            })
+            .ToList();
 
         var rootPath = configuration.GetValue<string>("AppSettings:Storage")!;
         var publicPath = Path.Combine(rootPath, "challenges", challengeEntity.Id.ToString(), "public");
@@ -158,60 +176,38 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
             instance.Services
         } : null;
 
+        var hasSolved = await context.ChallengeSubmissions
+            .AnyAsync(s => s.UserId == userId && s.ChallengeId == challengeEntity.Id && s.Correct);
+
         var challenge = new
         {
             challengeEntity.Id,
             challengeEntity.Name,
             challengeEntity.Description,
             CategoryName = challengeEntity.Category.Name,
+            CategoryShort = challengeEntity.Category.ShortForm,
             challengeEntity.Points,
             SolvedCount = challengeEntity.Submissions?.Count(s => s.Correct) ?? 0,
             challengeEntity.Difficulty,
-            AutorId = challengeEntity.Author?.Id ?? 0,
-            AutorRole = challengeEntity.Author?.Role.ToString() ?? "Unknown",
-            AutorCountry = challengeEntity.Author?.Country ?? "Unknown",
+            AuthorId = challengeEntity.Author?.Id ?? 0,
+            AuthorRole = challengeEntity.Author?.Role.ToString() ?? "Unknown",
+            AuthorCountry = challengeEntity.Author?.Country ?? "Unknown",
             dockerImage = challengeEntity.DockerImage,
             challengeEntity.CreatedAt,
-            AutorName = challengeEntity.Author?.Username ?? "Unknown",
+            AuthorName = challengeEntity.Author?.Username ?? "Unknown",
             IsArchived = challengeEntity.Archived,
             IsPublic = challengeEntity.Public,
             ReviewCount = challengeEntity.Reviews?.Count ?? 0,
             AverageRating = challengeEntity.Reviews?.Count > 0 ? challengeEntity.Reviews.Average(r => r.Stars) : 0.0,
             AverageReviewDifficulty = averageReviewDifficuly,
+            difficultyCounts,
             DownloadFile = downloadFile,
-            Instance = instanceRet
+            Instance = instanceRet,
+            review,
+            hasSolved,
         };
 
         return Ok(challenge);
-    }
-
-
-    [HttpGet("GetCategories")]
-    [AllowAnonymous]
-    public async Task<ActionResult<IEnumerable<string>>> GetCategories()
-    {
-        var categories = await context.Categories
-            .Select(c => c.Name)
-            .Distinct()
-            .ToListAsync();
-
-        return Ok(categories);
-    }
-
-    [HttpGet("GetDifficulties")]
-    [AllowAnonymous]
-    public ActionResult<IEnumerable<object>> GetDifficulties()
-    {
-        var difficulties = new[]
-        {
-        new { value = 0, label = "Very Easy" },
-        new { value = 1, label = "Easy" },
-        new { value = 2, label = "Medium" },
-        new { value = 3, label = "Hard" },
-        new { value = 4, label = "Very Hard" }
-    };
-
-        return Ok(difficulties);
     }
 
     [HttpPost("SubmitFlag")]
@@ -231,7 +227,17 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
         if (challenge == null)
             return NotFound("Challenge not found.");
 
+        var hasSolved = await context.ChallengeSubmissions
+            .AnyAsync(s => s.UserId == userId && s.ChallengeId == dto.ChallengeId && s.Correct);
+
+        if (hasSolved)
+            return BadRequest("You have already solved challenge");
+
         var isCorrect = challenge.Flag.Trim() == dto.Flag.Trim();
+        if (isCorrect && !challenge.Archived)
+        {
+            user.TotalPoints += challenge.Points;
+        }
 
         var submission = new ChallengeSubmission
         {
@@ -249,8 +255,8 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
         return Ok(new { correct = isCorrect });
     }
 
-    [HttpGet("HasSolved")]
-    public async Task<IActionResult> HasUserSolved(int challengeId)
+    [HttpPost("SubmitReview")]
+    public async Task<IActionResult> SubmitReview(ReviewDto request)
     {
         int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
         if (userId == -1)
@@ -258,100 +264,68 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
 
         User? user = await context.Users.FindAsync(userId);
         if (user == null)
-            return BadRequest("User for account not found");
+            return NotFound("User for account not found");
 
-        var hasSolved = await context.ChallengeSubmissions
-            .AnyAsync(s => s.UserId == userId && s.ChallengeId == challengeId && s.Correct);
-
-        return Ok(hasSolved);
-    }
-
-    [HttpPost("SubmitChallengeReview")]/////ispravi
-    public async Task<IActionResult> SubmitReview([FromBody] ChallengeReviewDto dto)
-    {
-
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
-        if (userId == -1)
-            return BadRequest("UserId in token is malformed");
-
-        User? user = await context.Users.FindAsync(userId);
-        if (user == null)
-            return BadRequest("User for account not found");
-        var challenge = await context.Challenges.FindAsync(dto.ChallengeId);
+        var challenge = await context.Challenges.FindAsync(request.Id);
         if (challenge == null)
             return NotFound("Challenge not found");
-        var existingReview = await context.ChallengeReviews
-.FirstOrDefaultAsync(r => r.UserId == userId && r.ChallengeId == dto.ChallengeId);
-        var review = new ChallengeReview
-        {
-            ChallengeId = dto.ChallengeId,
-            Challenge = challenge,
-            Stars = dto.Stars,
-            Difficulty = dto.Difficulty,
-            Text = dto.Text,
-            UserId = userId,
-        };
-
-        context.ChallengeReviews.Add(review);
-        await context.SaveChangesAsync();
-
-        return Ok();
-    }
-    [HttpGet("HasReviewed")]
-    public async Task<IActionResult> HasUserReviewed(int challengeId)
-    {
-        int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
-        if (userId == -1)
-            return BadRequest("UserId in token is malformed");
-
-        var hasReviewed = await context.ChallengeReviews
-            .AnyAsync(r => r.UserId == userId && r.ChallengeId == challengeId);
-
-        return Ok(hasReviewed);
-    }
-
-    [HttpGet("GetUserReview")]
-    public async Task<IActionResult> GetUserReview(int challengeId)
-    {
-        int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
-        if (userId == -1)
-            return BadRequest("UserId in token is malformed");
 
         var review = await context.ChallengeReviews
-            .FirstOrDefaultAsync(r => r.ChallengeId == challengeId && r.UserId == userId);
+            .Where(cr => cr.ChallengeId == challenge.Id && cr.UserId == userId)
+            .FirstOrDefaultAsync();
+        if (review != null)
+            return BadRequest("You have already reviewed this challenge");
 
-        if (review == null)
-            return NotFound();
+        ChallengeReview newReview = new()
+        {
+            Challenge = challenge,
+            User = user,
+            Text = request.Text,
+            Stars = request.Stars,
+            Difficulty = request.Difficulty
+        };
+
+        await context.ChallengeReviews.AddAsync(newReview);
+        await context.SaveChangesAsync();
 
         return Ok(new
         {
-            Stars = review.Stars,
-            Difficulty = (int)review.Difficulty,
-            Text = review.Text
+            newReview.Text,
+            newReview.Stars,
+            newReview.Difficulty
         });
     }
 
     [HttpPut("UpdateReview")]
-    public async Task<IActionResult> UpdateReview([FromBody] ChallengeReviewDto dto)
+    public async Task<IActionResult> UpdateReview(ReviewDto request)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-
         int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
         if (userId == -1)
             return BadRequest("UserId in token is malformed");
 
-        var review = await context.ChallengeReviews
-            .FirstOrDefaultAsync(r => r.ChallengeId == dto.ChallengeId && r.UserId == userId);
+        User? user = await context.Users.FindAsync(userId);
+        if (user == null)
+            return NotFound("User for account not found");
 
+        var challenge = await context.Challenges.FindAsync(request.Id);
+        if (challenge == null)
+            return NotFound("Challenge not found");
+
+        var review = await context.ChallengeReviews
+            .Where(cr => cr.ChallengeId == challenge.Id && cr.UserId == userId)
+            .FirstOrDefaultAsync();
         if (review == null)
             return NotFound("Review not found");
 
-        review.Stars = dto.Stars;
-        review.Difficulty = dto.Difficulty;
-        review.Text = dto.Text;
+        if (review.Difficulty != request.Difficulty)
+            review.Difficulty = request.Difficulty;
+        if (review.Stars != request.Stars)
+            review.Stars = request.Stars;
+        if (review.Text != request.Text)
+            review.Text = request.Text;
 
         await context.SaveChangesAsync();
+
         return Ok();
     }
 

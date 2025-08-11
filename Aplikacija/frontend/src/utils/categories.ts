@@ -21,3 +21,11 @@ export default {
     "rev": revIcon,
     "web": webIcon
 }
+
+interface CategoryData {
+    id: number;
+    name: string;
+    shortForm: string;
+};
+
+export type { CategoryData };

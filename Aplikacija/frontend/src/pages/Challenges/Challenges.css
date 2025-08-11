@@ -17,7 +17,6 @@
 .challenge-container .tabs {
     display: flex;
     gap: 1rem;
-    margin-bottom: 1.5rem;
 }
 
 .challenge-container .tab {
@@ -37,36 +36,6 @@
 .challenge-container .tab.active {
     background-color: #2d324a;
     color: #fff;
-}
-
-.challenge-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
-    font-size: 0.95rem;
-}
-
-.challenge-table th, .challenge-table td {
-    text-align: left;
-    padding: 0.75rem;
-    border-bottom: 1px solid #2a2d3f00;
-}
-
-.challenge-table th {
-    color: #aab2c8;
-    cursor: pointer;
-    user-select: none;
-    background-color: #151824e7;
-}
-
-.challenge-table tr:hover {
-    background-color: #1f2233;
-}
-
-.challenge-table img {
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
 }
 
 .challenge-container input[type="text"], select {
@@ -96,16 +65,6 @@
 
 .challenge-container button:hover {
     opacity: 0.9;
-}
-
-.challenge-container .challenge-table tbody tr {
-    transition: transform 0.2s ease, background-color 0.2s ease;
-    cursor: pointer;
-}
-
-.challenge-container .challenge-table tbody tr:hover {
-    transform: scale(1.02);
-    background-color: rgba(255, 255, 255, 0.05);
 }
 
 .challenge-container .view-button {
@@ -208,4 +167,22 @@
 
 .challenge-table tr.solved {
     background-color: rgba(40, 167, 69, 0.15) !important;
+}
+
+.challenge-table td:has(.cat-icon) {
+    width: 0;
+    padding: 0 1.3rem;
+}
+
+.people-solve {
+    display: flex;
+    gap: 0.6rem;
+}
+
+.challenge-container .search-bar-container {
+    margin: 0;
+}
+
+.challenge-container .search-bar-container input {
+    width: 12rem;
 }

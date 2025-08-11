@@ -1,0 +1,81 @@
+.notification {
+    position: fixed;
+    top: 0;
+    left: 50%;
+
+    pointer-events: none;
+    z-index: 9999;
+
+    width: 30rem;
+    height: 8rem;
+
+    opacity: 0;
+    transform: translate(-50%, -100%);
+
+    background: rgba(21, 41, 68);
+    animation: slideFadeIn 0.3s forwards;
+
+    border-left: 4px solid white;
+    border-right: 4px solid white;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 1.3rem;
+}
+
+.notification.fade-out {
+    animation: fadeOut 0.3s forwards;
+}
+
+.notification svg {
+    margin-right: 1rem;
+    font-size: 2rem;
+}
+
+.notification.notf-success {
+    border-color: rgb(82, 170, 82);
+}
+
+.notification.notf-success svg {
+    color: rgb(82, 170, 82);
+}
+
+.notification.notf-error {
+    border-color: rgb(170, 82, 82);
+}
+
+.notification.notf-error svg {
+    color: rgb(212, 110, 110);
+}
+
+.notification.notf-warning {
+    border-color: rgb(219, 207, 92);
+}
+
+.notification.notf-warning svg {
+    color: rgb(212, 202, 110);
+}
+
+@keyframes slideFadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -100%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+    }
+
+    @keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+    to {
+        opacity: 0;
+        transform: translate(-50%, 0);
+    }
+}

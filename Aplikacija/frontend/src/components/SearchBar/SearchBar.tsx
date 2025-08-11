@@ -15,6 +15,7 @@ function SearchBar({ label, searchWord, setSearchWord, onSearch } : Props) {
             placeholder={`Search ${label}`}
             value={searchWord}
             onChange={e => setSearchWord?.(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && onSearch?.()}
         />
         <FaSearch onClick={() => onSearch?.()} />
     </div>

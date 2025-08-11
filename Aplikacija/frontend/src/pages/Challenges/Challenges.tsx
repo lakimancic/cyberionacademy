@@ -1,127 +1,184 @@
-import './Challenges.css';
-import { useEffect, useState } from 'react';
-import api from '@/lib/api';
-import { Rating } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import Switch from '@mui/material/Switch';
-
-
+import "./Challenges.css";
+import { useEffect, useMemo, useState } from "react";
+import api from "@/lib/api";
+import { MenuItem, Rating, Select } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import Switch from "@mui/material/Switch";
+import categoriesIcon, { type CategoryData } from "@/utils/categories";
+import difficulties, { getColorHex } from "@/utils/difficulties";
+import DataTable from "@/components/Table/DataTable";
+import { IoPeople } from "react-icons/io5";
+import SearchBar from "@/components/SearchBar/SearchBar";
 
 interface Challenge {
-    id: number;
-    name: string;
-    categoryName: string;
-    points: number;
-    averageRating: number;
-    solvedCount: number;
-    isArchived: boolean;
-    isPublic: boolean;
-    avatarUrl?: string;
-    difficulty: number;
-    hasSolved: boolean;
+  id: number;
+  name: string;
+  categoryName: string;
+  categoryShort: string;
+  points: number;
+  averageRating: number;
+  solvedCount: number;
+  isArchived: boolean;
+  isPublic: boolean;
+  avatarUrl?: string;
+  difficulty: number;
+  hasSolved: boolean;
 }
 
-type SortKey = 'name' | 'points' | 'categoryName' | 'averageRating' | 'solvedCount';
-type Tab = 'active' | 'retired' | 'all';
+type SortKey =
+  | "name"
+  | "points"
+  | "categoryName"
+  | "averageRating"
+  | "solvedCount";
+type Tab = "active" | "archived" | "all";
 
 function Challenges() {
-    const [challenges, setChallenges] = useState<Challenge[]>([]);
-    const [sortKey, setSortKey] = useState<SortKey>('name');
-    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-    const [activeTab, setActiveTab] = useState<Tab>('all');
-    const [inputValue, setInputValue] = useState('');
-    const [searchQuery, setSearchQuery] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('all');
-    const [selectedDifficulty, setSelectedDifficulty] = useState<number | ''>('');
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [categories, setCategories] = useState<string[]>([]);
-    const [difficulties, setDifficulties] = useState<{ value: number; label: string }[]>([]);
-     const [showUnsolvedOnly, setShowUnsolvedOnly] = useState(false);
-    const difficultyLabels = ['Very Easy', 'Easy', 'Medium', 'Hard', 'Very Hard'];
-    const getDifficultyLabel = (value: number) => {
-        return difficultyLabels[value] ?? 'Unknown';
-    };
-    const navigate = useNavigate();
+  const [challenges, setChallenges] = useState<Challenge[]>([]);
+  const [sortKey, setSortKey] = useState<SortKey>("name");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [activeTab, setActiveTab] = useState<Tab>("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedDifficulty, setSelectedDifficulty] = useState<number>(-1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [categories, setCategories] = useState<CategoryData[]>([]);
+  const [showUnsolvedOnly, setShowUnsolvedOnly] = useState(false);
 
-    const pageSize = 8;
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        fetchChallenges();
-    }, [sortKey, sortDirection, activeTab, searchQuery, selectedCategory, selectedDifficulty, currentPage, showUnsolvedOnly]);
+  const pageSize = 8;
 
-    useEffect(() => {
-        api.get('/Challenge/GetCategories')
-            .then(res => setCategories(res.data))
-            .catch(err => console.error('Greška pri dohvatanju kategorija', err));
+  useEffect(() => {
+    fetchChallenges();
+  }, [
+    sortKey,
+    sortDirection,
+    activeTab,
+    selectedCategory,
+    selectedDifficulty,
+    currentPage,
+    showUnsolvedOnly,
+  ]);
 
-        api.get('/Challenge/GetDifficulties')
-            .then(res => setDifficulties(res.data))
-            .catch(err => console.error('Greška pri dohvatanju težina', err));
-    }, []);
-    const fetchChallenges = () => {
-        const archivedParam =
-            activeTab === 'retired' ? true :
-                activeTab === 'active' ? false :
-                    undefined;
+  useEffect(() => {
+    api
+      .get("/Categories/")
+      .then((res) => setCategories(res.data))
+      .catch((err) => console.error("Greška pri dohvatanju kategorija", err));
+  }, []);
 
-        const params: any = {
-            sortKey,
-            sortDirection,
-            page: currentPage,
-            pageSize,
-            category: selectedCategory !== 'all' ? selectedCategory : undefined,
-            search: searchQuery !== '' ? searchQuery : undefined,
-            archived: archivedParam,
-            difficulty: selectedDifficulty !== '' ? Number(selectedDifficulty) : undefined,
-            unsolvedOnly: showUnsolvedOnly ? true : undefined
-        };
-        console.log("Params sent to backend:", params);
-        api.get('/Challenge/GetChallenges', { params })
-            .then(response => {
-                setChallenges(response.data.items);
-                setTotalPages(response.data.totalPages);
-            })
-            .catch(error => console.error('Greška pri dohvatanju izazova:', error));
+  const fetchChallenges = () => {
+    const archivedParam =
+      activeTab === "archived"
+        ? true
+        : activeTab === "active"
+        ? false
+        : undefined;
+
+    const params: any = {
+      sortKey,
+      sortDirection,
+      page: currentPage,
+      pageSize,
+      category: selectedCategory !== "" ? selectedCategory : undefined,
+      search: searchQuery !== "" ? searchQuery : undefined,
+      archived: archivedParam,
+      difficulty:
+        selectedDifficulty !== -1 ? Number(selectedDifficulty) : undefined,
+      unsolvedOnly: showUnsolvedOnly ? true : undefined,
     };
 
-    const renderSortArrow = (key: SortKey) => {
-        if (sortKey !== key) return null;
-        return sortDirection === 'asc' ? ' ▲' : ' ▼';
-    };
+    api
+      .get("/Challenge/GetChallenges", { params })
+      .then((response) => {
+        setChallenges(response.data.items);
+        setTotalPages(response.data.totalPages);
+      })
+      .catch((error) => console.error("Greška pri dohvatanju izazova:", error));
+  };
 
-    const handleSort = (key: SortKey) => {
-        if (sortKey === key) {
-            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-        } else {
-            setSortKey(key);
-            setSortDirection('asc');
-        }
-    };
+  const mappedChallenges = useMemo(() => {
+    return challenges.map((c) => {
+      return {
+        icon: (
+          <img
+            className="cat-icon"
+            src={(categoriesIcon as any)[c.categoryShort]}
+          />
+        ),
+        name: (
+          <div className="challenge-name">
+            <strong>{c.name}</strong>
+            {c.hasSolved && (
+              <span style={{ color: "#28a745", marginLeft: "6px" }}>✔</span>
+            )}
+            <div className="difficulty">
+              {difficulties[c.difficulty] ?? "Unknown"}
+            </div>
+          </div>
+        ),
+        difficulty: (
+          <span style={{ color: getColorHex(c.difficulty) }}>
+            {difficulties[c.difficulty] ?? "Unknown"}
+          </span>
+        ),
+        points: (
+          <span style={{ opacity: c.isArchived ? 0.3 : 1 }}>{c.points}</span>
+        ),
+        status: c.isArchived ? "Archived" : "Active",
+        categoryName: c.categoryName,
+        solvedCount: (
+          <span className="people-solve">
+            <IoPeople /> {c.solvedCount}
+          </span>
+        ),
+        averageRating: (
+          <Rating
+            value={c.averageRating}
+            precision={0.1}
+            readOnly
+            size="small"
+          />
+        ),
+        id: c.id,
+        solved: c.hasSolved,
+      };
+    });
+  }, [challenges]);
 
-    return (
-        <div className="challenge-container">
-            <h2 className="title">Challenges</h2>
+  return (
+    <div className="challenge-container">
+      <h2 className="title">Challenges</h2>
 
-            <div className="controls-bar">
-                <div className="tabs">
-                    {['all', 'active', 'retired'].map(tab => (
-                        <button
-                            key={tab}
-                            className={`tab ${activeTab === tab ? 'active' : ''}`}
-                            onClick={() => {
-                                setCurrentPage(1);
-                                setActiveTab(tab as Tab);
-                            }}>
-                            {tab[0].toUpperCase() + tab.slice(1)}
-                        </button>
-                    ))}
-                </div>
-                <label style={{display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'white'}}>
+      <div className="controls-bar">
+        <div className="tabs">
+          {["all", "active", "archived"].map((tab) => (
+            <button
+              key={tab}
+              className={`tab ${activeTab === tab ? "active" : ""}`}
+              onClick={() => {
+                setCurrentPage(1);
+                setActiveTab(tab as Tab);
+              }}
+            >
+              {tab[0].toUpperCase() + tab.slice(1)}
+            </button>
+          ))}
+        </div>
+        <label
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            color: "white",
+          }}
+        >
           Show Unsolved Only
           <Switch
             checked={showUnsolvedOnly}
-            onChange={e => {
+            onChange={(e) => {
               setCurrentPage(1);
               setShowUnsolvedOnly(e.target.checked);
             }}
@@ -129,104 +186,89 @@ function Challenges() {
           />
         </label>
 
-                <div className="controls">
-                    <div className="search-group">
-                        <input
-                            type="text"
-                            placeholder="Search Challenges..."
-                            value={inputValue}
-                            onChange={e => setInputValue(e.target.value)}
-                            onKeyDown={e => e.key === 'Enter' && setSearchQuery(inputValue)}
-                        />
-                        <button onClick={() => {
-                            setCurrentPage(1);
-                            setSearchQuery(inputValue);
-                        }}>🔎︎</button>
-                    </div>
+        <div className="controls">
+          <SearchBar
+            label="Challenges"
+            searchWord={searchQuery}
+            setSearchWord={setSearchQuery}
+            onSearch={() => fetchChallenges()}
+          />
+          <Select
+            value={selectedCategory}
+            displayEmpty
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            renderValue={(selected) => {
+              if (selected.length === 0)
+                return (
+                  <span className="admin-placeholder">Filter by Category</span>
+                );
 
+              return selected;
+            }}
+          >
+            <MenuItem value="">All Categories</MenuItem>
+            {categories.map((cat, idx) => (
+              <MenuItem key={idx} value={cat.name}>
+                {cat.name}
+              </MenuItem>
+            ))}
+          </Select>
+          <Select
+            value={selectedDifficulty}
+            displayEmpty
+            onChange={(e) => setSelectedDifficulty(e.target.value)}
+            renderValue={(selected) => {
+              if (selected === -1)
+                return (
+                  <span className="admin-placeholder">
+                    Filter by Difficulty
+                  </span>
+                );
 
-                    <select value={selectedCategory} onChange={e => {
-                        setCurrentPage(1);
-                        setSelectedCategory(e.target.value);
-                    }}>
-                        <option value="all">All Categories</option>
-                        {categories.map(cat => (
-                            <option key={cat} value={cat}>{cat}</option>
-                        ))}
-                    </select>
-
-                    <select value={selectedDifficulty} onChange={e => {
-                        setCurrentPage(1);
-                        const value = e.target.value;
-                        setSelectedDifficulty(value === '' ? '' : Number(value));
-                    }}>
-                        <option value="">All Difficulties</option>
-                        {difficulties.map(diff => (
-                            <option key={diff.value} value={diff.value}>
-                                {diff.label}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            </div>
-
-
-            <table className="challenge-table">
-                <thead>
-                    <tr>
-                        <th onClick={() => handleSort('name')}>Challenge {renderSortArrow('name')}</th>
-                        <th onClick={() => handleSort('categoryName')}>Category {renderSortArrow('categoryName')}</th>
-                        <th onClick={() => handleSort('points')}>Points {renderSortArrow('points')}</th>
-                        <th onClick={() => handleSort('averageRating')}>Avg. Rating {renderSortArrow('averageRating')}</th>
-                        <th onClick={() => handleSort('solvedCount')}>Users Solves {renderSortArrow('solvedCount')}</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {challenges.map(c => (
-                        <tr
-                            key={c.id}
-                            className={c.hasSolved ? 'solved' : ''}
-                            onClick={() => navigate(`/challenges/${c.id}`)}
-                        >
-                            <td>
-                                <div className="challenge-name">
-                                    <strong>{c.name}</strong>
-                                    {c.hasSolved && <span style={{ color: '#28a745', marginLeft: '6px' }}>✔</span>}
-                                    <div className="difficulty">{getDifficultyLabel(c.difficulty)}</div>
-                                </div>
-                            </td>
-                            <td>{c.categoryName}</td>
-                            <td>{c.points}</td>
-                            <td>
-                                <Rating value={c.averageRating} precision={0.1} readOnly size="small" />
-                            </td>
-                            <td>{c.solvedCount}</td>
-                            <td>
-                                <button className="view-button">➔</button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-
-            </table>
-
-            <div className="pagination">
-                <button
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}>
-                    Previous
-                </button>
-                <span>Page {currentPage} of {totalPages}</span>
-                <button
-                    disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}>
-                    Next
-                </button>
-            </div>
-
+              return difficulties[Number(selected)];
+            }}
+          >
+            <MenuItem value={-1}>All Difficulties</MenuItem>
+            {difficulties.map((diff, idx) => (
+              <MenuItem key={idx} value={idx}>
+                {diff}
+              </MenuItem>
+            ))}
+          </Select>
         </div>
-    );
+      </div>
+      <DataTable
+        data={mappedChallenges}
+        className="challenge-table"
+        columns={[
+          { key: "icon", header: "" },
+          { key: "name", header: "Challenge", sortable: true },
+          { key: "categoryName", header: "Category", sortable: true },
+          { key: "points", header: "Points", sortable: true },
+          { key: "averageRating", header: "Avg. Rating", sortable: true },
+          { key: "solvedCount", header: "Users Solved", sortable: true },
+          { key: "status", header: "Status" },
+        ]}
+        pagination={{
+          page: currentPage,
+          totalPages: totalPages,
+          setPage: setCurrentPage,
+        }}
+        sort={{
+          key: sortKey,
+          dir: sortDirection,
+          onSetSortDir: setSortDirection,
+          onSetSortKey: (arg) => setSortKey(arg as SortKey),
+        }}
+        onRowClick={(row) => {
+          navigate(`/challenges/${row.id}`);
+        }}
+        rowClass={(row) => {
+          return row.solved ? "solved" : "";
+        }}
+      />
+    </div>
+  );
 }
 
 export default Challenges;
