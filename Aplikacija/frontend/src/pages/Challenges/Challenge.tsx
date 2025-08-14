@@ -13,6 +13,7 @@ import { useNotification } from "@/contexts/Notification/NotificationProvider";
 import difficulties, { getColorHex } from "@/utils/difficulties";
 import categoriesIcon from "@/utils/categories";
 import AuthImage from "@/components/AuthImage/AuthImage";
+import { MdContactSupport } from "react-icons/md";
 
 interface ChallengeDetailsData {
   id: number;
@@ -409,6 +410,12 @@ function ChallengeDetails() {
               </div>
             </div>
           </Link>
+          <Link
+            to={`/new-support/challenge/${challenge.id}`}
+            className="call-support"
+          >
+            <MdContactSupport /> Need Help?
+          </Link>
         </div>
 
         <div className="challenge-details">
@@ -486,6 +493,12 @@ function ChallengeDetails() {
               <div className="rating-description">
                 Based on {challenge.reviewCount} review(s)
               </div>
+              <Link
+                className="user-review-link"
+                to={`/reviews/challenge/${challenge.id}`}
+              >
+                Read User Reviews
+              </Link>
             </div>
           </div>
 

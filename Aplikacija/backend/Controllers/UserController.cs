@@ -144,7 +144,8 @@ public class UserController(ApplicationDbContext context, IConfiguration configu
             .ToList();
 
         var challengePoints = await context.ChallengeSubmissions
-            .Where(s => s.UserId == userId && s.Correct && s.SubmittedAt >= fromDate)
+            .Include(s => s.Challenge)
+            .Where(s => s.UserId == userId && s.Correct && !s.Challenge.Archived && s.SubmittedAt >= fromDate)
             .Select(s => new
             {
                 s.SubmittedAt.Year,
@@ -239,5 +240,30 @@ public class UserController(ApplicationDbContext context, IConfiguration configu
             .OrderBy(a => a.Date)
             .ToList()
         );
+    }
+
+    [HttpGet("Search")]
+    public async Task<ActionResult> SearchUser(
+        string? search,
+        int limit = 10
+    )
+    {
+        var query = context.Users
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(search))
+            query = query.Where(c =>
+                c.Username.ToLower().Contains(search.ToLower()) ||
+                c.FullName.ToLower().Contains(search.ToLower()));
+
+        var users = await query.Take(Math.Min(limit, 10)).ToListAsync();
+
+        return Ok(users.Select(l => new
+        {
+            l.Id,
+            l.Username,
+            l.TotalPoints,
+            Role = l.Role.ToString()
+        }));
     }
 }

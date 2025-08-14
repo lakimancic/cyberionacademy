@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { createSearchParams, Link, useNavigate } from 'react-router-dom';
 import SearchBar from '../SearchBar/SearchBar';
 import { Avatar } from '@mui/material';
 import { FaAngleDown, FaAngleUp, FaUser, FaUserCheck } from 'react-icons/fa';
@@ -12,10 +12,24 @@ import './Header.css';
 function Header() {
     const [submenuVisible, setSubmenuVisible] = useState(false);
     const auth = useAuth();
+    const [searchWord, setSearchWord] = useState('');
+
     const navigate = useNavigate();
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     const jwtToken = getInfoFromToken(auth?.token ?? null);
+
+    const onSearch = (tag?: String) => {
+        const params: any = {};
+        if (tag)
+            params["type"] = tag;
+        params["search"] = searchWord;
+
+        navigate({
+            pathname: '/search',
+            search: createSearchParams(params).toString()
+        })
+    };
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -34,7 +48,18 @@ function Header() {
         <header>
             <div className='header-left'>
                 <Link to="/" className='title'>Cyberion<span>Academy</span></Link>
-                <SearchBar label='Cyberion Academy' />
+                <SearchBar 
+                    label='Cyberion Academy' 
+                    tags={[
+                        { name: 'user', label: 'Users' },
+                        { name: 'course', label: 'Courses' },
+                        { name: 'challenge', label: 'Challenges' },
+                        { name: 'lesson', label: 'Lessons' }
+                    ]}
+                    searchWord={searchWord}
+                    setSearchWord={setSearchWord}
+                    onSearch={onSearch}
+                />
             </div>
             <div className="header-right" onClick={() => setSubmenuVisible(!submenuVisible)} ref={dropdownRef}>
                 <AuthImage src="/Account/ProfilePicture" element={Avatar} />

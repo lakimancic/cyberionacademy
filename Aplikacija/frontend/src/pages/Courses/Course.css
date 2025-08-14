@@ -177,3 +177,15 @@
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
 }
+
+.user-review-link {
+    width: 100%;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.6);
+
+    transition: all 0.3s ease;
+}
+
+.user-review-link:hover {
+    color: white;
+}

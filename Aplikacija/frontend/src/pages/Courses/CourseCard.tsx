@@ -28,7 +28,7 @@ function CourseCard({ course } : Props) {
     const navigate = useNavigate();
 
     return (
-        <div className="course-card" onClick={() => navigate(`/course/${course.id}`)}>
+        <div className="course-card" onClick={() => navigate(`/courses/${course.id}`)}>
             <div className="course-card-img">
                 {!course.hasBanner && <span>No Banner</span>}
                 {course.hasBanner && <AuthImage 

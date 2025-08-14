@@ -29,6 +29,8 @@ import CourseStudio from "@/pages/Courses/CourseStudio";
 import CreateCourse from "@/pages/Courses/CreateCourse";
 import Course from "@/pages/Courses/Course";
 import { useNotification } from "@/contexts/Notification/NotificationProvider";
+import Reviews from "@/pages/Reviews/Reviews";
+import SearchPage from "@/pages/Search/SearchPage";
 
 function Routes() {
     const auth = useAuth();
@@ -147,7 +149,7 @@ function Routes() {
                             element: <Courses />
                         },
                         {
-                            path: "/course/:id",
+                            path: "/courses/:id",
                             element: <Course />
                         },
                         {
@@ -177,6 +179,14 @@ function Routes() {
                         {
                             path: '/new-support/:type/:id',
                             element: <Support isNew={true} isSupport={false} />
+                        },
+                        {
+                            path: '/reviews/:type/:id',
+                            element: <Reviews />
+                        },
+                        {
+                            path: '/search',
+                            element: <SearchPage />
                         },
                         ...(roleInd >= 1 ? routesForHelper : []),
                         ...(roleInd >= 2 ? routesForMod : []),

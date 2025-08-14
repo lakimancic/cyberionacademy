@@ -26,4 +26,17 @@ interface CourseItem {
     type: number;
 };
 
-export type { CourseData, CourseItem };
+interface Course {
+    id: number;
+    title: string;
+    description?: string;
+    authorName?: string;
+    authorId?: number;
+    averageRating: number;
+    difficulty: number;
+    hasBanner: boolean;
+    lessonCount: number;
+    challengeCount: number;
+};
+
+export type { CourseData, CourseItem, Course };

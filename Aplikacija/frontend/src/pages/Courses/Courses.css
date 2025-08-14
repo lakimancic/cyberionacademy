@@ -44,16 +44,16 @@
   padding: 0.8rem 1rem;
 }
 
-.courses-container .sort-buttons {
+.sort-buttons {
   display: flex;
   background-color: #1a1d2e;
 }
 
-.courses-container .sort-buttons svg {
+.sort-buttons svg {
   margin-left: 0.5rem;
 }
 
-.courses-container .sort-buttons .sort-button {
+.sort-buttons .sort-button {
   background-color: #1a1d2e;
   color: #fff;
   border: 1px solid transparent;
@@ -64,7 +64,7 @@
   align-items: center;
 }
 
-.courses-container .sort-buttons .sort-button.active {
+.sort-buttons .sort-button.active {
   background-color: #2d324a;
   border: 1px solid #2c2f45;
 }

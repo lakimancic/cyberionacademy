@@ -445,7 +445,12 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
     }
 
     [HttpGet("Search")]
-    public async Task<ActionResult> SearchChallenge(string? search, [FromQuery(Name = "exclude[]")]int[]? exclude, int limit = 10)
+    public async Task<ActionResult> SearchChallenge(
+        string? search,
+        [FromQuery(Name = "exclude[]")] int[]? exclude,
+        int limit = 10,
+        bool searchDescription = false
+    )
     {
         var query = context.Challenges
             .Include(c => c.Category)
@@ -456,7 +461,9 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
             .AsQueryable();
 
         if (!string.IsNullOrEmpty(search))
-            query = query.Where(c => c.Name.ToLower().Contains(search.ToLower()));
+            query = query.Where(c =>
+                c.Name.ToLower().Contains(search.ToLower()) ||
+                (searchDescription && c.Description.ToLower().Contains(search.ToLower())));
 
         if (exclude != null)
             query = query.Where(c => !exclude.Contains(c.Id));

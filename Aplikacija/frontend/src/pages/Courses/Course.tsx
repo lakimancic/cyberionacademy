@@ -173,6 +173,8 @@ function Course() {
                         <div className="rating-description">
                             Based on {course.reviewCount} review(s)
                         </div>
+                        <Link className='user-review-link'
+                        to={`/reviews/course/${course.id}`}>Read User Reviews</Link>
                         </div>
                     </div>
                     <Review 

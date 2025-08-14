@@ -32,7 +32,7 @@ public class QuizCleanupService(IServiceProvider serviceProvider, ILogger<QuizCl
                 logger.LogError(ex, "Error while removing expired containers");
             }
 
-            await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
+            await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
         }
     }
 }

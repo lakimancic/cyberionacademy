@@ -90,7 +90,10 @@
 
 .lesson-right .author-card {
   width: 18rem;
-  margin-bottom: 2rem;
+}
+
+.lesson-right .call-support {
+  width: 18rem;
 }
 
 .lesson-right .review-section {

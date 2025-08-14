@@ -6,19 +6,7 @@ import difficulties from '@/utils/difficulties';
 import SearchBar from '@/components/SearchBar/SearchBar';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import CourseCard from './CourseCard';
-
-interface Course {
-  id: number;
-  title: string;
-  description?: string;
-  authorName?: string;
-  authorId?: number;
-  averageRating: number;
-  difficulty: number;
-  hasBanner: boolean;
-  lessonCount: number;
-  challengeCount: number;
-};
+import type { Course } from './CourseTypes';
 
 
 function Courses() {
@@ -107,8 +95,8 @@ function Courses() {
       </div>
 
       <div className="course-grid">
-        {courses.map(course => (
-          <CourseCard course={course} />
+        {courses.map((course, ind) => (
+          <CourseCard course={course} key={ind} />
         ))}
       </div>
 

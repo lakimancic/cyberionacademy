@@ -264,7 +264,12 @@ public class LessonController(ApplicationDbContext context, IQuizService quizSer
     }
 
     [HttpGet("Search")]
-    public async Task<ActionResult> SearchLesson(string? search, [FromQuery(Name = "exclude[]")]int[]? exclude, int limit = 10)
+    public async Task<ActionResult> SearchLesson(
+        string? search,
+        [FromQuery(Name = "exclude[]")] int[]? exclude,
+        int limit = 10,
+        bool searchDescription = false
+    )
     {
         var query = context.Lessons
             .Include(l => l.Category)
@@ -275,7 +280,9 @@ public class LessonController(ApplicationDbContext context, IQuizService quizSer
             .AsQueryable();
 
         if (!string.IsNullOrEmpty(search))
-            query = query.Where(c => c.Title.ToLower().Contains(search.ToLower()));
+            query = query.Where(c => 
+                c.Title.ToLower().Contains(search.ToLower()) ||
+                (searchDescription && c.Description.ToLower().Contains(search.ToLower())));
 
         if (exclude != null)
             query = query.Where(c => !exclude.Contains(c.Id));

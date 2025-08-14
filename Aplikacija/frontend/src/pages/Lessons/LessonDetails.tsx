@@ -11,6 +11,7 @@ import Review from "@/components/Review/Review";
 import AuthImage from "@/components/AuthImage/AuthImage";
 import { Avatar, Rating } from "@mui/material";
 import { useNotification } from "@/contexts/Notification/NotificationProvider";
+import { MdContactSupport } from "react-icons/md";
 
 interface LessonDetailsData {
   id: number;
@@ -191,6 +192,10 @@ function LessonDetails() {
               </div>
             </div>
           </Link>
+          <Link
+            to={`/new-support/lessons/${lesson.id}`}
+            className="call-support"
+          ><MdContactSupport /> Need Help?</Link>
           <div className="review-section">
             <h3>Ratings</h3>
             <div className="ratings-grid">
@@ -254,6 +259,12 @@ function LessonDetails() {
               <div className="rating-description">
                 Based on {lesson.reviewCount} review(s)
               </div>
+              <Link
+                className="user-review-link"
+                to={`/reviews/lesson/${lesson.id}`}
+              >
+                Read User Reviews
+              </Link>
             </div>
           </div>
           <Review

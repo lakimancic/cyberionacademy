@@ -1,0 +1,75 @@
+.user-reviews {
+    display: flex;
+    flex-direction: column;
+
+    width: 70%;
+    margin: 2rem auto;
+    padding: 2rem;
+    backdrop-filter: blur(16px);
+}
+
+.user-reviews-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.user-reviews-header a {
+    color: white;
+}
+
+.user-reviews-grid {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    row-gap: 1rem;
+
+    margin-top: 3rem;
+}
+
+.user-reviews-profile {
+    display: flex;
+    align-items: center;
+}
+
+.user-reviews-userinfo {
+    text-align: left;
+}
+
+.user-reviews-userinfo h2 {
+    font-size: 1.4rem;
+}
+
+.user-reviews-profile .MuiAvatar-root {
+    height: 5rem;
+    width: 5rem;
+    margin: 1rem;
+}
+
+.user-reviews-text {
+    margin: 1.5rem 0;
+    font-size: 1.2rem;
+    color: #b2bac7;
+    text-align: left;
+}
+
+.user-reviews .pagination {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  align-items: center;
+}
+
+.user-reviews .pagination button {
+  background-color: #1a1d2e;
+  color: white;
+  border: 1px solid #2c2f45;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.user-reviews .pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -194,7 +194,7 @@ function Support({ isNew, isSupport } : Props) {
         return () => {
             connection.stop();
         };
-    }, []);
+    }, [params.id]);
 
     useEffect(() => {
         if(!currentConv && newConv) {
@@ -241,7 +241,7 @@ function Support({ isNew, isSupport } : Props) {
                 <div className="support-header">
                     <img src={(catIcons as any)[currentConv.category.shortForm] ?? ''} />
                     <div className="support-subheader">
-                        <Link to="/"><h2>{currentConv.type.at(0)?.toUpperCase() + currentConv.type.slice(1)}:
+                        <Link to={`/${currentConv.type.toLowerCase()}s/${currentConv.objId}`}><h2>{currentConv.type.at(0)?.toUpperCase() + currentConv.type.slice(1)}:
                             <strong> {currentConv.title}</strong> <i>#{currentConv.id}</i></h2></Link>
                         <p>{currentConv.category.name}</p>
                     </div>

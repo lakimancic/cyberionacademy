@@ -560,7 +560,43 @@ public class CourseController(ApplicationDbContext context, IConfiguration confi
 
         context.Courses.Remove(course);
         await context.SaveChangesAsync();
-        
+
         return Ok();
+    }
+    
+    [HttpGet("Search")]
+    public async Task<ActionResult> SearchCourse(
+        string? search,
+        int limit = 10,
+        bool searchDescription = false
+    )
+    {
+        var query = context.Courses
+            .Include(l => l.Author)
+            .Include(l => l.Reviews)
+            .Include(l => l.Challenges)
+            .Include(l => l.Lessons)
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(search))
+            query = query.Where(c =>
+                c.Title.ToLower().Contains(search.ToLower()) ||
+                (searchDescription && c.Description != null && c.Description.ToLower().Contains(search.ToLower())));
+
+        var courses = await query.Take(Math.Min(limit, 10)).ToListAsync();
+
+        return Ok(courses.Select(l => new
+        {
+            l.Id,
+            l.Title,
+            l.Description,
+            AverageRating = l.Reviews?.Count > 0 ? l.Reviews.Average(r => r.Stars) : 0.0,
+            l.Difficulty,
+            AuthorName = l.Author?.Username,
+            l.AuthorId,
+            LessonCount = l.Lessons!.Count,
+            ChallengeCount = l.Challenges!.Count,
+            HasBanner = l.Banner != null
+        }));
     }
 }
