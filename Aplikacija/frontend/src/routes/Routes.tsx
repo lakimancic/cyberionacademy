@@ -31,10 +31,10 @@ import Course from "@/pages/Courses/Course";
 import { useNotification } from "@/contexts/Notification/NotificationProvider";
 import Reviews from "@/pages/Reviews/Reviews";
 import SearchPage from "@/pages/Search/SearchPage";
+import HomePage from "@/pages/Home/Home";
 
 function Routes() {
     const auth = useAuth();
-    const { showNotification } = useNotification();
 
     const token = getInfoFromToken(auth?.token ?? null);
     const roleInd = ['User', 'Helper', 'Moderator', 'Admin'].indexOf(token?.role ?? 'User');
@@ -122,7 +122,7 @@ function Routes() {
                     children: [
                         {
                             path: "/",
-                            element: <div onClick={() => showNotification("Review submitted successfully", 'warning')}>HELLO WORLD</div> 
+                            element: <HomePage />
                         },
                         {
                             path: "/lessons",

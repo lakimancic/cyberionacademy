@@ -56,10 +56,14 @@ builder.Services.AddScoped<IQuizService, QuizService>();
 builder.Services.AddScoped<IChallengeService, ChallengeService>();
 
 builder.Services.AddScoped<UserProfileService>();
+builder.Services.AddScoped<RecommendationEngine>();
+
+builder.Services.AddMemoryCache();
 
 builder.Services.AddSingleton<IDockerInstancer, DockerInstancer>();
 builder.Services.AddHostedService<DockerCleanupService>();
-// builder.Services.AddHostedService<QuizCleanupService>();
+builder.Services.AddHostedService<QuizCleanupService>();
+builder.Services.AddHostedService<DailyGlobalPoolsUpdater>();
 
 builder.Services.AddSignalR();
 

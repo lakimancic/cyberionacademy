@@ -1,0 +1,16 @@
+.home-page h1 {
+    margin: 5rem 0;
+}
+
+.home-page blockquote {
+    font-size: 1.3rem;
+
+    width: 60%;
+    margin: 0 auto;
+    transition: all 1s ease;
+}
+
+.home-quote-author {
+    text-align: right;
+    font-weight: 600;
+}

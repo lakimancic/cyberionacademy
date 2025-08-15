@@ -55,7 +55,7 @@ public class UserProfileService(ApplicationDbContext context)
 
         profile.PreferredDifficulty = (int)solvedChallenges
             .Select(s => s.Challenge.Difficulty)
-            .DefaultIfEmpty(1)
+            .DefaultIfEmpty(0)
             .Average();
 
         return profile;
