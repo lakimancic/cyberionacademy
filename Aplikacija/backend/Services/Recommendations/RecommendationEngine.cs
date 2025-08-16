@@ -36,6 +36,7 @@ public class RecommendationEngine(IMemoryCache cache, ApplicationDbContext conte
             .Where(c => c.Public)
             .Include(c => c.Reviews)
             .Include(c => c.Submissions)
+            .Include(c => c.Category)
             .ToListAsync();
 
         pools.MostSolved = [.. challenges
@@ -48,6 +49,9 @@ public class RecommendationEngine(IMemoryCache cache, ApplicationDbContext conte
                 Points = c.Points,
                 Difficulty = c.Difficulty,
                 CategoryId = c.CategoryId,
+                CategoryName = c.Category.Name,
+                CategoryShort = c.Category.ShortForm,
+                Archived = c.Archived,
                 SolvesCount = c.Submissions?.Count(cs => cs.Correct) ?? 0,
                 AvgRating = c.Reviews?.Count != 0 ? c.Reviews!.Average(r => r.Stars) : 0
             })];
@@ -62,6 +66,9 @@ public class RecommendationEngine(IMemoryCache cache, ApplicationDbContext conte
                 Points = c.Points,
                 Difficulty = c.Difficulty,
                 CategoryId = c.CategoryId,
+                CategoryName = c.Category.Name,
+                CategoryShort = c.Category.ShortForm,
+                Archived = c.Archived,
                 SolvesCount = c.Submissions?.Count(cs => cs.Correct) ?? 0,
                 AvgRating = c.Reviews?.Count != 0 ? c.Reviews!.Average(r => r.Stars) : 0
             }).ToList();
@@ -77,6 +84,9 @@ public class RecommendationEngine(IMemoryCache cache, ApplicationDbContext conte
                     Points = c.Points,
                     Difficulty = c.Difficulty,
                     CategoryId = c.CategoryId,
+                    CategoryName = c.Category.Name,
+                    CategoryShort = c.Category.ShortForm,
+                    Archived = c.Archived,
                     SolvesCount = c.Submissions?.Count(cs => cs.Correct)  ?? 0,
                     AvgRating = c.Reviews?.Count != 0 ? c.Reviews!.Average(r => r.Stars) : 0
                 }).ToList()
@@ -93,6 +103,9 @@ public class RecommendationEngine(IMemoryCache cache, ApplicationDbContext conte
                     Points = c.Points,
                     Difficulty = c.Difficulty,
                     CategoryId = c.CategoryId,
+                    CategoryName = c.Category.Name,
+                    CategoryShort = c.Category.ShortForm,
+                    Archived = c.Archived,
                     SolvesCount = c.Submissions?.Count(cs => cs.Correct)  ?? 0,
                     AvgRating = c.Reviews?.Count != 0 ? c.Reviews!.Average(r => r.Stars) : 0
                 }).ToList()
@@ -104,6 +117,7 @@ public class RecommendationEngine(IMemoryCache cache, ApplicationDbContext conte
         var lessons = await context.Lessons
             .Where(l => l.Public)
             .Include(l => l.Reviews)
+            .Include(l => l.Category)
             .ToListAsync();
 
         pools.MostPopular = [.. lessons
@@ -115,6 +129,8 @@ public class RecommendationEngine(IMemoryCache cache, ApplicationDbContext conte
                 Title = l.Title,
                 Difficulty = l.Difficulty,
                 CategoryId = l.CategoryId,
+                CategoryName = l.Category.Name,
+                CategoryShort = l.Category.ShortForm,
                 AvgRating = l.Reviews?.Count != 0 ? l.Reviews!.Average(r => r.Stars) : 0
             })];
 
@@ -128,6 +144,8 @@ public class RecommendationEngine(IMemoryCache cache, ApplicationDbContext conte
                     Title = l.Title,
                     Difficulty = l.Difficulty,
                     CategoryId = l.CategoryId,
+                    CategoryName = l.Category.Name,
+                    CategoryShort = l.Category.ShortForm,
                     AvgRating = l.Reviews?.Count != 0 ? l.Reviews!.Average(r => r.Stars) : 0,
                 }).ToList()
             );
@@ -237,7 +255,72 @@ public class RecommendationEngine(IMemoryCache cache, ApplicationDbContext conte
             .OrderByDescending(c => c.AvgRating / (1 + c.SolvesCount))
             .Take(5)
             .ToList();
+        
 
+        // -------------------------
+        // BoostKnowledge logic
+        // -------------------------
+        var upcomingCategories = challengePools?.ByDifficulty
+            .Where(kvp => Math.Abs(kvp.Key - profile.PreferredDifficulty) <= 1)
+            .SelectMany(kvp => kvp.Value)
+            .Where(ch => !profile.SolvedChallengeIds.Contains(ch.Id))
+            .Select(ch => ch.CategoryId)
+            .Distinct() ?? [];
+
+        var prepLessons = new List<LessonSummary>();
+
+        foreach (var catId in upcomingCategories)
+        {
+            if (lessonPools?.ByCategory.TryGetValue(catId, out var lessons1) ?? false)
+            {
+                prepLessons.AddRange(lessons1
+                    .Where(l => !profile.CompletedLessonIds.Contains(l.Id))
+                    .OrderByDescending(l => l.AvgRating)
+                    .Take(3));
+            }
+        }
+
+        prepLessons = [.. prepLessons
+            .DistinctBy(l => l.Id)
+            .Take(5)];
+
+
+        // -------------------------
+        // WeakSpots logic
+        // -------------------------
+        var weakestCategory = profile.WeakestCategory;
+
+        if (lessonPools?.ByCategory.TryGetValue(weakestCategory, out var lessons2) ?? false)
+        {
+            var patchLessons = lessons2
+                .Where(l => !profile.CompletedLessonIds.Contains(l.Id))
+                .OrderByDescending(l => l.AvgRating)
+                .Take(5)
+                .ToList();
+
+            result.LessonRecs[RecLabels.PatchWeakSpots] = patchLessons;
+        }
+
+
+        // -------------------------
+        // NextStep logic
+        // -------------------------
+        var levelUpLessons = new List<LessonSummary>();
+
+        foreach (var categoryId in strongCategories)
+        {
+            var lessons = lessonPools?.ByCategory[categoryId]
+                .Where(c => !profile.SolvedChallengeIds.Contains(c.Id))
+                .Where(c => c.Difficulty > profile.PreferredDifficulty)
+                .OrderBy(c => c.Difficulty)
+                .Take(3);
+
+            levelUpLessons.AddRange(lessons ?? []);
+        }
+        levelUpLessons = [.. levelUpLessons
+            .OrderBy(_ => Guid.NewGuid())
+            .Take(5)];
+        
 
         result.ChallengeRecs[RecLabels.Newbie] = newbieChallenges ?? [];
         result.ChallengeRecs[RecLabels.ContinueGrind] = continueGrindChallenges ?? [];
@@ -245,8 +328,10 @@ public class RecommendationEngine(IMemoryCache cache, ApplicationDbContext conte
         result.ChallengeRecs[RecLabels.LevelUp] = levelUpChallenges;
         result.ChallengeRecs[RecLabels.TrendingNow] = trendingChallenges ?? [];
         result.ChallengeRecs[RecLabels.HiddenGems] = hiddenGemChallenges ?? [];
-        result.LessonRecs[RecLabels.Newbie] = newbieLessons ?? [];
+        result.LessonRecs[RecLabels.WarmUp] = newbieLessons ?? [];
         result.LessonRecs[RecLabels.TrendingNow] = trendingLessons ?? [];
+        result.LessonRecs[RecLabels.LearnBeforeYouBurn] = prepLessons;
+        result.LessonRecs[RecLabels.NextStep] = levelUpLessons;
 
         return result;
     }

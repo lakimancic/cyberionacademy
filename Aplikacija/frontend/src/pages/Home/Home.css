@@ -14,3 +14,72 @@
     text-align: right;
     font-weight: 600;
 }
+
+.home-page > h2 {
+    font-size: 2rem;
+    margin: 3rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.home-page > h2 > svg {
+    cursor: pointer;
+}
+
+.home-page > h2 > svg.home-disabled {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.home-recomms {
+    display: flex;
+    overflow: hidden;
+    position: relative;
+}
+
+.recomm-track {
+    will-change: transform;
+}
+
+.home-recomm {
+    position: relative;
+    width: calc(100% / 3);
+    flex-shrink: 0;
+}
+
+.home-recomm h2 {
+    margin: 2rem 0;
+}
+
+.home-recomm-item {
+    display: flex;  
+    align-items: center;  
+
+    width: 90%;
+    margin: 0 auto;
+
+    text-align: left;
+
+    background-color: rgba(28, 43, 85, 0.2);
+    cursor: pointer;
+
+    transition: all 0.5s ease;
+}
+
+.home-recomm-item:hover {
+    background-color: rgba(28, 43, 85, 0.5);
+}
+
+.home-recomm-item .challenge-name {
+    flex: 1;
+}
+
+.home-recomm-item .MuiRating-root {
+    margin: 0 1rem;
+}
+
+.home-recomm-item img {
+    padding: 1rem;
+}
