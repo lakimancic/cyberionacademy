@@ -1,5 +1,6 @@
 using backend.DTOs;
 using backend.DTOs.Challenges;
+using backend.Services.Badges;
 using backend.Services.ChallengeService;
 using backend.Utils.Docker;
 using System.Security.Claims;
@@ -10,7 +11,7 @@ namespace backend.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class ChallengeController(ApplicationDbContext context, IChallengeService challengeService, IConfiguration configuration) : ControllerBase
+public class ChallengeController(ApplicationDbContext context, IChallengeService challengeService, IConfiguration configuration, IBadgeService badgeService) : ControllerBase
 {
 
     [HttpGet("GetChallenges")]
@@ -237,6 +238,10 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
         if (isCorrect && !challenge.Archived)
         {
             user.TotalPoints += challenge.Points;
+        }
+        if (isCorrect)
+        {
+            await badgeService.CheckBadgeChallenge(challenge, user);
         }
 
         var submission = new ChallengeSubmission

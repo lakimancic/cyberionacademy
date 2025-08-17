@@ -12,6 +12,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<ChallengeSubmission> ChallengeSubmissions { get; set; }
     public DbSet<QuizResult> QuizResults { get; set; }
     public DbSet<Badge> Badges { get; set; }
+    public DbSet<UserBadge> UserBadges { get; set; }
     public DbSet<Message> Messages { get; set; }
     public DbSet<ChallengeReview> ChallengeReviews { get; set; }
     public DbSet<LessonReview> LessonReviews { get; set; }
@@ -51,7 +52,7 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<CourseReview>()
             .HasKey(cr => new { cr.UserId, cr.CourseId });
-        
+
         modelBuilder.Entity<Lesson>()
             .HasOne(l => l.Quiz)
             .WithOne(q => q.Lesson)
@@ -61,7 +62,7 @@ public class ApplicationDbContext : DbContext
             .HasDiscriminator<ConversationType>("ConversationType")
             .HasValue<LessonConversation>(ConversationType.Lesson)
             .HasValue<ChallengeConversation>(ConversationType.Challenge);
-        
+
         modelBuilder.Entity<Category>().HasData(
             new Category { Id = 1, Name = "Web Exploitation", ShortForm = "web" },
             new Category { Id = 2, Name = "Reverse Engineering", ShortForm = "rev" },
@@ -73,6 +74,29 @@ public class ApplicationDbContext : DbContext
             new Category { Id = 8, Name = "Network Security", ShortForm = "net" },
             new Category { Id = 9, Name = "Open Source Intelligence", ShortForm = "osint" },
             new Category { Id = 10, Name = "Game Hacking", ShortForm = "game" }
+        );
+
+        modelBuilder.Entity<Badge>().HasData(
+            new Badge { Id = 1, Name = "First Blood", Short = "bld1" },
+            new Badge { Id = 2, Name = "First Blood x10", Short = "bld10" },
+            new Badge { Id = 3, Name = "First Blood x100", Short = "bld100" },
+
+            new Badge { Id = 4, Name = "Web Exploitation", Short = "web" },
+            new Badge { Id = 5, Name = "Reverse Engineering", Short = "rev" },
+            new Badge { Id = 6, Name = "Binary Exploitation", Short = "pwn" },
+            new Badge { Id = 7, Name = "Cryptography", Short = "cry" },
+            new Badge { Id = 8, Name = "Digital Forensics", Short = "for" },
+            new Badge { Id = 9, Name = "Miscellaneous", Short = "misc" },
+            new Badge { Id = 10, Name = "Hardware Hacking", Short = "hw" },
+            new Badge { Id = 11, Name = "Network Security", Short = "net" },
+            new Badge { Id = 12, Name = "Open Source Intelligence", Short = "osint" },
+            new Badge { Id = 13, Name = "Game Hacking", Short = "game" },
+
+            new Badge { Id = 14, Name = "Quiz Flash", Short = "flash1" },
+            new Badge { Id = 15, Name = "Quiz Flash", Short = "flash10" },
+            new Badge { Id = 16, Name = "Quiz Flash", Short = "flash100" },
+
+            new Badge { Id = 17, Name = "Jack of all Trades", Short = "joat" }
         );
     }
 }

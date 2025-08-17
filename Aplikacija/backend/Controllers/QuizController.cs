@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using backend.DTOs;
 using backend.DTOs.Lessons;
+using backend.Services.Badges;
 using backend.Services.QuizService;
 
 namespace backend.Controllers;
@@ -8,7 +9,7 @@ namespace backend.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class QuizController(ApplicationDbContext context, IQuizService quizService) : ControllerBase
+public class QuizController(ApplicationDbContext context, IQuizService quizService, IBadgeService badgeService) : ControllerBase
 {
     [Authorize(Roles = "Moderator,Admin")]
     [HttpPut("UpdateQuiz")]
@@ -411,6 +412,9 @@ public class QuizController(ApplicationDbContext context, IQuizService quizServi
 
         if (points > prevBest)
             user.TotalPoints += points - prevBest;
+
+        if (points > quiz.TotalPoints * 6 / 10)
+            await badgeService.CheckBadgeQuiz(quizResult, user);
 
         await context.SaveChangesAsync();
         return Ok(new

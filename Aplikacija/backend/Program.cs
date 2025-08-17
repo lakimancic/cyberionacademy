@@ -1,6 +1,7 @@
 
 using backend.Hubs;
 using backend.Services.Auth;
+using backend.Services.Badges;
 using backend.Services.ChallengeService;
 using backend.Services.Docker;
 using backend.Services.QuizService;
@@ -54,6 +55,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IQuizService, QuizService>();
 builder.Services.AddScoped<IChallengeService, ChallengeService>();
+builder.Services.AddScoped<IBadgeService, BadgeService>();
 
 builder.Services.AddScoped<UserProfileService>();
 builder.Services.AddScoped<RecommendationEngine>();

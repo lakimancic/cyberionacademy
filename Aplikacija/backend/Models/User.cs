@@ -36,7 +36,7 @@ public class User
     public List<Challenge>? Challenges { get; set; }
     public List<Lesson>? Lessons { get; set; }
     public List<Course>? Courses { get; set; }
-    public List<Badge>? Badges { get; set; }
+    public List<UserBadge>? Badges { get; set; }
     public List<QuizResult>? QuizResults { get; set; }
     public List<Conversation>? Conversations { get; set; }
 }
