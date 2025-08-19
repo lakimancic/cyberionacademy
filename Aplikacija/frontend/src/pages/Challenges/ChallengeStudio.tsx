@@ -6,6 +6,9 @@ import api from '@/lib/api';
 import SearchBar from '@/components/SearchBar/SearchBar';
 import { useNavigate } from 'react-router-dom';
 import '@/assets/css/ModStudio.css';
+import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { useNotification } from '@/contexts/Notification/NotificationProvider';
+import type { CategoryData } from '@/utils/categories';
 
 interface Challenge {
     id: number;
@@ -31,13 +34,17 @@ function ChallengeStudio() {
     const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc');
     const [selectedCategory, setSelectedCategory] = useState<string>('');
     const [selectedDifficulty, setSelectedDifficulty] = useState<string>('');
-    const [categories, setCategories] = useState<string[]>([]);
+    const [categories, setCategories] = useState<CategoryData[]>([]);
     const navigate = useNavigate();
+    const handleError = useErrorHandler();
+    const { showNotification } = useNotification();
 
     useEffect(() => {
-        api.get('/Challenge/GetCategories')
+        api.get('/Categories')
             .then(res => setCategories(res.data))
-            .catch(err => console.error('Greška pri dohvatanju kategorija', err));
+            .catch(err => {
+                handleError(err, msg => showNotification(msg, 'error'));
+            });
     }, []);
 
     const fetchChallenges = (searchQuery?: string) => {
@@ -56,7 +63,9 @@ function ChallengeStudio() {
                 setChallenges(response.data.items);
                 setTotalPages(response.data.totalPages);
             })
-            .catch(error => console.error('Greška pri dohvatanju izazova:', error));
+            .catch(error => {
+                handleError(error, msg => showNotification(msg, 'error'));
+            });
     };
 
     const onSearch = () => {
@@ -120,8 +129,8 @@ function ChallengeStudio() {
                         }}
                         >
                             <MenuItem value=''>All Categories</MenuItem>
-                            {categories.map((cat, idx) => (<MenuItem key={idx} value={cat}>
-                                {cat}
+                            {categories.map((cat, idx) => (<MenuItem key={idx} value={cat.name}>
+                                {cat.name}
                             </MenuItem>))}
                     </Select>
                     <Select

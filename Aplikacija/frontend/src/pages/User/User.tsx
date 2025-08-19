@@ -8,6 +8,7 @@ import { RadarChart } from '@mui/x-charts/RadarChart';
 import { ActivityCalendar } from 'react-activity-calendar';
 import './User.css';
 import { LineChart } from '@mui/x-charts';
+import badges from '@/utils/badges';
 
 type UserInfo = {
     id: number;
@@ -22,6 +23,10 @@ type UserStats = {
     points: number;
     rankName: string;
     rankNum: number;
+    badges: {
+        short: string;
+        name: string;
+    }[]
 };
 
 type ChallengeRadarData = {
@@ -126,6 +131,18 @@ function User() {
                     <p className="user-ranking">Ranking #{userStats?.rankNum}</p>
                 </div>
             </div>
+            {(userStats?.badges.length ?? 0 > 0) && 
+            <div className='user-badges'>
+                <h2>User Badges</h2>
+                <div className="user-badges-grid">
+                    {userStats?.badges.map((badge, i) => (
+                        <div className="user-badge" key={i}>
+                            <img src={(badges as any)[badge.short]} />
+                            <div className="user-badge-name">{badge.name}</div>
+                        </div>
+                    ))}
+                </div>
+            </div>}
             <div className="user-year-stats">
                 <h2>User Activity & Growth Last year</h2>
                 {activity.length > 0 && <ActivityCalendar 

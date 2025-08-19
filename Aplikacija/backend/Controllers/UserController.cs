@@ -110,7 +110,12 @@ public class UserController(ApplicationDbContext context, IConfiguration configu
     [HttpGet("{userId}/Stats")]
     public async Task<ActionResult> GetUserStats(int userId)
     {
-        User? user = await context.Users.FindAsync(userId);
+        User? user = await context.Users
+            .Include(u => u.Badges!)
+            .ThenInclude(ub => ub.Badge)
+            .Where(u => u.Id == userId)
+            .FirstOrDefaultAsync();
+
         if (user == null)
             return NotFound("User not found");
 
@@ -121,7 +126,8 @@ public class UserController(ApplicationDbContext context, IConfiguration configu
         {
             Points = user.TotalPoints,
             RankName = service.GetRank(user.TotalPoints, userRank, totalRankedUsers),
-            RankNum = userRank
+            RankNum = userRank,
+            Badges = user.Badges!.Select(ub => ub.Badge)
         });
     }
 

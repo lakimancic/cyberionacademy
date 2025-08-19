@@ -9,6 +9,8 @@ import difficulties, { getColorHex } from "@/utils/difficulties";
 import DataTable from "@/components/Table/DataTable";
 import { IoPeople } from "react-icons/io5";
 import SearchBar from "@/components/SearchBar/SearchBar";
+import { useErrorHandler } from "@/hooks/useErrorHandler";
+import { useNotification } from "@/contexts/Notification/NotificationProvider";
 
 interface Challenge {
   id: number;
@@ -45,6 +47,8 @@ function Challenges() {
   const [totalPages, setTotalPages] = useState(1);
   const [categories, setCategories] = useState<CategoryData[]>([]);
   const [showUnsolvedOnly, setShowUnsolvedOnly] = useState(false);
+  const handleError = useErrorHandler();
+  const { showNotification } = useNotification();
 
   const navigate = useNavigate();
 
@@ -66,7 +70,9 @@ function Challenges() {
     api
       .get("/Categories/")
       .then((res) => setCategories(res.data))
-      .catch((err) => console.error("Greška pri dohvatanju kategorija", err));
+      .catch((err) => {
+        handleError(err, msg => showNotification(msg, 'error'));
+      });
   }, []);
 
   const fetchChallenges = () => {
@@ -96,7 +102,9 @@ function Challenges() {
         setChallenges(response.data.items);
         setTotalPages(response.data.totalPages);
       })
-      .catch((error) => console.error("Greška pri dohvatanju izazova:", error));
+      .catch((error) => {
+        handleError(error, msg => showNotification(msg, 'error'));
+      });
   };
 
   const mappedChallenges = useMemo(() => {

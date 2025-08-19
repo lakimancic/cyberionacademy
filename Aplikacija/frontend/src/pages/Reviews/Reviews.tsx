@@ -43,8 +43,6 @@ function Reviews() {
         setReviews(res.data.reviews);
         setTotalPages(res.data.totalPages);
         setItemName(res.data.item);
-
-        console.log(res.data)
       })
       .catch((err) => {
         handleError(err, (msg) => showNotification(msg, "error"));

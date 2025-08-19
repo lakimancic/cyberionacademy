@@ -1,6 +1,8 @@
 import '@/assets/css/ModStudio.css';
 import SearchBar from '@/components/SearchBar/SearchBar';
 import DataTable from '@/components/Table/DataTable';
+import { useNotification } from '@/contexts/Notification/NotificationProvider';
+import { useErrorHandler } from '@/hooks/useErrorHandler';
 import api from '@/lib/api';
 import difficulties from '@/utils/difficulties';
 import { MenuItem, Rating, Select } from '@mui/material';
@@ -26,6 +28,8 @@ function CourseStudio() {
     const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc');
     const [selectedDifficulty, setSelectedDifficulty] = useState<string>('');
     const navigate = useNavigate();
+    const handleError = useErrorHandler();
+    const { showNotification } = useNotification();
 
     const fetchCourses = (searchQuery?: string) => {
         const params = {
@@ -42,7 +46,9 @@ function CourseStudio() {
                 setCourses(response.data.items);
                 setTotalPages(response.data.totalPages);
             })
-            .catch(error => console.error('Greška pri dohvatanju izazova:', error));
+            .catch(error => {
+                handleError(error, msg => showNotification(msg, 'error'));
+            });
     };
 
     const onSearch = () => {

@@ -13,6 +13,7 @@ import * as yup from 'yup';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { useAuth } from '@/contexts/AuthProvider';
 import { getInfoFromToken } from '@/lib/jwt';
+import { useNotification } from '@/contexts/Notification/NotificationProvider';
 
 interface LessonData {
     id?: number;
@@ -64,6 +65,7 @@ function CreateLesson() {
     const auth = useAuth();
     const [loading, setLoading] = useState(false);
     const handleError = useErrorHandler();
+    const { showNotification } = useNotification();
 
     const tokenData = getInfoFromToken(auth?.token ?? null);
     
@@ -72,7 +74,9 @@ function CreateLesson() {
             .then(res => {
                 setCategories(res.data);
             })
-            .catch(err => console.error('Greška pri dohvatanju kategorija', err));
+            .catch(err => {
+                handleError(err, msg => showNotification(msg, 'error'));
+            });
 
         let lessonSet = false;
         if (location.state) {
@@ -91,7 +95,10 @@ function CreateLesson() {
                     setLesson(res.data);
                 })
                 .catch(err => {
-                    console.error(err);
+                    if (err.response.status == 404)
+                        navigate("/moderator/lessons");
+                    else
+                        handleError(err, msg => showNotification(msg, 'error'));
                 });
         }
     }, [location]);
@@ -149,6 +156,7 @@ function CreateLesson() {
                 .then(res => {
                     setLoading(false);
                     setLesson(prev => ({...prev, quizId: res.data !== '' ? res.data : undefined }));
+                    showNotification("Lesson updated successfully", "success");
                 })
                 .catch(err => {
                     setLoading(false);

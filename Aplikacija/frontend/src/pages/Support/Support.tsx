@@ -148,8 +148,6 @@ function Support({ isNew, isSupport } : Props) {
             else
                 data.lessonId = intId;
 
-            console.log(data);
-
             await api.post("/Support/CreateConversation", data)
                 .then(resp => {
                     setNewConv(resp.data.conversationId);

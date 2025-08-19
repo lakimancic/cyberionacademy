@@ -1,5 +1,5 @@
 import { useEffect, useState, type SetStateAction } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "@/lib/api";
 import "./LessonDetails.css";
 import difficulties, { getColorHex } from "@/utils/difficulties";
@@ -12,6 +12,7 @@ import AuthImage from "@/components/AuthImage/AuthImage";
 import { Avatar, Rating } from "@mui/material";
 import { useNotification } from "@/contexts/Notification/NotificationProvider";
 import { MdContactSupport } from "react-icons/md";
+import { useErrorHandler } from "@/hooks/useErrorHandler";
 
 interface LessonDetailsData {
   id: number;
@@ -47,6 +48,8 @@ function LessonDetails() {
   const { id } = useParams<{ id: string }>();
   const [lesson, setLesson] = useState<LessonDetailsData | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const handleError = useErrorHandler();
 
   useEffect(() => {
     if (!id) return;
@@ -58,6 +61,12 @@ function LessonDetails() {
     api
       .get(`/Lesson/GetLessonDetails/${id}`)
       .then((res) => setLesson(res.data))
+      .catch(err => {
+        if (err.response.status == 404)
+          navigate("/lessons");
+        else
+          handleError(err, msg => showNotification(msg, 'error'));
+      })
       .finally(() => setLoading(false));
   };
 
@@ -82,7 +91,7 @@ function LessonDetails() {
           fetchLesson();
         })
         .catch((err) => {
-          console.error(err);
+          handleError(err, msg => showNotification(msg, 'error'));
         });
     } else {
       api
@@ -97,7 +106,7 @@ function LessonDetails() {
           fetchLesson();
         })
         .catch((err) => {
-          console.error(err);
+          handleError(err, msg => showNotification(msg, 'error'));
         });
     }
   };

@@ -4,8 +4,11 @@ import { useEffect, useMemo, useState } from 'react';
 import api from '@/lib/api';
 import categories from '@/utils/categories';
 import difficulties from '@/utils/difficulties';
-import { Rating } from '@mui/material';
+import { CircularProgress, Rating } from '@mui/material';
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
+import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { useNotification } from '@/contexts/Notification/NotificationProvider';
+import { useNavigate } from 'react-router-dom';
 
 interface Quote {
     quote: string;
@@ -67,6 +70,10 @@ function HomePage() {
     const [opacity, setOpacity] = useState(0);
     const [recomms, setRecomms] = useState<Recommendation[]>([]);
     const [rIndex, setRIndex] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const handleError = useErrorHandler();
+    const { showNotification } = useNotification();
+    const navigate = useNavigate();
 
     const randomQuote = () => {
         return quotes[Math.floor(Math.random() * quotes.length)];
@@ -115,6 +122,12 @@ function HomePage() {
                 const data: Recommendations = resp.data;
                 setRecomms(transformRecommendations(data));
                 setRIndex(0);
+            })
+            .catch(err => {
+                handleError(err, msg => showNotification(msg, 'error'));
+            })
+            .finally(() => {
+                setLoading(false);
             });
     };
 
@@ -125,7 +138,7 @@ function HomePage() {
         >
             <h2>{r.label}</h2>
             {r.array.map((item, ii) => (
-                <div className="home-recomm-item" key={ii}>
+                <div className="home-recomm-item" key={ii} onClick={() => navigate(`/${r.type}s/${item.id}`)}>
                     <img src={(categories as any)[item.categoryShort]} />
                     <div className="challenge-name">
                         <strong>{r.type === 'challenge' ? item.name : item.title}</strong>
@@ -180,7 +193,7 @@ function HomePage() {
                 className={rIndex >= recomms.length - 3 ? 'home-disabled' : ''} 
                 onClick={() => setRIndex(prev => Math.min(recomms.length - 3, prev + 1))}
             /></h2>
-            <div className="home-recomms">
+            {!loading && <div className="home-recomms">
                 <div 
                     className="recomm-track"
                     style={{
@@ -190,7 +203,8 @@ function HomePage() {
                     width: '100%'
                     }}
                 >{mappedReccoms}</div>
-            </div>
+            </div>}
+            {loading && <CircularProgress size={40} />}
         </div>
     )
 }

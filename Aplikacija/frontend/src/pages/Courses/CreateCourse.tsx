@@ -18,6 +18,7 @@ import api from '@/lib/api';
 import * as yup from 'yup';
 import type { CourseData, CourseItem } from './CourseTypes';
 import ImageWrapper from '@/components/AuthImage/ImageWrapper';
+import { useNotification } from '@/contexts/Notification/NotificationProvider';
 
 interface ChallengeItem {
     id: number;
@@ -77,6 +78,7 @@ function CreateCourse() {
     const [currentMyItem, setCurrentMyItem] = useState<number|null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [triggerFetch, setTriggerFetch] = useState(false);
+    const { showNotification } = useNotification();
 
     const tokenData = getInfoFromToken(auth?.token ?? null);
 
@@ -96,7 +98,7 @@ function CreateCourse() {
             setChallenges(res.data);
         })
         .catch(err => {
-            console.error(err);
+            handleError(err, msg => showNotification(msg, 'error'));
         })
     };
 
@@ -112,7 +114,7 @@ function CreateCourse() {
             setLessons(res.data);
         })
         .catch(err => {
-            console.error(err);
+            handleError(err, msg => showNotification(msg, 'error'));
         })
     };
 
@@ -248,9 +250,10 @@ function CreateCourse() {
             });
 
             api.put("/Course/UpdateCourse", formData)
-                .then(() => {})
+                .then(() => {
+                    showNotification("Course updated successfully", "success");
+                })
                 .catch(err => {
-                    console.error(err)
                     handleError(err, setError);
                 })
                 .finally(() => setLoading(false));
@@ -271,7 +274,7 @@ function CreateCourse() {
             navigate("/moderator/courses");
         })
         .catch(err => {
-            console.error(err);
+            handleError(err, msg => showNotification(msg, 'error'));
         });
     };
 
@@ -279,9 +282,14 @@ function CreateCourse() {
         if (params.id) {
             api.get(`/Course/CourseDetails/${params.id}`)
                 .then(res => {
-                    console.log(res.data);
                     setCourse(res.data);
                     setTriggerFetch(true);
+                })
+                .catch(err => {
+                    if (err.response.status == 404)
+                        navigate("/moderator/courses");
+                    else
+                        handleError(err, msg => showNotification(msg, 'error'));
                 })
         }
         else {
@@ -393,7 +401,6 @@ function CreateCourse() {
 
                                 const reader = new FileReader();
                                 reader.onloadend = () => {
-                                    console.log('FileReader result:', reader.result);
                                     setPreview(reader.result as string);
                                 };
                                 reader.readAsDataURL(file);

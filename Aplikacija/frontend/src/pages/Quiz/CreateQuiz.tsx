@@ -11,6 +11,8 @@ import '@/assets/css/ModCreate.css';
 import type { AnswerOption, ConnectPair, Question, Quiz } from './QuizTypes';
 import * as yup from 'yup';
 import api from '@/lib/api';
+import { useNotification } from '@/contexts/Notification/NotificationProvider';
+import { useErrorHandler } from '@/hooks/useErrorHandler';
 
 const questionTypes = ['Single Answer', 'Multiple Answer', 'Connect Pairs', 'Text Answer'];
 const typesLabel = ['Select correct one', 'Select correct ones', 'Write matching pairs', 'Keep answer short'];
@@ -68,6 +70,8 @@ function CreateQuiz() {
     const questionRefs = useRef<(HTMLDivElement | null)[]>([]);
     const containerRef = useRef<HTMLDivElement|null>(null);
     const [questionErrors, setQuestionErrors] = useState<string[]>([]);
+    const { showNotification } = useNotification();
+    const handleError = useErrorHandler();
 
     const addQuestion = (type: number) => {
         const newQuestion: Question = {
@@ -176,7 +180,12 @@ function CreateQuiz() {
                 }, replace: true })
             })
             .catch(err => {
-                console.error(err);
+                if (err.response.status == 404)
+                    navigate(location.state.retPage, { state: {
+                        lesson: location.state.lesson
+                    }, replace: true })
+                else
+                    handleError(err, msg => showNotification(msg, 'error'));
             })
         }
         else {
@@ -203,12 +212,13 @@ function CreateQuiz() {
 
         api.put("/Quiz/UpdateQuiz", quiz)
             .then(() => {
+                showNotification("Quiz updated successfully", "success");
                 navigate(location.state.retPage, { state: {
                     lesson: location.state.lesson
                 }, replace: true });
             })
             .catch(err => {
-                console.error(err);
+                handleError(err, msg => showNotification(msg, 'error'));
             });
     };
 
@@ -332,7 +342,12 @@ function CreateQuiz() {
                     setQuiz(res.data);
                 })
                 .catch(err => {
-                    console.error(err);
+                    if (err.response.status == 404)
+                        navigate(location.state.retPage, { state: {
+                            lesson: location.state.lesson
+                        }, replace: true });
+                    else
+                        handleError(err, msg => showNotification(msg, 'error'));
                 })
         }
 

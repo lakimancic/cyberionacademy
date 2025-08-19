@@ -13,6 +13,7 @@ import { getInfoFromToken } from '@/lib/jwt';
 import * as yup from 'yup';
 import * as signalR from '@microsoft/signalr';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { useNotification } from '@/contexts/Notification/NotificationProvider';
 
 interface ChallengeData {
     id?: number;
@@ -95,13 +96,16 @@ function CreateChallenge() {
     const [loading, setLoading] = useState(false);
     const handleError = useErrorHandler();
     const [error, setError] = useState('');
+    const { showNotification } = useNotification();
 
     const tokenData = getInfoFromToken(auth?.token ?? null);
     
     useEffect(() => {
         api.get('/Categories/')
             .then(res => setCategories(res.data))
-            .catch(err => console.error('Greška pri dohvatanju kategorija', err));
+            .catch(err => {
+                handleError(err, msg => showNotification(msg, 'error'));
+            });
     }, []);
 
     useEffect(() => {
@@ -132,7 +136,9 @@ function CreateChallenge() {
                     connectionRef.current = connection;
                     connection.send("AcceptLogging", parseInt(params.id ?? '0'));
                 })
-                .catch(err => console.error(err));
+                .catch(err => {
+                    console.error(err);
+                });
 
             return () => {
                 connection.stop();
@@ -148,7 +154,10 @@ function CreateChallenge() {
             setChallenge(resp.data);
         })
         .catch(err => {
-            console.error(err);
+            if (err.response.status == 404)
+                navigate("/moderator/challenges");
+            else 
+                handleError(err, msg => showNotification(msg, 'error'));
         })
     };
 
@@ -221,7 +230,9 @@ function CreateChallenge() {
                 formData.append("DockerFile", dockerFileRef.current.files[0]);
 
             api.put("/Challenge/UpdateChallenge", formData)
-                .then(() => {})
+                .then(() => {
+                    showNotification("Challenge updated successfully", "success");
+                })
                 .catch(err => {
                     handleError(err, setError);
                 });
@@ -242,7 +253,10 @@ function CreateChallenge() {
             navigate("/moderator/challenges");
         })
         .catch(err => {
-            console.error(err);
+            if (err.response.status == 404)
+                navigate("/moderator/challenges");
+            else
+                handleError(err, msg => showNotification(msg, 'error'));
         });
     };
 

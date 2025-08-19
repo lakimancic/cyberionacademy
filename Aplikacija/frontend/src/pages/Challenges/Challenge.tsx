@@ -1,5 +1,5 @@
 import { useEffect, useState, type SetStateAction } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { TextField, Rating, CircularProgress, Avatar } from "@mui/material";
 import api from "@/lib/api";
 import "./Challenge.css";
@@ -14,6 +14,7 @@ import difficulties, { getColorHex } from "@/utils/difficulties";
 import categoriesIcon from "@/utils/categories";
 import AuthImage from "@/components/AuthImage/AuthImage";
 import { MdContactSupport } from "react-icons/md";
+import { useErrorHandler } from "@/hooks/useErrorHandler";
 
 interface ChallengeDetailsData {
   id: number;
@@ -78,6 +79,8 @@ function ChallengeDetails() {
   const [hasSolved, setHasSolved] = useState<boolean | null>(null);
   const [instance, setInstance] = useState<Instance | null>(null);
   const [instanceLoad, setInstanceLoad] = useState(false);
+  const navigate = useNavigate();
+  const handleError = useErrorHandler();
 
   useEffect(() => {
     if (!id) return;
@@ -97,7 +100,12 @@ function ChallengeDetails() {
         setHasSolved(res.data.hasSolved);
         setInstance(res.data.instance);
       })
-      .catch((err) => console.error("Greška:", err))
+      .catch((err) => {
+        if (err.response.status == 404)
+          navigate("/challenges");
+        else
+          handleError(err, msg => showNotification(msg, 'error'));
+      })
       .finally(() => setLoading(false));
   };
 
@@ -137,7 +145,7 @@ function ChallengeDetails() {
           fetchChallenge();
         })
         .catch((err) => {
-          console.error(err);
+          handleError(err, msg => showNotification(msg, 'error'));
         });
     } else {
       api
@@ -152,7 +160,7 @@ function ChallengeDetails() {
           fetchChallenge();
         })
         .catch((err) => {
-          console.error(err);
+          handleError(err, msg => showNotification(msg, 'error'));
         });
     }
   };
@@ -177,7 +185,9 @@ function ChallengeDetails() {
         link.remove();
         window.URL.revokeObjectURL(url);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        handleError(err, msg => showNotification(msg, 'error'));
+      });
   };
 
   const startInstance = () => {
@@ -193,7 +203,9 @@ function ChallengeDetails() {
         }
         setInstance(resp.data);
       })
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        handleError(err, msg => showNotification(msg, 'error'));
+      })
       .finally(() => setInstanceLoad(false));
   };
 
@@ -202,7 +214,9 @@ function ChallengeDetails() {
 
     api
       .delete(`/Challenge/StopInstance/${challenge.id}`)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        handleError(err, msg => showNotification(msg, 'error'));
+      })
       .finally(() => setInstance(null));
   };
 
@@ -214,7 +228,9 @@ function ChallengeDetails() {
       .then((resp) => {
         setInstance((prev) => (prev ? { ...prev, timeRem: resp.data } : null));
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        handleError(err, msg => showNotification(msg, 'error'));
+      });
   };
 
   useEffect(() => {
@@ -227,7 +243,7 @@ function ChallengeDetails() {
     return () => clearInterval(interval);
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <CircularProgress size={80} />;
   if (!challenge) return <div>Challenge not found</div>;
 
   return (

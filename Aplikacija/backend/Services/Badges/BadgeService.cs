@@ -26,11 +26,14 @@ public class BadgeService(ApplicationDbContext context) : IBadgeService
         if (challengeSolved != 0)
             return;
 
-        var firstBloodCount = await context.ChallengeSubmissions
-            .Where(s => s.Correct)
-            .GroupBy(s => s.ChallengeId)
-            .Select(g => g.OrderBy(s => s.SubmittedAt).FirstOrDefault())
-            .CountAsync(s => s != null && s.UserId == user.Id);
+        var firstBloodCount = await context.Challenges
+            .Where(c => c.Submissions!.Any(s => s.Correct))
+            .Select(c => c.Submissions!
+                .Where(s => s.Correct)
+                .OrderBy(s => s.SubmittedAt)
+                .FirstOrDefault())
+            .Where(submission => submission != null && submission.UserId == user.Id)
+            .CountAsync();
 
         Badge? badge = await context.Badges
             .Where(b => b.Short == $"bld{firstBloodCount + 1}")

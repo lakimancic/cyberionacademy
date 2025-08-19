@@ -10,6 +10,8 @@ import { Avatar } from '@mui/material';
 import type { AnswersSave, QuestionDetails } from './QuizTypes';
 import Questions from './Questions';
 import api from '@/lib/api';
+import { useNotification } from '@/contexts/Notification/NotificationProvider';
+import { useErrorHandler } from '@/hooks/useErrorHandler';
 
 interface QuizDetails {
     id: number;
@@ -51,6 +53,8 @@ function Quiz() {
     const [questions, setQuestions] = useState<QuestionDetails[]>([]);
     const [initPairs, setInitPairs] = useState<{ left: number; right: number}[]>([]);
     const navigate = useNavigate();
+    const { showNotification } = useNotification();
+    const handleError = useErrorHandler();
 
     const loadAnswers = (arr : QuestionDetails[]) => {
         const json = localStorage.getItem("quizSave");
@@ -93,7 +97,9 @@ function Quiz() {
                             setQuestions(loadAnswers(resp.data.questions));
                             setQuiz(prev => prev ? ({...prev, time: resp.data.time }) : prev);
                         })
-                        .catch(err => console.error(err));
+                        .catch(err => {
+                            handleError(err, msg => showNotification(msg, 'error'));
+                        });
                 }
                 else {
                     const json = localStorage.getItem("quizSave");
@@ -104,7 +110,10 @@ function Quiz() {
                 }
             })
             .catch(err => {
-                console.error(err);
+                if (err.response.status == 404)
+                    navigate(-1);
+                else
+                    handleError(err, msg => showNotification(msg, 'error'));
             });
     }
 
@@ -127,7 +136,10 @@ function Quiz() {
             fetchQuiz();
         })
         .catch(err => {
-            console.error(err);
+            if (err.response.status == 404)
+                navigate(-1);
+            else
+                handleError(err, msg => showNotification(msg, 'error'));
         })
     };
 

@@ -56,11 +56,9 @@ function RoleSignup() {
 
         api.post("/Roles/SubmitRoleRequest", data)
             .then(() => {
-                console.log("HELLO")
                 updateData();
             })
             .catch(err => {
-                console.log(err)
                 handleError(err, setGlobalError);
             });
     };
@@ -68,7 +66,6 @@ function RoleSignup() {
     const updateData = () => {
         api.get("/Roles/GetRoleRequests")
             .then(resp => {
-                console.log(resp);
                 setRequests(resp.data.requests.map((req : any) => {
                     return {...req, requestedAt: new Date(req.requestedAt)}
                 }));

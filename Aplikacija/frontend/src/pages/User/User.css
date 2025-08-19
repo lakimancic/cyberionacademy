@@ -148,3 +148,46 @@
 .user-year-stats .react-activity-calendar {
     margin-bottom: 3rem;
 }
+
+.user-badges {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.user-badge {
+    position: relative;
+    height: 4rem;
+    width: 4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: rgba(223, 240, 255, 0.1);
+    border-radius: 20%;
+    margin: 0 1rem;
+}
+
+.user-badge-name {
+    position: absolute;
+    width: max-content;
+    opacity: 0;
+    top: 115%;
+    transition: all 0.6s ease;
+}
+
+.user-badge:hover > .user-badge-name {
+    opacity: 1;
+}
+
+.user-badge img {
+    height: 60%;
+}
+
+.user-badges-grid {
+    width: auto;
+    display: grid;
+    justify-content: center;
+    grid-template-columns: repeat(12, auto);
+    margin-top: 2rem;
+}

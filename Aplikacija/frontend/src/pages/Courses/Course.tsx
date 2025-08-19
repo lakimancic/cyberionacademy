@@ -11,6 +11,7 @@ import ImageWrapper from '@/components/AuthImage/ImageWrapper';
 import { Avatar, Rating } from '@mui/material';
 import { useNotification } from '@/contexts/Notification/NotificationProvider';
 import Review from '@/components/Review/Review';
+import { useErrorHandler } from '@/hooks/useErrorHandler';
 
 type RichCourseData = CourseData & {
     reviewCount: number;
@@ -27,6 +28,7 @@ function Course() {
     const { id } = useParams<{ id: string }>();
     const [course, setCourse] = useState<RichCourseData|null>(null);
     const navigate = useNavigate();
+    const handleError = useErrorHandler();
 
     useEffect(() => {
         fetchCourse();
@@ -38,7 +40,10 @@ function Course() {
                 setCourse(res.data);
             })
             .catch(err => {
-                console.log(err);
+                if (err.response.status == 404)
+                    navigate("/courses");
+                else
+                    handleError(err, msg => showNotification(msg, 'error'));
             });
     };
 
@@ -56,7 +61,7 @@ function Course() {
                 fetchCourse();
             })
             .catch(err => {
-                console.error(err);
+                handleError(err, msg => showNotification(msg, 'error'));
             })
         }
         else {
@@ -72,7 +77,7 @@ function Course() {
                 fetchCourse();
             })
             .catch(err => {
-                console.error(err);
+                handleError(err, msg => showNotification(msg, 'error'));
             })
         }
     };

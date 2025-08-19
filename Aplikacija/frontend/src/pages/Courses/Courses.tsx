@@ -7,6 +7,8 @@ import SearchBar from '@/components/SearchBar/SearchBar';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import CourseCard from './CourseCard';
 import type { Course } from './CourseTypes';
+import { useNotification } from '@/contexts/Notification/NotificationProvider';
+import { useErrorHandler } from '@/hooks/useErrorHandler';
 
 
 function Courses() {
@@ -17,6 +19,8 @@ function Courses() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<number>(-1);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const { showNotification } = useNotification();
+  const handleError = useErrorHandler();
 
   const pageSize = 9;
 
@@ -38,9 +42,10 @@ function Courses() {
       .then(res => {
         setCourses(res.data.items);
         setTotalPages(res.data.totalPages);
-        console.log(res)
       })
-      .catch(err => console.error('Greška pri dohvatanju kurseva', err));
+      .catch(err => {
+        handleError(err, msg => showNotification(msg, 'error'));
+      });
   };
 
   const renderSortButton = (key: 'name' | 'rating', label: string) => (
