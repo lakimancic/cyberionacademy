@@ -28,7 +28,6 @@ import Quiz from "@/pages/Quiz/Quiz";
 import CourseStudio from "@/pages/Courses/CourseStudio";
 import CreateCourse from "@/pages/Courses/CreateCourse";
 import Course from "@/pages/Courses/Course";
-import { useNotification } from "@/contexts/Notification/NotificationProvider";
 import Reviews from "@/pages/Reviews/Reviews";
 import SearchPage from "@/pages/Search/SearchPage";
 import HomePage from "@/pages/Home/Home";

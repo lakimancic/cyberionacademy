@@ -11,6 +11,7 @@ import api from '@/lib/api';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useState } from 'react';
 import { CircularProgress } from '@mui/material';
+import { IoMdArrowRoundBack } from 'react-icons/io';
 
 const schema = yup.object({
     email: yup
@@ -90,7 +91,7 @@ function Login() {
 
     return <>
         <h1 className="title">Cyberion<span>Academy</span></h1>
-        <button type="button" className="back-button" onClick={() => navigate('/')}>Back</button>
+        <button type="button" className="back-button" onClick={() => navigate('/')}><IoMdArrowRoundBack /></button>
         <form className='auth-form' onSubmit={handleSubmit(onSubmit)}>
             <h1>Log in to your account</h1>
             {globalError.length > 0 && <div className='auth-global-error'>{globalError}</div>}

@@ -518,6 +518,7 @@ public class ChallengeController(ApplicationDbContext context, IChallengeService
             Public = request.IsPublic,
             Archived = request.IsArchived,
             Category = category,
+            Author = user,
             CreatedAt = DateTime.Now
         };
 

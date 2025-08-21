@@ -131,7 +131,7 @@ function User() {
                     <p className="user-ranking">Ranking #{userStats?.rankNum}</p>
                 </div>
             </div>
-            {(userStats?.badges.length ?? 0 > 0) && 
+            {((userStats?.badges.length ?? 0) > 0) && 
             <div className='user-badges'>
                 <h2>User Badges</h2>
                 <div className="user-badges-grid">

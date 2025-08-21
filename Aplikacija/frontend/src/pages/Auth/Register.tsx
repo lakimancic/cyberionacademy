@@ -11,6 +11,7 @@ import Footer from '@/components/Footer/Footer';
 import countries from '@/assets/data/countries.json';
 import api from '@/lib/api';
 import './Auth.css';
+import { IoMdArrowRoundBack } from 'react-icons/io';
 
 const schema = yup.object({
     email: yup
@@ -180,7 +181,7 @@ function Register() {
 
     return <>
         <h1 className="title">Cyberion<span>Academy</span></h1>
-        <button type="button" className="back-button" onClick={() => navigate('/')}>Back</button>
+        <button type="button" className="back-button" onClick={() => navigate('/')}><IoMdArrowRoundBack /></button>
         <form className='auth-form' onSubmit={handleSubmit(onSubmit)}>
             <h1>Create new account</h1>
             {globalError.length > 0 && <div className='auth-global-error'>{globalError}</div>}
