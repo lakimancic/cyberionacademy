@@ -78,6 +78,7 @@ function CreateCourse() {
     const [currentMyItem, setCurrentMyItem] = useState<number|null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [triggerFetch, setTriggerFetch] = useState(false);
+    const containerRef = useRef<HTMLDivElement|null>(null);
     const { showNotification } = useNotification();
 
     const tokenData = getInfoFromToken(auth?.token ?? null);
@@ -185,12 +186,20 @@ function CreateCourse() {
 
             if (course.items.length < 5) {
                 setError("Course must have at least 5 items");
+                containerRef.current?.scrollIntoView({
+                    block: 'start',
+                    behavior: 'smooth'
+                });
                 setLoading(false);
                 return;
             }
 
             if (course.items.length > 50) {
                 setError("Course must have at most 50 items");
+                containerRef.current?.scrollIntoView({
+                    block: 'start',
+                    behavior: 'smooth'
+                });
                 setLoading(false);
                 return;
             }
@@ -205,11 +214,19 @@ function CreateCourse() {
                     navigate(`/moderator/edit-course/${resp.data}`);
                 })
                 .catch(err => {
+                    containerRef.current?.scrollIntoView({
+                        block: 'start',
+                        behavior: 'smooth'
+                    });
                     handleError(err, setError);
                 })
                 .finally(() => setLoading(false));
         })
         .catch(err => {
+            containerRef.current?.scrollIntoView({
+                block: 'start',
+                behavior: 'smooth'
+            });
             handleError(err, setError);
         })
         .finally(() => setLoading(false));
@@ -234,12 +251,20 @@ function CreateCourse() {
 
             if (course.items.length < 5) {
                 setError("Course must have at least 5 items");
+                containerRef.current?.scrollIntoView({
+                    block: 'start',
+                    behavior: 'smooth'
+                });
                 setLoading(false);
                 return;
             }
 
             if (course.items.length > 50) {
                 setError("Course must have at most 50 items");
+                containerRef.current?.scrollIntoView({
+                    block: 'start',
+                    behavior: 'smooth'
+                });
                 setLoading(false);
                 return;
             }
@@ -254,11 +279,19 @@ function CreateCourse() {
                     showNotification("Course updated successfully", "success");
                 })
                 .catch(err => {
+                    containerRef.current?.scrollIntoView({
+                        block: 'start',
+                        behavior: 'smooth'
+                    });
                     handleError(err, setError);
                 })
                 .finally(() => setLoading(false));
         })
         .catch(err => {
+            containerRef.current?.scrollIntoView({
+                block: 'start',
+                behavior: 'smooth'
+            });
             handleError(err, setError);
         })
         .finally(() => setLoading(false));
@@ -307,7 +340,7 @@ function CreateCourse() {
     }, [course, triggerFetch]);
 
     return (
-        <div className="studio-create">
+        <div className="studio-create" ref={containerRef}>
             <IoMdArrowRoundBack className='studio-back' onClick={() => navigate("/moderator/courses")}/>
             <h1>{params.id ? 'Edit' : 'Create'} Course</h1>
             <form className="studio-create-form">
