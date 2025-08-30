@@ -1,15 +1,15 @@
 * {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-    font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  font-family: "Inter", "Helvetica Neue", sans-serif;
 
-    color: white;
+  color: white;
 
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

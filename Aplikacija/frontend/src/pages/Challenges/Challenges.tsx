@@ -71,7 +71,7 @@ function Challenges() {
       .get("/Categories/")
       .then((res) => setCategories(res.data))
       .catch((err) => {
-        handleError(err, msg => showNotification(msg, 'error'));
+        handleError(err, (msg) => showNotification(msg, "error"));
       });
   }, []);
 
@@ -103,7 +103,7 @@ function Challenges() {
         setTotalPages(response.data.totalPages);
       })
       .catch((error) => {
-        handleError(error, msg => showNotification(msg, 'error'));
+        handleError(error, (msg) => showNotification(msg, "error"));
       });
   };
 

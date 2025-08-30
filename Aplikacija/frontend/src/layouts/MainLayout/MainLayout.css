@@ -1,24 +1,24 @@
 main.layout {
-    width: 100vw;
-    height: 100vh;
+  width: 100vw;
+  height: 100vh;
 
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .layout-container {
-    display: flex;
-    flex: 1;
+  display: flex;
+  flex: 1;
 }
 
 .layout-content {
-    flex: 1;
-    overflow-y: scroll;
+  flex: 1;
+  overflow-y: scroll;
 
-    max-height: calc(100vh - 4rem);
+  max-height: calc(100vh - 4rem);
 }
 
 * {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(72, 97, 153, 0.5) transparent;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(72, 97, 153, 0.5) transparent;
 }

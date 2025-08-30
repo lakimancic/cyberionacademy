@@ -1,120 +1,121 @@
 header {
-    width: 100%;
-    min-height: 4rem;
+  width: 100%;
+  min-height: 4rem;
 
-    background: rgba(21, 41, 68, 0.5);
+  background: rgba(21, 41, 68, 0.5);
 
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.header-left, .header-right {
-    display: flex;
-    align-items: center;
+.header-left,
+.header-right {
+  display: flex;
+  align-items: center;
 }
 
 .header-right {
-    position: relative;
-    background: rgba(30, 59, 97, 0.5);
-    padding: 0.5rem 1rem;
-    border-radius: 3px;
+  position: relative;
+  background: rgba(30, 59, 97, 0.5);
+  padding: 0.5rem 1rem;
+  border-radius: 3px;
 
-    margin-right: 1rem;
-    cursor: pointer;
+  margin-right: 1rem;
+  cursor: pointer;
 }
 
 .header-right:hover {
-    background: rgba(33, 64, 104, 0.5);
+  background: rgba(33, 64, 104, 0.5);
 }
 
 .header-right .name {
-    margin: 0 1rem;
-    font-weight: 600;
+  margin: 0 1rem;
+  font-weight: 600;
 }
 
 .header-right svg {
-    pointer-events: none;
+  pointer-events: none;
 }
 
 .header-right .MuiAvatar-root {
-    width: 2rem !important;
-    height: 2rem !important;
+  width: 2rem !important;
+  height: 2rem !important;
 }
 
 .header-submenu {
-    position: absolute;
-    top: 120%;
-    right: 0;
-    width: 130%;
+  position: absolute;
+  top: 120%;
+  right: 0;
+  width: 130%;
 
-    text-align: left;
-    background: rgb(19, 39, 65);
+  text-align: left;
+  background: rgb(19, 39, 65);
 
-    transition: all 0.4s ease;
-    transform-origin: 50% 0;
+  transition: all 0.4s ease;
+  transform-origin: 50% 0;
 
-    z-index: 3;
+  z-index: 3;
 }
 
 .header-hidden {
-    transform: scaleY(0);
+  transform: scaleY(0);
 }
 
 .header-submenu a {
-    display: block;
-    text-decoration: none;
+  display: block;
+  text-decoration: none;
 }
 
 .header-subitem {
-    color: white;
-    height: 3rem;
+  color: white;
+  height: 3rem;
 
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 
-    margin: 0.6rem;
-    border-radius: 3px;
+  margin: 0.6rem;
+  border-radius: 3px;
 }
 
 .header-subitem:hover {
-    background-color: rgba(10, 22, 39, 0.5);
+  background-color: rgba(10, 22, 39, 0.5);
 }
 
 .header-subitem svg {
-    margin-left: 1.5rem;
-    margin-right: 1rem;
+  margin-left: 1.5rem;
+  margin-right: 1rem;
 }
 
 .logout-btn {
-    border: 0;
-    outline: none;
+  border: 0;
+  outline: none;
 
-    width: 100%;
+  width: 100%;
 
-    font-size: 1rem;
-    padding: 0.7rem;
+  font-size: 1rem;
+  padding: 0.7rem;
 
-    cursor: pointer;
+  cursor: pointer;
 
-    color: white;
-    background-color: rgba(10, 22, 39, 0.6);
+  color: white;
+  background-color: rgba(10, 22, 39, 0.6);
 }
 
 .logout-btn:hover {
-    background-color: rgba(52, 68, 90, 0.6);
+  background-color: rgba(52, 68, 90, 0.6);
 }
 
 header .title {
-    color: white;
-    text-decoration: none;
+  color: white;
+  text-decoration: none;
 
-    font-size: 1.5rem;
-    font-weight: 600;
+  font-size: 1.5rem;
+  font-weight: 600;
 
-    margin-left: 1rem;
+  margin-left: 1rem;
 }
 
 header .title span {
-    font-weight: 500;
+  font-weight: 500;
 }

@@ -61,11 +61,9 @@ function LessonDetails() {
     api
       .get(`/Lesson/GetLessonDetails/${id}`)
       .then((res) => setLesson(res.data))
-      .catch(err => {
-        if (err.response.status == 404)
-          navigate("/lessons");
-        else
-          handleError(err, msg => showNotification(msg, 'error'));
+      .catch((err) => {
+        if (err.response.status == 404) navigate("/lessons");
+        else handleError(err, (msg) => showNotification(msg, "error"));
       })
       .finally(() => setLoading(false));
   };
@@ -91,7 +89,7 @@ function LessonDetails() {
           fetchLesson();
         })
         .catch((err) => {
-          handleError(err, msg => showNotification(msg, 'error'));
+          handleError(err, (msg) => showNotification(msg, "error"));
         });
     } else {
       api
@@ -106,7 +104,7 @@ function LessonDetails() {
           fetchLesson();
         })
         .catch((err) => {
-          handleError(err, msg => showNotification(msg, 'error'));
+          handleError(err, (msg) => showNotification(msg, "error"));
         });
     }
   };
@@ -204,7 +202,9 @@ function LessonDetails() {
           <Link
             to={`/new-support/lessons/${lesson.id}`}
             className="call-support"
-          ><MdContactSupport /> Need Help?</Link>
+          >
+            <MdContactSupport /> Need Help?
+          </Link>
           <div className="review-section">
             <h3>Ratings</h3>
             <div className="ratings-grid">

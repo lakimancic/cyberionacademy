@@ -1,4 +1,8 @@
-import { Navigate, RouterProvider, createBrowserRouter } from "react-router-dom";
+import {
+  Navigate,
+  RouterProvider,
+  createBrowserRouter,
+} from "react-router-dom";
 import { useAuth } from "@/contexts/AuthProvider";
 import ProtectedRoute from "./ProtectedRoute";
 import Welcome from "@/pages/Welcome/Welcome";
@@ -33,191 +37,193 @@ import SearchPage from "@/pages/Search/SearchPage";
 import HomePage from "@/pages/Home/Home";
 
 function Routes() {
-    const auth = useAuth();
+  const auth = useAuth();
 
-    const token = getInfoFromToken(auth?.token ?? null);
-    const roleInd = ['User', 'Helper', 'Moderator', 'Admin'].indexOf(token?.role ?? 'User');
+  const token = getInfoFromToken(auth?.token ?? null);
+  const roleInd = ["User", "Helper", "Moderator", "Admin"].indexOf(
+    token?.role ?? "User"
+  );
 
-    const routesForPublic = [
-        {
-            path: "*",
-            element: <Navigate to="/" replace />,
-        },
-    ];
+  const routesForPublic = [
+    {
+      path: "*",
+      element: <Navigate to="/" replace />,
+    },
+  ];
 
-    const routesForHelper = [
-        {
-            path: "/helper/questions",
-            element: <Support isNew={false} isSupport={true} />
-        }
-    ];
+  const routesForHelper = [
+    {
+      path: "/helper/questions",
+      element: <Support isNew={false} isSupport={true} />,
+    },
+  ];
 
-    const routesForMod = [
-        {
-            path: "/moderator/challenges",
-            element: <ChallengeStudio />
-        },
-        {
-            path: "/moderator/new-challenge",
-            element: <CreateChallenge />
-        },
-        {
-            path: "/moderator/edit-challenge/:id",
-            element: <CreateChallenge />
-        },
-        {
-            path: "/moderator/lessons",
-            element: <LessonStudio />
-        },
-        {
-            path: "/moderator/new-lesson",
-            element: <CreateLesson />
-        },
-        {
-            path: "/moderator/edit-lesson/:id",
-            element: <CreateLesson />
-        },
-        {
-            path: "/moderator/lesson-editor",
-            element: <LessonEditor />
-        },
-        {
-            path: "/moderator/new-quiz",
-            element: <CreateQuiz />
-        },
-        {
-            path: "/moderator/edit-quiz/:id",
-            element: <CreateQuiz />
-        },
-        {
-            path: "/moderator/courses",
-            element: <CourseStudio />
-        },
-        {
-            path: "/moderator/new-course",
-            element: <CreateCourse />
-        },
-        {
-            path: "/moderator/edit-course/:id",
-            element: <CreateCourse />
-        },
-    ];
+  const routesForMod = [
+    {
+      path: "/moderator/challenges",
+      element: <ChallengeStudio />,
+    },
+    {
+      path: "/moderator/new-challenge",
+      element: <CreateChallenge />,
+    },
+    {
+      path: "/moderator/edit-challenge/:id",
+      element: <CreateChallenge />,
+    },
+    {
+      path: "/moderator/lessons",
+      element: <LessonStudio />,
+    },
+    {
+      path: "/moderator/new-lesson",
+      element: <CreateLesson />,
+    },
+    {
+      path: "/moderator/edit-lesson/:id",
+      element: <CreateLesson />,
+    },
+    {
+      path: "/moderator/lesson-editor",
+      element: <LessonEditor />,
+    },
+    {
+      path: "/moderator/new-quiz",
+      element: <CreateQuiz />,
+    },
+    {
+      path: "/moderator/edit-quiz/:id",
+      element: <CreateQuiz />,
+    },
+    {
+      path: "/moderator/courses",
+      element: <CourseStudio />,
+    },
+    {
+      path: "/moderator/new-course",
+      element: <CreateCourse />,
+    },
+    {
+      path: "/moderator/edit-course/:id",
+      element: <CreateCourse />,
+    },
+  ];
 
-    const routesForAdmin = [
-        {
-            path: "/admin/users-roles",
-            element: <AdminRoles />
-        }
-    ];
+  const routesForAdmin = [
+    {
+      path: "/admin/users-roles",
+      element: <AdminRoles />,
+    },
+  ];
 
-    const routesForAuthenticatedOnly = [
+  const routesForAuthenticatedOnly = [
+    {
+      path: "/",
+      element: <ProtectedRoute />,
+      children: [
         {
-            path: "/",
-            element: <ProtectedRoute />,
-            children: [
-                {
-                    path: "/",
-                    element: <MainLayout />,
-                    children: [
-                        {
-                            path: "/",
-                            element: <HomePage />
-                        },
-                        {
-                            path: "/lessons",
-                            element: <Lessons />
-                        },
-                        {
-                            path: "/lessons/:id",
-                            element: <LessonDetails />
-                        },
-                        {
-                            path: "/quiz/:id",
-                            element: <Quiz />
-                        },
-                        {
-                            path: "/challenges",
-                            element: <Challenges />
-                        },
-                        {
-                            path: "/challenges/:id",
-                            element: <Challenge />
-                        },
-                        {
-                            path: "/courses",
-                            element: <Courses />
-                        },
-                        {
-                            path: "/courses/:id",
-                            element: <Course />
-                        },
-                        {
-                            path: "/settings",
-                            element: <Settings />
-                        },
-                        {
-                            path: "/user/:userId",
-                            element: <User />
-                        },
-                        {
-                            path: "/profile",
-                            element: <Profile />
-                        },
-                        {
-                            path: '/role-signup',
-                            element: <RoleSignup />
-                        },
-                        {
-                            path: '/scoreboard',
-                            element: <Scoreboard />
-                        },
-                        {
-                            path: '/support',
-                            element: <Support isNew={false} isSupport={false} />
-                        },
-                        {
-                            path: '/new-support/:type/:id',
-                            element: <Support isNew={true} isSupport={false} />
-                        },
-                        {
-                            path: '/reviews/:type/:id',
-                            element: <Reviews />
-                        },
-                        {
-                            path: '/search',
-                            element: <SearchPage />
-                        },
-                        ...(roleInd >= 1 ? routesForHelper : []),
-                        ...(roleInd >= 2 ? routesForMod : []),
-                        ...(roleInd >= 3 ? routesForAdmin : [])
-                    ]
-                },
-            ]
-        }
-    ];
-
-    const routesForNotAuthenticatedOnly = [
-        {
-            path: "/",
-            element: <Welcome />
+          path: "/",
+          element: <MainLayout />,
+          children: [
+            {
+              path: "/",
+              element: <HomePage />,
+            },
+            {
+              path: "/lessons",
+              element: <Lessons />,
+            },
+            {
+              path: "/lessons/:id",
+              element: <LessonDetails />,
+            },
+            {
+              path: "/quiz/:id",
+              element: <Quiz />,
+            },
+            {
+              path: "/challenges",
+              element: <Challenges />,
+            },
+            {
+              path: "/challenges/:id",
+              element: <Challenge />,
+            },
+            {
+              path: "/courses",
+              element: <Courses />,
+            },
+            {
+              path: "/courses/:id",
+              element: <Course />,
+            },
+            {
+              path: "/settings",
+              element: <Settings />,
+            },
+            {
+              path: "/user/:userId",
+              element: <User />,
+            },
+            {
+              path: "/profile",
+              element: <Profile />,
+            },
+            {
+              path: "/role-signup",
+              element: <RoleSignup />,
+            },
+            {
+              path: "/scoreboard",
+              element: <Scoreboard />,
+            },
+            {
+              path: "/support",
+              element: <Support isNew={false} isSupport={false} />,
+            },
+            {
+              path: "/new-support/:type/:id",
+              element: <Support isNew={true} isSupport={false} />,
+            },
+            {
+              path: "/reviews/:type/:id",
+              element: <Reviews />,
+            },
+            {
+              path: "/search",
+              element: <SearchPage />,
+            },
+            ...(roleInd >= 1 ? routesForHelper : []),
+            ...(roleInd >= 2 ? routesForMod : []),
+            ...(roleInd >= 3 ? routesForAdmin : []),
+          ],
         },
-        {
-            path: "/login",
-            element: <Login />
-        },
-        {
-            path: "/register",
-            element: <Register />
-        }
-    ];
+      ],
+    },
+  ];
 
-    const router = createBrowserRouter([
-        ...(!auth?.token ? routesForNotAuthenticatedOnly : []),
-        ...routesForAuthenticatedOnly,
-        ...routesForPublic
-    ]);
+  const routesForNotAuthenticatedOnly = [
+    {
+      path: "/",
+      element: <Welcome />,
+    },
+    {
+      path: "/login",
+      element: <Login />,
+    },
+    {
+      path: "/register",
+      element: <Register />,
+    },
+  ];
 
-    return <RouterProvider router={router} />;
+  const router = createBrowserRouter([
+    ...(!auth?.token ? routesForNotAuthenticatedOnly : []),
+    ...routesForAuthenticatedOnly,
+    ...routesForPublic,
+  ]);
+
+  return <RouterProvider router={router} />;
 }
 
 export default Routes;

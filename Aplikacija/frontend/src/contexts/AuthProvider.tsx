@@ -1,115 +1,112 @@
 import {
-    createContext,
-    useContext,
-    useMemo,
-    useState,
-    type ReactNode,
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  type ReactNode,
 } from "react";
-import api from '@/lib/api';
+import api from "@/lib/api";
 import { getInfoFromToken } from "@/lib/jwt";
 
 interface AuthContextType {
-    token: string | null;
-    setToken: (newToken: string | null) => void;
-    setRefreshToken: (newToken: string | null) => void;
-    logout: () => void;
-    refreshToken: () => Promise<void>;
-    checkAndRefreshToken: () => Promise<void>;
-};
+  token: string | null;
+  setToken: (newToken: string | null) => void;
+  setRefreshToken: (newToken: string | null) => void;
+  logout: () => void;
+  refreshToken: () => Promise<void>;
+  checkAndRefreshToken: () => Promise<void>;
+}
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 interface AuthProviderProps {
-    children: ReactNode;
+  children: ReactNode;
 }
 
-function AuthProvider({ children } : AuthProviderProps) {
-    const [token, setToken_] = useState<string | null>(() => {
-        const savedToken = localStorage.getItem("token");
-        if (savedToken) {
-            api.defaults.headers.common["Authorization"] = `Bearer ${savedToken}`;
-        }
-        return savedToken;
-    });
-    const [refresh, setRefresh] = useState<string | null>(localStorage.getItem("refreshToken"));
-
-    const setToken = (newToken: string | null) => {
-        setToken_(newToken);
-        if(newToken) {
-            api.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
-            localStorage.setItem("token", newToken);
-        } else {
-            delete api.defaults.headers.common["Authorization"];
-            localStorage.removeItem("token");
-        }
+function AuthProvider({ children }: AuthProviderProps) {
+  const [token, setToken_] = useState<string | null>(() => {
+    const savedToken = localStorage.getItem("token");
+    if (savedToken) {
+      api.defaults.headers.common["Authorization"] = `Bearer ${savedToken}`;
     }
+    return savedToken;
+  });
+  const [refresh, setRefresh] = useState<string | null>(
+    localStorage.getItem("refreshToken")
+  );
 
-    const setRefreshToken = (newRefreshToken: string | null) => {
-        setRefresh(newRefreshToken);
-        if (newRefreshToken) {
-            localStorage.setItem("refreshToken", newRefreshToken);
-        } else {
-            localStorage.removeItem("refreshToken");
-        }
-    };
+  const setToken = (newToken: string | null) => {
+    setToken_(newToken);
+    if (newToken) {
+      api.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
+      localStorage.setItem("token", newToken);
+    } else {
+      delete api.defaults.headers.common["Authorization"];
+      localStorage.removeItem("token");
+    }
+  };
 
-    const logout = () => {
-        setToken(null);
-        setRefreshToken(null);
-    };
+  const setRefreshToken = (newRefreshToken: string | null) => {
+    setRefresh(newRefreshToken);
+    if (newRefreshToken) {
+      localStorage.setItem("refreshToken", newRefreshToken);
+    } else {
+      localStorage.removeItem("refreshToken");
+    }
+  };
 
-    const refreshToken = async () => {
-        if (!refresh) return logout();
+  const logout = () => {
+    setToken(null);
+    setRefreshToken(null);
+  };
 
-        try {
-            const response = await api.post("/Auth/RefreshToken", {
-                refreshToken: refresh,
-            });
+  const refreshToken = async () => {
+    if (!refresh) return logout();
 
-            setToken(response.data.accessToken);
-            setRefreshToken(response.data.refreshToken);
+    try {
+      const response = await api.post("/Auth/RefreshToken", {
+        refreshToken: refresh,
+      });
 
-        } catch (error) {
-            logout();
-        }
-    };
+      setToken(response.data.accessToken);
+      setRefreshToken(response.data.refreshToken);
+    } catch (error) {
+      logout();
+    }
+  };
 
-    const checkAndRefreshToken = async () => {
-        if(!refresh || !token) return logout();
-        
-        const data = getInfoFromToken(token);
+  const checkAndRefreshToken = async () => {
+    if (!refresh || !token) return logout();
 
-        if(!data) return logout();
+    const data = getInfoFromToken(token);
 
-        const timeDiff = Math.abs(data.exp - Date.now() / 1000);
+    if (!data) return logout();
 
-        if(timeDiff <= 600)
-            await refreshToken();
-        else if(Date.now() / 1000 > data.exp)
-            return logout();
-    };
+    const timeDiff = Math.abs(data.exp - Date.now() / 1000);
 
-    const contextValue = useMemo(
-        () => ({
-            token,
-            setToken,
-            setRefreshToken,
-            logout,
-            refreshToken,
-            checkAndRefreshToken
-        }),
-        [token, refresh]
-    );
+    if (timeDiff <= 600) await refreshToken();
+    else if (Date.now() / 1000 > data.exp) return logout();
+  };
 
-    return (
-        <AuthContext.Provider value={contextValue}>
-            {children}
-        </AuthContext.Provider>
-    )
+  const contextValue = useMemo(
+    () => ({
+      token,
+      setToken,
+      setRefreshToken,
+      logout,
+      refreshToken,
+      checkAndRefreshToken,
+    }),
+    [token, refresh]
+  );
+
+  return (
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
+  );
 }
 
 export const useAuth = () => {
-    return useContext(AuthContext);
+  return useContext(AuthContext);
 };
 
 export default AuthProvider;

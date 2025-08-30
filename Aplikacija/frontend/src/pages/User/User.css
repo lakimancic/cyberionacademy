@@ -1,193 +1,193 @@
 .user-page {
-    width: 90%;
-    backdrop-filter: blur(12px);
-    border-radius: 12px;
-    margin: 3rem auto;
-    padding: 1rem;
-    box-sizing: border-box;
+  width: 90%;
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  margin: 3rem auto;
+  padding: 1rem;
+  box-sizing: border-box;
 
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .user-main {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
 }
 
 .user-info {
-    width: 30%;
+  width: 30%;
 
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .user-world {
-    height: 100%;
+  height: 100%;
 }
 
 .user-avatar {
-    position: relative;
-    height: 8rem;
-    width: 8rem;
+  position: relative;
+  height: 8rem;
+  width: 8rem;
 }
 
 .user-profile {
-    width: 100% !important;
-    height: 100% !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .user-flag {
-    position: absolute !important;
-    bottom: 0;
-    right: 0;
+  position: absolute !important;
+  bottom: 0;
+  right: 0;
 
-    width: 35% !important;
-    height: 35% !important;
+  width: 35% !important;
+  height: 35% !important;
 }
 
 .user-text {
-    width: calc(100% - 10rem);
+  width: calc(100% - 10rem);
 
-    margin-left: 2rem;
-    text-align: left;
+  margin-left: 2rem;
+  text-align: left;
 }
 
 .user-text p {
-    margin: 0;
+  margin: 0;
 }
 
-[class^=user-role] {
-    font-size: 1.3rem;
+[class^="user-role"] {
+  font-size: 1.3rem;
 }
 
 .user-role-helper {
-    color: rgb(255, 255, 142)
+  color: rgb(255, 255, 142);
 }
 
 .user-role-moderator {
-    color: rgb(255, 171, 92)
+  color: rgb(255, 171, 92);
 }
 
 .user-role-admin {
-    color: rgb(255, 92, 92)
+  color: rgb(255, 92, 92);
 }
 
 .user-username {
-    font-size: 2rem;
-    margin: 0.5rem 0;
+  font-size: 2rem;
+  margin: 0.5rem 0;
 }
 
 .user-fullname {
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .user-fullname span {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .user-bio {
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.7);
-    font-style: italic;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
 }
 
 .user-bio span {
-    font-style: normal;
-    margin-right: 0.5rem;
+  font-style: normal;
+  margin-right: 0.5rem;
 }
 
 .user-stats {
-    min-width: 30%;
+  min-width: 30%;
 }
 
 .user-stats p {
-    margin: 0;
+  margin: 0;
 }
 
 .user-rank-label {
-    font-size: 1.3rem;
+  font-size: 1.3rem;
 }
 
 .user-rank {
-    font-size: 2rem;
+  font-size: 2rem;
 
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .user-radars {
-    display: flex;
-    justify-content: space-around;
+  display: flex;
+  justify-content: space-around;
 
-    margin-top: 2rem;
+  margin-top: 2rem;
 }
 
 .user-radar {
-    margin-top: 2rem;
-    width: 40%;
+  margin-top: 2rem;
+  width: 40%;
 }
 
 .user-radar h2 {
-    margin: 2rem 0;
+  margin: 2rem 0;
 }
 
 .user-year-stats {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 
-    justify-content: center;
-    align-items: center;
+  justify-content: center;
+  align-items: center;
 }
 
 .user-year-stats h2 {
-    margin: 3rem 0;
+  margin: 3rem 0;
 }
 
 .user-year-stats .react-activity-calendar {
-    margin-bottom: 3rem;
+  margin-bottom: 3rem;
 }
 
 .user-badges {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .user-badge {
-    position: relative;
-    height: 4rem;
-    width: 4rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  position: relative;
+  height: 4rem;
+  width: 4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-    background-color: rgba(223, 240, 255, 0.1);
-    border-radius: 20%;
-    margin: 0 1rem;
+  background-color: rgba(223, 240, 255, 0.1);
+  border-radius: 20%;
+  margin: 0 1rem;
 }
 
 .user-badge-name {
-    position: absolute;
-    width: max-content;
-    opacity: 0;
-    top: 115%;
-    transition: all 0.6s ease;
+  position: absolute;
+  width: max-content;
+  opacity: 0;
+  top: 115%;
+  transition: all 0.6s ease;
 }
 
 .user-badge:hover > .user-badge-name {
-    opacity: 1;
+  opacity: 1;
 }
 
 .user-badge img {
-    height: 60%;
+  height: 60%;
 }
 
 .user-badges-grid {
-    width: auto;
-    display: grid;
-    justify-content: center;
-    grid-template-columns: repeat(12, auto);
-    margin-top: 2rem;
+  width: auto;
+  display: grid;
+  justify-content: center;
+  grid-template-columns: repeat(12, auto);
+  margin-top: 2rem;
 }

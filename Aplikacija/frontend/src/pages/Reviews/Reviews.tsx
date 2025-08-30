@@ -34,7 +34,7 @@ function Reviews() {
     const params = {
       page: currentPage,
       sortKey: sortKey,
-      sortDir: sortDirection
+      sortDir: sortDirection,
     };
 
     api
@@ -81,8 +81,8 @@ function Reviews() {
           Reviews for {type}: <Link to={`/${type}s/${id}`}>{itemName}</Link>
         </h2>
         <div className="sort-buttons">
-          {renderSortButton('rating', 'Sort by Rating')}
-          {renderSortButton('difficulty', 'Sort by Difficulty')}
+          {renderSortButton("rating", "Sort by Rating")}
+          {renderSortButton("difficulty", "Sort by Difficulty")}
         </div>
       </div>
       <div className="user-reviews-grid">
@@ -91,38 +91,46 @@ function Reviews() {
             <div className="user-reviews-user">
               <div className="user-reviews-profile">
                 <Link to={`/user/${review.authorId}`}>
-                  <AuthImage 
+                  <AuthImage
                     src={`/User/${review.authorId}/ProfilePicture`}
                     element={Avatar}
                   />
                 </Link>
                 <div className="user-reviews-userinfo">
                   <h2>{review.authorName}</h2>
-                  <Rating
-                    value={review.stars}
-                    precision={0.1}
-                    readOnly
-                  />
-                  <h3 style={{
-                    color: getColorHex(review.difficulty)
-                  }}>{difficulties[review.difficulty]}</h3>
+                  <Rating value={review.stars} precision={0.1} readOnly />
+                  <h3
+                    style={{
+                      color: getColorHex(review.difficulty),
+                    }}
+                  >
+                    {difficulties[review.difficulty]}
+                  </h3>
                 </div>
               </div>
             </div>
-            <div className="user-reviews-text">
-              {review.text}
-            </div>
+            <div className="user-reviews-text">{review.text}</div>
           </React.Fragment>
         ))}
       </div>
       <div className="pagination">
         <button
           disabled={currentPage === 1}
-          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}>Previous</button>
-        <span>Page {currentPage} of {totalPages}</span>
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+        >
+          Previous
+        </button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
         <button
           disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}>Next</button>
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+        >
+          Next
+        </button>
       </div>
     </div>
   );

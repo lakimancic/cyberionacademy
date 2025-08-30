@@ -1,22 +1,22 @@
 .challenge-details-container {
-  padding: 2rem;
-  gap: 2rem;
+    padding: 2rem;
+    gap: 2rem;
 }
 
 .challenge-header {
-  margin-bottom: 2rem;
-   text-align: left;
+    margin-bottom: 2rem;
+    text-align: left;
 }
 
-.challenge-header h2{
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
+.challenge-header h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
 }
 .challenge-content-row {
-  display: flex;
-  gap: 1.5rem;
-  align-items: stretch;
-  min-height: 600px;
+    display: flex;
+    gap: 1.5rem;
+    align-items: stretch;
+    min-height: 600px;
 }
 .challenge-section {
   width: 100%;
@@ -30,7 +30,7 @@
   flex: 1 1 300px;
   max-width: 400px;
 }
-.challenge-details{
+.challenge-details {
   display: flex;
   padding: 1.5rem;
   gap: 1.5rem;
@@ -95,7 +95,8 @@
   backdrop-filter: blur(16px);
 }
 
-.action-item, .action-instance {
+.action-item,
+.action-instance {
   display: flex;
   align-items: flex-start;
   gap: 1rem;
@@ -103,9 +104,7 @@
   padding: 1rem 1.25rem;
   border-radius: 12px;
   border: 1px solid #1f2937;
-  transition: 
-    background-color 0.3s ease, 
-    box-shadow 0.3s ease, 
+  transition: background-color 0.3s ease, box-shadow 0.3s ease,
     transform 0.3s ease;
   cursor: pointer;
   will-change: transform, box-shadow;
@@ -140,7 +139,6 @@
   transform: scale(1.02);
 }
 
-
 .icon-container {
   font-size: 1.6rem;
   color: #ffffff;
@@ -154,7 +152,7 @@
 }
 
 .action-item:hover {
-  background-color: #1f29373f; 
+  background-color: #1f29373f;
   box-shadow: 0 4px 20px rgba(153, 153, 153, 0.5);
   border-color: #b1b1b1;
 }
@@ -321,7 +319,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-   flex: 0 0 300px;
+  flex: 0 0 300px;
   max-width: 300px;
 }
 
@@ -466,9 +464,7 @@
   cursor: pointer;
   border-radius: 8px;
   font-weight: bold;
-  transition: 
-    background-color 0.3s ease, 
-    box-shadow 0.3s ease, 
+  transition: background-color 0.3s ease, box-shadow 0.3s ease,
     transform 0.3s ease;
   cursor: pointer;
   will-change: transform, box-shadow;

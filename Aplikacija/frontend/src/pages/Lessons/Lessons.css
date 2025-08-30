@@ -1,49 +1,49 @@
 .lesson-container .data-table td:has(.cat-icon) {
-    width: 0;
-    padding: 0 1.3rem;
+  width: 0;
+  padding: 0 1.3rem;
 }
 
 .lesson-container .data-table th {
-    background-color: #151824e7;
+  background-color: #151824e7;
 }
 
 .lesson-container .data-table td {
-    padding: 1.2rem 0;
+  padding: 1.2rem 0;
 }
 
 .lesson-container {
-    backdrop-filter: blur(12px);
-    color: #fff;
-    padding: 2rem;
-    font-family: 'Segoe UI', sans-serif;
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(12px);
+  color: #fff;
+  padding: 2rem;
+  font-family: "Segoe UI", sans-serif;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .lesson-container h2 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    display: flex;
-    color: #e4e6eb;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  display: flex;
+  color: #e4e6eb;
 }
 
 .lesson-container .search-bar-container {
-    margin: 0;
+  margin: 0;
 }
 
 .lesson-container .search-bar-container input {
-    width: 18rem;
+  width: 18rem;
 }
 
 .controls-bar .MuiSelect-root {
-    margin-bottom: 0;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    width: 15rem;
-    text-align: left;
-    margin-left: 1rem;
+  margin-bottom: 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 15rem;
+  text-align: left;
+  margin-left: 1rem;
 }
 
 .controls-bar .MuiSelect-select {
-    padding-top: 0.8rem;
-    padding-bottom: 0.8rem;
+  padding-top: 0.8rem;
+  padding-bottom: 0.8rem;
 }

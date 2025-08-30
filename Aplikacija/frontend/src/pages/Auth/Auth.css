@@ -1,195 +1,196 @@
 .auth-form {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 
-    width: 30rem;
-    padding: 3.5rem 3rem;
-    box-sizing: border-box;
-    border-radius: 4px;
+  width: 30rem;
+  padding: 3.5rem 3rem;
+  box-sizing: border-box;
+  border-radius: 4px;
 
-    background-color: rgba(26, 50, 83, 0.4);
+  background-color: rgba(26, 50, 83, 0.4);
 }
 
 .auth-form h1 {
-    display: block;
-    margin-bottom: 1.5rem;
-    font-size: 1.6rem;
+  display: block;
+  margin-bottom: 1.5rem;
+  font-size: 1.6rem;
 }
 
 .auth-global-error {
-    color: #FF646E;
-    margin-bottom: 1rem;
-    text-align: center;
+  color: #ff646e;
+  margin-bottom: 1rem;
+  text-align: center;
 }
 
 .form-field {
-    width: 100%;
+  width: 100%;
 }
 
-.form-field input, #mui-component-select-country {
-    display: block;
-    box-sizing: border-box;
-    width: 100%;
-    
-    font-size: 0.9rem;
-    line-height: 1.2rem;
+.form-field input,
+#mui-component-select-country {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
 
-    padding: 0.6rem 1rem;
-    outline: none;
-    border-radius: 3px;
+  font-size: 0.9rem;
+  line-height: 1.2rem;
 
-    background-color: #1d2d46;
-    color: white;
+  padding: 0.6rem 1rem;
+  outline: none;
+  border-radius: 3px;
 
-    transition: all 0.2s ease;
+  background-color: #1d2d46;
+  color: white;
+
+  transition: all 0.2s ease;
 }
 
 .MuiSelect-root {
-    width: 100%;
-    border: 1px solid #283d5f;
-    margin-bottom: 2rem;
+  width: 100%;
+  border: 1px solid #283d5f;
+  margin-bottom: 2rem;
 }
 
 .MuiSelect-root svg {
-    color: white;
+  color: white;
 }
 
 .MuiPaper-root {
-    background-color: #1d2d46 !important;
-    color: white !important;
+  background-color: #1d2d46 !important;
+  color: white !important;
 }
 
 #mui-component-select-country {
-    padding: 0.8rem 1rem;
+  padding: 0.8rem 1rem;
 }
 
 .MuiSelect-root fieldset {
-    all: unset;
+  all: unset;
 }
 
 .form-field option {
-    background-color: #1d2d46;
+  background-color: #1d2d46;
 }
 
 .form-input-error {
-    border: 1px solid #FF646E;
+  border: 1px solid #ff646e;
 }
 
 .form-input-normal {
-    border: 1px solid #283d5f;
+  border: 1px solid #283d5f;
 }
 
 .form-error {
-    font-size: 0.9rem;
-    line-height: 1.8rem;
-    height: 2rem;
-    color: #FF646E;
+  font-size: 0.9rem;
+  line-height: 1.8rem;
+  height: 2rem;
+  color: #ff646e;
 
-    transition: all 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .form-hidden {
-    transform: translateY(-50%);
-    opacity: 0;
+  transform: translateY(-50%);
+  opacity: 0;
 }
 
 .form-label {
-    color: #566888;
-    margin-bottom: 0.5rem;
+  color: #566888;
+  margin-bottom: 0.5rem;
 }
 
 .back-button {
-    cursor: pointer;
-    background: none;
-    border: 0;
-    outline: none;
-    color: white;
-    font-size: 3rem;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  outline: none;
+  color: white;
+  font-size: 3rem;
 
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    margin: 0;
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  margin: 0;
 }
 
 .auth-form button {
-    width: 100%;
-    margin: 1.5rem 0;
-    padding: 0.8rem;
+  width: 100%;
+  margin: 1.5rem 0;
+  padding: 0.8rem;
 
-    font-weight: 600;
-    font-size: 1rem;
-    color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  color: white;
 
-    outline: none;
-    border: 0;
-    border-radius: 4px;
+  outline: none;
+  border: 0;
+  border-radius: 4px;
 
-    background: linear-gradient(90deg, #0fac6f, #3385ff);
-    cursor: pointer;
+  background: linear-gradient(90deg, #0fac6f, #3385ff);
+  cursor: pointer;
 
-    transition: background 0.5s linear;
+  transition: background 0.5s linear;
 }
 
 .auth-form button.loading {
-    padding: 0.5rem;
+  padding: 0.5rem;
 }
 
 .auth-form button:disabled {
-    background: #2a374d;
-    color: #566888;
-    cursor: default;
+  background: #2a374d;
+  color: #566888;
+  cursor: default;
 }
 
 .form-next {
-    margin-top: 1.5rem;
-    color: #91a5c5;
-    font-size: 0.9rem;
+  margin-top: 1.5rem;
+  color: #91a5c5;
+  font-size: 0.9rem;
 }
 
 .form-next a {
-    color: #0facac;
-    text-decoration: none;
-    font-weight: 600;
+  color: #0facac;
+  text-decoration: none;
+  font-weight: 600;
 }
 
 .form-next a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .form-next a svg {
-    margin-left: 0.3rem;
-    transition: all 0.1s ease;
+  margin-left: 0.3rem;
+  transition: all 0.1s ease;
 }
 
 .form-next a:hover svg {
-    margin-left: 0.5rem;
+  margin-left: 0.5rem;
 }
 
 .form-input {
-    position: relative;
+  position: relative;
 }
 
 .form-input svg {
-    position: absolute;
-    right: 0;
-    top: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
 
-    height: 100%;
-    width: 1.2rem;
-    margin-right: 0.5rem;
-    cursor: pointer;
+  height: 100%;
+  width: 1.2rem;
+  margin-right: 0.5rem;
+  cursor: pointer;
 }
 
 .form-eye-red svg {
-    color: #FF646E;
+  color: #ff646e;
 }
 
 h1.title {
-    margin-bottom: 2rem;
-    font-size: 1.8rem;
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
 }
 
 h1.title span {
-    font-weight: 500;
+  font-weight: 500;
 }

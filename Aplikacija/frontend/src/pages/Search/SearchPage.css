@@ -1,92 +1,92 @@
 .search-page {
-    width: 80%;
+  width: 80%;
 
-    margin: 0 auto;
+  margin: 0 auto;
 }
 
 .search-page > h1 {
-    margin: 2rem;
-    font-size: 3rem;
+  margin: 2rem;
+  font-size: 3rem;
 }
 
 .search-page > h2 {
-    text-align: left;
-    font-size: 2rem;
+  text-align: left;
+  font-size: 2rem;
 
-    margin: 2rem 0;
+  margin: 2rem 0;
 }
 
 .search-page h2 a {
-    color: white;
+  color: white;
 }
 
 .search-items-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 5px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
 
-    margin-bottom: 2rem;
+  margin-bottom: 2rem;
 }
 
 .search-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-    padding: 1rem;
-    cursor: pointer;
+  padding: 1rem;
+  cursor: pointer;
 
-    background-color: rgba(32, 52, 90, 0.2);
+  background-color: rgba(32, 52, 90, 0.2);
 
-    transition: all 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .search-item:hover {
-    background-color: rgba(32, 52, 90, 0.3);
+  background-color: rgba(32, 52, 90, 0.3);
 }
 
 .search-item > img {
-    margin-right: 1.5rem;
+  margin-right: 1.5rem;
 }
 
 .search-item-name {
-    text-align: left;
-    flex: 2;
+  text-align: left;
+  flex: 2;
 }
 
 .search-item-category {
-    flex: 4;
-    
-    text-align: left;
+  flex: 4;
+
+  text-align: left;
 }
 
 .search-page .course-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin: 2rem 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
 }
 
 .search-username {
-    flex: 1;
-    text-align: left;
-    font-size: 1.3rem;
-    font-weight: 600;
+  flex: 1;
+  text-align: left;
+  font-size: 1.3rem;
+  font-weight: 600;
 }
 
 .search-role {
-    font-size: 1.3rem;
-    margin: 0 1rem;
-    font-weight: 600;
+  font-size: 1.3rem;
+  margin: 0 1rem;
+  font-weight: 600;
 }
 
 .search-points {
-    font-size: 1.2rem;
-    font-weight: 600;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
 .search-no-result {
-    margin: 5rem;
-    font-size: 2rem;
-    color: rgba(255, 255, 255, 0.4);
+  margin: 5rem;
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.4);
 }

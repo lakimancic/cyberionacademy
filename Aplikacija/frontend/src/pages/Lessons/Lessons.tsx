@@ -76,7 +76,7 @@ function Lessons() {
     selectedCategory,
     selectedDifficulty,
     currentPage,
-    showWithQuiz
+    showWithQuiz,
   ]);
 
   const mappedLessons = useMemo(() => {

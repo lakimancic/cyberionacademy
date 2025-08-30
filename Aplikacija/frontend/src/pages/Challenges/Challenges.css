@@ -1,188 +1,189 @@
 .challenge-container {
-    backdrop-filter: blur(12px);
-    color: #fff;
-    padding: 2rem;
-    font-family: 'Segoe UI', sans-serif;
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(12px);
+  color: #fff;
+  padding: 2rem;
+  font-family: "Segoe UI", sans-serif;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .challenge-container h2 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    display: flex;
-    color: #e4e6eb;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  display: flex;
+  color: #e4e6eb;
 }
 
 .challenge-container .tabs {
-    display: flex;
-    gap: 1rem;
+  display: flex;
+  gap: 1rem;
 }
 
 .challenge-container .tab {
-    background-color: #1a1d2e;
-    color: #aab2c8;
-    border: none;
-    padding: 1rem 2rem;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.2s;
+  background-color: #1a1d2e;
+  color: #aab2c8;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
 .challenge-container .tab:hover {
-    background-color: #252a40;
+  background-color: #252a40;
 }
 
 .challenge-container .tab.active {
-    background-color: #2d324a;
-    color: #fff;
+  background-color: #2d324a;
+  color: #fff;
 }
 
-.challenge-container input[type="text"], select {
-    background-color: #1a1d2e;
-    color: #fff;
-    border: 1px solid #2c2f45;
-    border-radius: 6px;
-    padding: 1rem;
-    outline: none;
-    font-size: 0.9rem;
+.challenge-container input[type="text"],
+select {
+  background-color: #1a1d2e;
+  color: #fff;
+  border: 1px solid #2c2f45;
+  border-radius: 6px;
+  padding: 1rem;
+  outline: none;
+  font-size: 0.9rem;
 }
 
 .challenge-container input::placeholder {
-    color: #777;
+  color: #777;
 }
 
 .challenge-container button {
-    font-size: 0.9rem;
-    background-color: #1a1d2e;
-    color: #fff;
-    border: 1px solid #2c2f45;
-    border-radius: 6px;
-    padding: 1rem;
-    outline: none;
-    font-size: 0.9rem;
+  font-size: 0.9rem;
+  background-color: #1a1d2e;
+  color: #fff;
+  border: 1px solid #2c2f45;
+  border-radius: 6px;
+  padding: 1rem;
+  outline: none;
+  font-size: 0.9rem;
 }
 
 .challenge-container button:hover {
-    opacity: 0.9;
+  opacity: 0.9;
 }
 
 .challenge-container .view-button {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .challenge-container .view-button:hover {
-    background-color: #218838;
-    transform: scale(1.1);
+  background-color: #218838;
+  transform: scale(1.1);
 }
 
 .challenge-container .pagination {
-    margin-top: 1rem;
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    align-items: center;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  align-items: center;
 }
 
 .challenge-container .pagination button {
-    background-color: #1a1d2e;
-    color: white;
-    border: 1px solid #2c2f45;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    cursor: pointer;
+  background-color: #1a1d2e;
+  color: white;
+  border: 1px solid #2c2f45;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
 .challenge-container .pagination button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .controls-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    background-color: #131623ad;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  background-color: #131623ad;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
 
 .controls-bar .tabs {
-    display: flex;
-    gap: 0.75rem;
+  display: flex;
+  gap: 0.75rem;
 }
 
 .controls-bar .controls {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-    justify-content: flex-end;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .search-group {
-    display: flex;
-    align-items: center;
-    border-radius: 6px;
-    overflow: hidden;
-    border: 1px solid #2c2f45;
-    background-color: #1a1d2e;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #2c2f45;
+  background-color: #1a1d2e;
 }
 
 .search-group input[type="text"] {
-    border: none;
-    padding: 1rem;
-    background-color: transparent;
-    color: #fff;
-    outline: none;
-    font-size: 0.9rem;
+  border: none;
+  padding: 1rem;
+  background-color: transparent;
+  color: #fff;
+  outline: none;
+  font-size: 0.9rem;
 }
 
 .search-group input::placeholder {
-    color: #777;
+  color: #777;
 }
 
 .search-group button {
-    border: none;
-    background-color: transparent;
-    color: #fff;
-    padding: 1rem;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.2s ease;
+  border: none;
+  background-color: transparent;
+  color: #fff;
+  padding: 1rem;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
 }
 
 .search-group button:hover {
-    background-color: #252a40;
+  background-color: #252a40;
 }
 
 .challenge-table tr.solved {
-    background-color: rgba(40, 167, 69, 0.15) !important;
+  background-color: rgba(40, 167, 69, 0.15) !important;
 }
 
 .challenge-table td:has(.cat-icon) {
-    width: 0;
-    padding: 0 1.3rem;
+  width: 0;
+  padding: 0 1.3rem;
 }
 
 .people-solve {
-    display: flex;
-    gap: 0.6rem;
+  display: flex;
+  gap: 0.6rem;
 }
 
 .challenge-container .search-bar-container {
-    margin: 0;
+  margin: 0;
 }
 
 .challenge-container .search-bar-container input {
-    width: 12rem;
+  width: 12rem;
 }

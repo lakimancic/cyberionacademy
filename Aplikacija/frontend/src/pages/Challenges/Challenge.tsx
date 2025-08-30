@@ -101,10 +101,8 @@ function ChallengeDetails() {
         setInstance(res.data.instance);
       })
       .catch((err) => {
-        if (err.response.status == 404)
-          navigate("/challenges");
-        else
-          handleError(err, msg => showNotification(msg, 'error'));
+        if (err.response.status == 404) navigate("/challenges");
+        else handleError(err, (msg) => showNotification(msg, "error"));
       })
       .finally(() => setLoading(false));
   };
@@ -145,7 +143,7 @@ function ChallengeDetails() {
           fetchChallenge();
         })
         .catch((err) => {
-          handleError(err, msg => showNotification(msg, 'error'));
+          handleError(err, (msg) => showNotification(msg, "error"));
         });
     } else {
       api
@@ -160,7 +158,7 @@ function ChallengeDetails() {
           fetchChallenge();
         })
         .catch((err) => {
-          handleError(err, msg => showNotification(msg, 'error'));
+          handleError(err, (msg) => showNotification(msg, "error"));
         });
     }
   };
@@ -186,7 +184,7 @@ function ChallengeDetails() {
         window.URL.revokeObjectURL(url);
       })
       .catch((err) => {
-        handleError(err, msg => showNotification(msg, 'error'));
+        handleError(err, (msg) => showNotification(msg, "error"));
       });
   };
 
@@ -204,7 +202,7 @@ function ChallengeDetails() {
         setInstance(resp.data);
       })
       .catch((err) => {
-        handleError(err, msg => showNotification(msg, 'error'));
+        handleError(err, (msg) => showNotification(msg, "error"));
       })
       .finally(() => setInstanceLoad(false));
   };
@@ -215,7 +213,7 @@ function ChallengeDetails() {
     api
       .delete(`/Challenge/StopInstance/${challenge.id}`)
       .catch((err) => {
-        handleError(err, msg => showNotification(msg, 'error'));
+        handleError(err, (msg) => showNotification(msg, "error"));
       })
       .finally(() => setInstance(null));
   };
@@ -229,7 +227,7 @@ function ChallengeDetails() {
         setInstance((prev) => (prev ? { ...prev, timeRem: resp.data } : null));
       })
       .catch((err) => {
-        handleError(err, msg => showNotification(msg, 'error'));
+        handleError(err, (msg) => showNotification(msg, "error"));
       });
   };
 

@@ -13,20 +13,19 @@ namespace backend.Controllers;
 [Authorize]
 public class ChallengeController(ApplicationDbContext context, IChallengeService challengeService, IConfiguration configuration, IBadgeService badgeService) : ControllerBase
 {
+    static readonly int pageSize = 8;
 
     [HttpGet("GetChallenges")]
     public async Task<ActionResult<object>> GetChallenges(
-
-    int page = 1,
-    int pageSize = 8,
-    string? sortKey = "Name",
-    string? sortDirection = "asc",
-    string? category = null,
-    string? search = null,
-    bool? archived = null,
-    int? difficulty = null,
-    bool ownChalls = false,
-    bool? unsolvedOnly = null)
+        int page = 1,
+        string? sortKey = "Name",
+        string? sortDirection = "asc",
+        string? category = null,
+        string? search = null,
+        bool? archived = null,
+        int? difficulty = null,
+        bool ownChalls = false,
+        bool? unsolvedOnly = null)
     {
         int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "-1");
         if (userId == -1)

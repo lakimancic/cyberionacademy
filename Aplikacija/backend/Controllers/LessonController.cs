@@ -106,18 +106,6 @@ public class LessonController(ApplicationDbContext context, IQuizService quizSer
         });
     }
 
-    [HttpGet("GetCategories")]
-    [AllowAnonymous]
-    public async Task<ActionResult<IEnumerable<string>>> GetCategories()
-    {
-        var categories = await context.Categories
-            .Select(c => c.Name)
-            .Distinct()
-            .ToListAsync();
-
-        return Ok(categories);
-    }
-
     [HttpGet("GetLessonDetails/{id}")]
     public async Task<ActionResult<LessonDto>> GetLessonDetails(int id)
     {

@@ -1,87 +1,88 @@
 .data-table-con {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 
-    width: 100%;
+  width: 100%;
 }
 
 .data-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
-    font-size: 0.95rem;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: 0.95rem;
 
-    table-layout: auto;
+  table-layout: auto;
 }
 
-.data-table th, .data-table td {
-    text-align: left;
-    padding: 0.75rem;
-    border-bottom: 1px solid #030824;
+.data-table th,
+.data-table td {
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 1px solid #030824;
 }
 
 .data-table th {
-    color: #aab2c8;
-    user-select: none;
-    background-color: #020e20a8;
+  color: #aab2c8;
+  user-select: none;
+  background-color: #020e20a8;
 }
 
 .data-table tr:hover {
-    background-color: #1f2233;
+  background-color: #1f2233;
 }
 
 .data-table-con .data-table tbody tr {
-    transition: transform 0.2s ease, background-color 0.2s ease;
-    cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  cursor: pointer;
 }
 
 .data-table-con .data-table tbody tr:hover {
-    transform: scale(1.02);
-    background-color: rgba(255, 255, 255, 0.05);
+  transform: scale(1.02);
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .data-table-con .data-pagination {
-    margin-top: 1rem;
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    align-items: center;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  align-items: center;
 }
 
 .data-table-con .data-pagination button {
-    background-color: #1a1d2e;
-    color: white;
-    border: 1px solid #2c2f45;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    cursor: pointer;
+  background-color: #1a1d2e;
+  color: white;
+  border: 1px solid #2c2f45;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
 .data-table-con .data-pagination button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .data-sortable {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .data-table th svg {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0);
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0);
 
-    transition: color 0.2s ease;
+  transition: color 0.2s ease;
 }
 
-.data-table th:hover svg:not([class^=data-sort-]) {
-    color: rgba(255, 255, 255, 0.5);
+.data-table th:hover svg:not([class^="data-sort-"]) {
+  color: rgba(255, 255, 255, 0.5);
 }
 
-.data-table svg[class^=data-sort-] {
-    color: white;
+.data-table svg[class^="data-sort-"] {
+  color: white;
 }
 
-.data-table svg[class^=data-sort-desc] {
-    transform: scaleY(-1);
+.data-table svg[class^="data-sort-desc"] {
+  transform: scaleY(-1);
 }
