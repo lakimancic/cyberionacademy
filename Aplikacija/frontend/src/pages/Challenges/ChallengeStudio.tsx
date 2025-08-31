@@ -48,12 +48,12 @@ function ChallengeStudio() {
       });
   }, []);
 
-  const fetchChallenges = (searchQuery?: string) => {
+  const fetchChallenges = () => {
     const params = {
       sortKey,
       sortDirection: sortDir,
       page: currentPage,
-      search: searchQuery,
+      search: searchWord,
       category: selectedCategory !== "" ? selectedCategory : undefined,
       difficulty:
         selectedDifficulty !== "" ? Number(selectedDifficulty) : undefined,
@@ -72,8 +72,13 @@ function ChallengeStudio() {
   };
 
   const onSearch = () => {
-    fetchChallenges(searchWord);
+    if (currentPage == 1) fetchChallenges();
+    setCurrentPage(1);
   };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [sortKey, sortDir, selectedCategory, selectedDifficulty]);
 
   useEffect(() => {
     fetchChallenges();

@@ -72,12 +72,17 @@ function LessonStudio() {
   };
 
   const onSearch = () => {
-    fetchChallenges(searchWord);
+    if(currentPage == 1) fetchChallenges(searchWord);
+    setCurrentPage(1);
   };
 
   useEffect(() => {
     fetchChallenges();
   }, [currentPage, sortKey, sortDir, selectedCategory, selectedDifficulty]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [sortKey, sortDir, selectedCategory, selectedDifficulty]);
 
   const mappedLessons = useMemo(() => {
     return lessons.map((l) => {

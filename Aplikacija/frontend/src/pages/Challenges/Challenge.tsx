@@ -189,6 +189,7 @@ function ChallengeDetails() {
   };
 
   const startInstance = () => {
+    if (instanceLoad) return;
     if (!challenge) return;
     setInstanceLoad(true);
 
@@ -208,14 +209,19 @@ function ChallengeDetails() {
   };
 
   const stopInstance = () => {
+    if (instanceLoad) return;
     if (!challenge) return;
+    setInstanceLoad(true);
 
     api
       .delete(`/Challenge/StopInstance/${challenge.id}`)
       .catch((err) => {
         handleError(err, (msg) => showNotification(msg, "error"));
       })
-      .finally(() => setInstance(null));
+      .finally(() => {
+        setInstance(null);
+        setInstanceLoad(false);
+      });
   };
 
   const extendInstance = () => {
@@ -333,10 +339,10 @@ function ChallengeDetails() {
               }}
             >
               <div className="icon-container">
-                {instance ? (
-                  <StopIcon fontSize="large" />
-                ) : instanceLoad ? (
+                {instanceLoad ? (
                   <CircularProgress />
+                ) : instance ? (
+                  <StopIcon fontSize="large" />
                 ) : (
                   <PlayArrowTwoToneIcon fontSize="large" />
                 )}

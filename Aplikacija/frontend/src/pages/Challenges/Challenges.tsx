@@ -67,6 +67,17 @@ function Challenges() {
   ]);
 
   useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    sortKey,
+    sortDirection,
+    selectedCategory,
+    selectedDifficulty,
+    showUnsolvedOnly,
+    activeTab,
+  ]);
+
+  useEffect(() => {
     api
       .get("/Categories/")
       .then((res) => setCategories(res.data))
@@ -199,7 +210,10 @@ function Challenges() {
             label="Challenges"
             searchWord={searchQuery}
             setSearchWord={setSearchQuery}
-            onSearch={() => fetchChallenges()}
+            onSearch={() => {
+              if (currentPage == 1) fetchChallenges();
+              setCurrentPage(1);
+            }}
           />
           <Select
             value={selectedCategory}

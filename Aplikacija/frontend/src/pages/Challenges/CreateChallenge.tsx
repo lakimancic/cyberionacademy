@@ -264,6 +264,8 @@ function CreateChallenge() {
           .put("/Challenge/UpdateChallenge", formData)
           .then(() => {
             showNotification("Challenge updated successfully", "success");
+            fetchModChallenge();
+            setDockerLogs([]);
           })
           .catch((err) => {
             handleError(err, setError);
@@ -499,7 +501,7 @@ function CreateChallenge() {
                 )}
               </div>
               <p className="studio-no-upload">
-                {downloadFileName
+                {dockerFileName
                   ? `New file: ${dockerFileName}`
                   : challenge.dockerFile ?? "No file upload"}
               </p>
@@ -519,7 +521,7 @@ function CreateChallenge() {
         <div className="studio-create-col">
           <div className="form-field">
             <div className="form-label">
-              Challenge Zip File (Available for user)
+              Challenge File (Available for user)
             </div>
             <div className="studio-upload-con">
               <div className="studio-upload-subcon">

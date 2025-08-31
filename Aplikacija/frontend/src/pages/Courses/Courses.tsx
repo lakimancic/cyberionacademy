@@ -27,6 +27,10 @@ function Courses() {
     fetchCourses();
   }, [sortKey, sortDirection, selectedDifficulty, currentPage]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [sortKey, sortDirection, selectedDifficulty]);
+
   const fetchCourses = () => {
     const params: any = {
       sortKey,
@@ -82,7 +86,10 @@ function Courses() {
           label="Courses"
           searchWord={search}
           setSearchWord={setSearch}
-          onSearch={() => fetchCourses()}
+          onSearch={() => {
+            if (currentPage == 1) fetchCourses();
+            setCurrentPage(1);
+          }}
         />
 
         <Select

@@ -54,12 +54,17 @@ function CourseStudio() {
   };
 
   const onSearch = () => {
-    fetchCourses(searchWord);
+    if(currentPage == 1) fetchCourses(searchWord);
+    setCurrentPage(1);
   };
 
   useEffect(() => {
     fetchCourses();
   }, [currentPage, sortKey, sortDir, selectedDifficulty]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [sortKey, sortDir, selectedDifficulty]);
 
   const mappedCourses = useMemo(() => {
     return courses.map((course) => {

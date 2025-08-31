@@ -13,34 +13,38 @@ public static class BuildHelper
             IsStreamOwner = false
         };
 
-        AddDirectoryFilesToTar(tarOutput, directory, true);
+        AddDirectoryFilesToTar(tarOutput, directory, directory, true);
         tarOutput.Close();
         memoryStream.Seek(0, SeekOrigin.Begin);
         return memoryStream;
     }
 
-    private static void AddDirectoryFilesToTar(TarOutputStream tarOutput, string source, bool recursive)
+    private static void AddDirectoryFilesToTar(TarOutputStream tarOutput, string rootDirectory, string currentDirectory, bool recursive)
     {
-        foreach (string filename in Directory.GetFiles(source))
+        string[] files = Directory.GetFiles(currentDirectory);
+        foreach (var filePath in files)
         {
-            var fileInfo = new FileInfo(filename);
-            string tarName = filename.Substring(source.Length).TrimStart(Path.DirectorySeparatorChar);
-
-            var entry = TarEntry.CreateEntryFromFile(filename);
-            entry.Name = tarName.Replace("\\", "/");
-
+            string relativePath = Path.GetRelativePath(rootDirectory, filePath).Replace("\\", "/");
+            var entry = TarEntry.CreateEntryFromFile(filePath);
+            entry.Name = relativePath;
             tarOutput.PutNextEntry(entry);
 
-            using var fileStream = File.OpenRead(filename);
-            fileStream.CopyTo(tarOutput);
+            using var fs = File.OpenRead(filePath);
+            fs.CopyTo(tarOutput);
             tarOutput.CloseEntry();
         }
 
         if (recursive)
         {
-            foreach (string directory in Directory.GetDirectories(source))
+            foreach (var dir in Directory.GetDirectories(currentDirectory))
             {
-                AddDirectoryFilesToTar(tarOutput, directory, recursive);
+                string relativeDirPath = Path.GetRelativePath(rootDirectory, dir).Replace("\\", "/") + "/";
+                var dirEntry = TarEntry.CreateEntryFromFile(dir);
+                dirEntry.Name = relativeDirPath;
+                tarOutput.PutNextEntry(dirEntry);
+                tarOutput.CloseEntry();
+
+                AddDirectoryFilesToTar(tarOutput, rootDirectory, dir, recursive);
             }
         }
     }

@@ -79,6 +79,16 @@ function Lessons() {
     showWithQuiz,
   ]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    sortKey,
+    sortDirection,
+    selectedCategory,
+    selectedDifficulty,
+    showWithQuiz,
+  ]);
+
   const mappedLessons = useMemo(() => {
     return lessons.map((l) => {
       return {
@@ -123,7 +133,10 @@ function Lessons() {
             label="Lessons"
             searchWord={searchQuery}
             setSearchWord={setSearchQuery}
-            onSearch={() => fetchLessons()}
+            onSearch={() => {
+              if (currentPage == 1) fetchLessons();
+              setCurrentPage(1);
+            }}
           />
         </div>
         <label
