@@ -90,6 +90,14 @@ function Scoreboard() {
   };
 
   useEffect(() => {
+    if (tab === 0 || currentCountry !== null) {
+      fetchUsers();
+    } else {
+      fetchCountries();
+    }
+  },[currentPage]);
+
+  useEffect(() => {
     if (!currentCountry) return;
 
     setCurrentPage(1);
